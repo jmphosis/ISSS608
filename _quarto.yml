@@ -4,14 +4,26 @@ project:
 website:
   title: "ISSS608"
   navbar:
-    left:
+    left: 
+      - text: Hands-on Exercises
+        menu:
+          - text: Hands-on Exercise 1
+            href: Hands-on_Ex/Hands-on_Ex1/Hands-on_Ex1.html
+      - text: In-class Exercise
+        menu: 
+          - text: In-class Exercise 1
+            href: In-class_Ex/In-class_Ex1/In-class_Ex1.html
+      - text: Take-home Exercise
+        menu: 
+          - text: Take-home Exercise 1
+            href: Take-home_Ex/Take-home_Ex1/Take-home_Ex1.html
+    right:
       - href: index.qmd
         text: Home
-      - about.qmd
 
 format:
   html:
-    theme: cosmo
+    theme: pulse
     css: styles.css
     toc: true
 

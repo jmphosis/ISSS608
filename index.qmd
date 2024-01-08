@@ -1,11 +1,14 @@
 ---
-title: "ISSS608"
+title: "ISSS608: Visual Analytics and Applications"
+author: "Janet Toa"
+background-color: lightgrey;
+font-family:  Palatino Linotype;
 ---
 
-This is a Quarto website.
+Welcome to ISSS608 Visual Analytics and Applications!
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+In this webpage, I am going to share my visual analytics learning journey.
 
-```{r}
-1 + 1
-```
+![](images/VAA.png){fig-align="center"}
+
+*Credit: Prima Consulting UK*

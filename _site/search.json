@@ -1,10 +1,17 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "ISSS608",
+    "objectID": "Take-home_Ex/Take-home_Ex1/Take-home_Ex1.html",
+    "href": "Take-home_Ex/Take-home_Ex1/Take-home_Ex1.html",
+    "title": "Take-home Exercise 1",
     "section": "",
-    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n1 + 1\n\n[1] 2"
+    "text": "&lt;Placeholder&gt;"
+  },
+  {
+    "objectID": "In-class_Ex/In-class_Ex1/In-class_Ex1.html",
+    "href": "In-class_Ex/In-class_Ex1/In-class_Ex1.html",
+    "title": "In-class Exercise 1",
+    "section": "",
+    "text": "&lt;Placeholder&gt;"
   },
   {
     "objectID": "about.html",
@@ -12,5 +19,19 @@
     "title": "About",
     "section": "",
     "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex1/Hands-on_Ex1.html",
+    "href": "Hands-on_Ex/Hands-on_Ex1/Hands-on_Ex1.html",
+    "title": "Hands-on Exercise 1",
+    "section": "",
+    "text": "&lt;Placeholder&gt;"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "ISSS608: Visual Analytics and Applications",
+    "section": "",
+    "text": "Welcome to ISSS608 Visual Analytics and Applications!\nIn this webpage, I am going to share my visual analytics learning journey.\n\n\n\n\n\nCredit: Prima Consulting UK"
   }
 ]
