@@ -25,7 +25,7 @@
     "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html",
     "title": "Hands-on Exercise 1",
     "section": "",
-    "text": "&lt;Placeholder&gt;"
+    "text": "The code chunk below uses the p_load() function of the pacman package to check if the tidyverse packages are installed in the computer. If yes, they are then launched in R.\n\npacman::p_load(tidyverse)\n\n\n\n\nThe data set for this hands-on exercise is imported into the R environment using the read_csv() function of the readr package and stored as the R object, exam_data.\nThe tibble data frame, exam_data, has 7 columns and 322 rows.\n\nexam_data = read_csv(\"data/Exam_data.csv\")\n\n\n\n\nThe ggplot() and geom_bar() functions in the ggplot2 package are used to plot a bar chart showing the breakdown of the data by the “RACE” variable.\nFrom the bar chart, we can see that most of the students are Chinese, followed by Malay. A minority of students are Indian or other races.\n\nggplot(data = exam_data,\n       aes(x = RACE)) +\n  geom_bar()"
   },
   {
     "objectID": "index.html",
@@ -33,5 +33,12 @@
     "title": "ISSS608: Visual Analytics and Applications",
     "section": "",
     "text": "Welcome to ISSS608 Visual Analytics and Applications!\nIn this webpage, I am going to share my visual analytics learning journey.\n\n\n\n\n\nCredit: Prima Consulting UK"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#getting-started",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#getting-started",
+    "title": "Hands-on Exercise 1",
+    "section": "",
+    "text": "The code chunk below uses the p_load() function of the pacman package to check if the tidyverse packages are installed in the computer. If yes, they are then launched in R.\n\npacman::p_load(tidyverse)\n\n\n\n\nThe data set for this hands-on exercise is imported into the R environment using the read_csv() function of the readr package and stored as the R object, exam_data.\nThe tibble data frame, exam_data, has 7 columns and 322 rows.\n\nexam_data = read_csv(\"data/Exam_data.csv\")\n\n\n\n\nThe ggplot() and geom_bar() functions in the ggplot2 package are used to plot a bar chart showing the breakdown of the data by the “RACE” variable.\nFrom the bar chart, we can see that most of the students are Chinese, followed by Malay. A minority of students are Indian or other races.\n\nggplot(data = exam_data,\n       aes(x = RACE)) +\n  geom_bar()"
   }
 ]
