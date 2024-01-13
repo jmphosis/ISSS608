@@ -1,6 +1,7 @@
 ---
-title: "In-class Exercise 1"
+title: "In-class Exercise 1: Now You See It!"
 date: "13 January 2024"
+date-modified: "last-modified" #allows for updating to the latest date
 format: html
 execute: 
   echo: true #shows the code
@@ -11,4 +12,55 @@ background-color: lightgrey;
 font-family:  Palatino Linotype;
 ---
 
-\<Placeholder\>
+# Now You See It!
+
+## 1 Overview and Learning Outcomes
+
+This is the in-class exercise 1.
+
+The learning outcomes are to load the relevant R packages and import the required dataset into the environment.
+
+## 2 Loading R Packages
+
+In this in-class exercise, two R packages will be used. They are:
+
+-   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data; and
+
+-   [**haven**](https://haven.tidyverse.org/) for importing SAS files.
+
+The code chunk below uses the `p_load()` function in the **pacman** package to check if the packages are installed in the computer. If yes, they are then loaded into the R environment. If no, they are installed, then loaded into the R environment.
+
+```{r}
+pacman::p_load(tidyverse, haven)
+```
+
+## 3 Importing Data
+
+The dataset used in this in-class exercise is the PISA 2022 student questionnaire data file, which is in the SAS file format. It is imported into the R environment using the [`read_sas()`](https://haven.tidyverse.org/reference/read_sas.html) function in the [**haven**](https://haven.tidyverse.org/)package and stored as the R object, `stu_qqq`.
+
+```{r}
+#| eval: false
+stu_qqq = read_sas("data/cy08msp_stu_qqq.sas7bdat")
+```
+
+The tibble data frame, `stu_qqq`, has 1,279 columns (variables) and 613,7 rows (observations).
+
+There are 6,606 rows with the country code "SGP", which represents Singapore. The [`filter()`](https://dplyr.tidyverse.org/reference/filter.html) function in the [**dplyr**](https://dplyr.tidyverse.org/) package is used to obtain these rows, and stored as the R object, `stu_qqq_SG`.
+
+```{r}
+#| eval: false
+stu_qqq_SG = stu_qqq %>% filter(CNT == "SGP")
+```
+
+The tibble data frame, `stu_qqq_SG`, is then saved in the rds file format and imported into the R environment.
+
+```{r}
+#| eval: false
+write_rds(stu_qqq_SG, "data/stu_qqq_SG.rds")
+```
+
+```{r}
+stu_qqq_SG = read_rds("data/stu_qqq_SG.rds")
+```
+
+[**\~\~\~ End of In-class Exercise 1 \~\~\~**]{.smallcaps}

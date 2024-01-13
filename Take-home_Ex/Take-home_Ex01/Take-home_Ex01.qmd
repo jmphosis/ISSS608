@@ -1,6 +1,7 @@
 ---
 title: "Take-home Exercise 1"
-date: "XX January 2024"
+date: "14 January 2024"
+date-modified: "last-modified" #allows for updating to the latest date
 format: html
 execute: 
   echo: true #shows the code
