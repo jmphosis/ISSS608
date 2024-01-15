@@ -14,4 +14,4 @@ font-family:  Palatino Linotype;
 
 \<*placeholder*\>
 
-[**\~\~\~ End of In-class Exercise 1 \~\~\~**]{.smallcaps}
+[**\~\~\~ End of In-class Exercise 2 \~\~\~**]{.smallcaps}

@@ -536,7 +536,7 @@ p3 + inset_element(p2,
 
 Using both the **ggthemes** and **patchwork** packages, a composite figure with The Economist theme is created.
 
-> ***Note***: The subplots are tagged with "A", "B", and "C" using the `plot_annotation()` function in the **patchwork** package. Also, the `theme()` function in the **ggplot2** package is used, with the "plot.title" argument to reduce the size of the titles to fit the composite figure.
+> ***Note***: The subplots are tagged with "A", "B", and "C" using the `plot_annotation()` function in the **patchwork** package. Also, the `theme()` function in the **ggplot2** package is used with the "plot.title" argument to reduce the size of the titles to fit the composite figure.
 
 ::: panel-tabset
 ## Plot
