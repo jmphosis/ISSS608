@@ -588,7 +588,7 @@ ggplot(data = exam_data,
 
 -   Winston Chang (2013) [**R Graphics Cookbook 2nd edition**](https://r-graphics.org/). Online version.
 
--   Healy, Kieran (2019) [**Data Visualization: A practical introduction**](https://socviz.co/). Online version
+-   Healy, Kieran (2019) [**Data Visualization: A practical introduction**](https://socviz.co/). Online version.
 
 -   [Learning ggplot2 on Paper – Components](https://henrywang.nl/learning-ggplot2-on-paper-components/)
 

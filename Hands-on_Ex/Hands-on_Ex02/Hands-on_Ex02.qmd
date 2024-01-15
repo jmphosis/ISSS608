@@ -1,5 +1,5 @@
 ---
-title: "Hands-on Exercise 1"
+title: "Hands-on Exercise 2"
 date: "15 January 2024"
 date-modified: "last-modified" #allows for updating to the latest date
 format: html
@@ -72,6 +72,8 @@ The tibble data frame, `exam_data`, has 7 columns and 322 rows.
 
 A challenge in plotting a statistical graph is annotation, especially with a large number of data points.
 
+The scatterplot below shows many overlapping annotations because of the sheer number of dots on it.
+
 ::: panel-tabset
 ## Plot
 
@@ -114,7 +116,9 @@ The **ggrepel** package is an extension of the **ggplot2** package, which provid
 
 ### 2.3.1 Working with ggrepel
 
-The previous plot is re-plotted by replacing the `geom_label()` function in the **ggplot2** package with the [`geom_label_repel()`](https://ggrepel.slowkow.com/reference/geom_text_repel.html) function in the **ggrepel** package.
+The previous scatterplot is re-plotted by replacing the `geom_label()` function in the **ggplot2** package with the [`geom_label_repel()`](https://ggrepel.slowkow.com/reference/geom_text_repel.html) function in the **ggrepel** package.
+
+> ***Note***: The annotations avoid the main clusters and labels potential outlier dots.
 
 ::: panel-tabset
 ## Plot
@@ -192,7 +196,7 @@ ggplot(data = exam_data,
 
 The **ggthemes** package provides ggplot2 themes that replicate the look of plots by Edward Tufte, Stephen Few, Fivethirtyeight, The Economist, ‘Stata’, ‘Excel’, and The Wall Street Journal, etc. It also provides some extra geoms and scales for ggplot2.
 
-The previous plot is re-plotted with *The Economist* theme below.
+The previous plot is re-plotted with *The Economist* theme below, with the classic light blue background.
 
 ::: panel-tabset
 ## Plot
@@ -262,13 +266,15 @@ ggplot(data = exam_data,
 
 The second goal of the **hrbrthemes** package is productivity for a production workflow. A “production workflow” is when the output of the work is to be put into a publication of some kind. While working through the analysis, the visual elements do not need to be perfect but are there to validate/support the work and are more of a starting point for the finished product.
 
-The previous plot is re-plotted with the `theme_ipsum` function below, with the addition of the following arguments:
+The previous plot is re-plotted with the `theme_ipsum` function below, with the addition of some arguments to customise the elements.
 
--   "axis_title_size" argument is used to increase the font size of the axis title to 18;
-
--   "base_size" argument is used to increase the default axis label to 15; and
-
--   "grid" argument is used to remove the x-axis grid lines and show only the y-axis grid lines.
+> ***Note***: The various arguments are:
+>
+> -   "axis_title_size" argument is used to increase the font size of the axis title to 18;
+>
+> -   "base_size" argument is used to increase the default axis label to 15; and
+>
+> -   "grid" argument is used to remove the x-axis grid lines and show only the y-axis grid lines.
 
 ::: panel-tabset
 ## Plot
@@ -311,7 +317,7 @@ Often, multiple graphs are required to tell a compelling visual story. There are
 To start, three separate statistical graphics are created below, showing the distribution of Maths scores, the distribution of English scores, and the English scores versus Maths scores.
 
 ::: panel-tabset
-## Maths Scores Plot
+## Maths
 
 ```{r}
 #| echo: false 
@@ -327,7 +333,7 @@ p1 = ggplot(data = exam_data,
 p1
 ```
 
-## English Scores Plot
+## English
 
 ```{r}
 #| echo: false 
@@ -343,7 +349,7 @@ p2 = ggplot(data = exam_data,
 p2
 ```
 
-## Plot
+## Maths vs. English
 
 ```{r}
 #| echo: false 
@@ -355,7 +361,7 @@ p3 = ggplot(data = exam_data,
               size = 0.5) +  
   coord_cartesian(xlim = c(0,100),
                   ylim = c(0,100)) +
-  ggtitle("English scores versus Maths scores for Primary 3")
+  ggtitle("English scores versus Maths scores")
 
 p3
 ```
@@ -400,11 +406,11 @@ There are several ggplot2 extension functions that support the preparation of a 
 
 The ggplot2 extension **patchwork** package is specially designed for combining separate ggplot2 graphs into a single figure. It has a simple syntax to create [layouts](https://patchwork.data-imaginist.com/articles/guides/assembly.html) easily:
 
--   Two-Column Layout using '+' (plus sign);
+-   Two-column layout using "+";
 
--   () (parenthesis) to create a subplot group; and
+-   "()" to create a subplot group; and
 
--   Two-Row Layout using '/' (division sign).
+-   Two-row layout using "/".
 
 ### 2.5.2 Combining Two ggplot2 Graphs
 
@@ -459,7 +465,7 @@ For example, the composite figure below is plotted by using:
 The **patchwork** package also allow subplots to be identified in text using its auto-tagging capabilities.
 
 ::: panel-tabset
-## Plot (Roman Numerals)
+## Roman Numerals
 
 ```{r}
 #| echo: false
@@ -467,7 +473,15 @@ The **patchwork** package also allow subplots to be identified in text using its
   plot_annotation(tag_levels = 'I')
 ```
 
-## Plot (Alphabets)
+## Arabic Numerals
+
+```{r}
+#| echo: false
+((p1 / p2) | p3) + 
+  plot_annotation(tag_levels = '1')
+```
+
+## Alphabets
 
 ```{r}
 #| echo: false
@@ -481,6 +495,9 @@ The **patchwork** package also allow subplots to be identified in text using its
 #| eval: false 
 ((p1 / p2) | p3) + 
   plot_annotation(tag_levels = 'I')
+
+((p1 / p2) | p3) + 
+  plot_annotation(tag_levels = '1')
 
 ((p1 / p2) | p3) + 
   plot_annotation(tag_levels = 'I')
@@ -519,13 +536,16 @@ p3 + inset_element(p2,
 
 Using both the **ggthemes** and **patchwork** packages, a composite figure with The Economist theme is created.
 
+> ***Note***: The subplots are tagged with "A", "B", and "C" using the `plot_annotation()` function in the **patchwork** package. Also, the `theme()` function in the **ggplot2** package is used, with the "plot.title" argument to reduce the size of the titles to fit the composite figure.
+
 ::: panel-tabset
 ## Plot
 
 ```{r}
 #| echo: false 
-patchwork = (p1 / p2) | p3
-patchwork & theme_economist()
+patchwork = ((p1 / p2) | p3) + plot_annotation(tag_levels = 'A')
+patchwork & (theme_economist() + 
+  theme(plot.title = element_text(size=10)) )
 ```
 
 ## Code
@@ -533,7 +553,7 @@ patchwork & theme_economist()
 ```{r}
 #| eval: false 
 patchwork = (p1 / p2) | p3
-patchwork & theme_economist()
+patchwork & theme_economist() + theme(plot.title = element_text(size=10))
 ```
 :::
 

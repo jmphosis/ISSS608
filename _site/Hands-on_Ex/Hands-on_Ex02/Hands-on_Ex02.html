@@ -8,7 +8,7 @@
 
 <meta name="dcterms.date" content="2024-01-15">
 
-<title>ISSS608 - Hands-on Exercise 1</title>
+<title>ISSS608 - Hands-on Exercise 2</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -129,6 +129,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html" rel="" target="">
  <span class="dropdown-text">Hands-on Exercise 2</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex03A/Hands-on_Ex03A.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 3A</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -139,6 +143,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li>
     <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex01/In-class_Ex01.html" rel="" target="">
  <span class="dropdown-text">In-class Exercise 1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex02/In-class_Ex02.html" rel="" target="">
+ <span class="dropdown-text">In-class Exercise 2</span></a>
   </li>  
     </ul>
   </li>
@@ -211,7 +219,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Hands-on Exercise 1</h1>
+<h1 class="title">Hands-on Exercise 2</h1>
 </div>
 
 
@@ -289,6 +297,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="beyond-ggplot2-annotation-ggrepel" class="level2">
 <h2 class="anchored" data-anchor-id="beyond-ggplot2-annotation-ggrepel">2.3 Beyond ggplot2 Annotation: ggrepel</h2>
 <p>A challenge in plotting a statistical graph is annotation, especially with a large number of data points.</p>
+<p>The scatterplot below shows many overlapping annotations because of the sheer number of dots on it.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Code</a></li></ul>
 <div class="tab-content">
@@ -320,7 +329,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The <strong>ggrepel</strong> package is an extension of the <strong>ggplot2</strong> package, which provides the <code>geoms</code> for ggplot2 to repel overlapping text as shown in the plot above. This is done by replacing the <code>geom_text()</code> and <code>geom_label()</code> functions in the <strong>ggplot2</strong> package with the <a href="https://ggrepel.slowkow.com/reference/geom_text_repel.html"><code>geom_text_repel()</code></a> and <a href="https://ggrepel.slowkow.com/reference/geom_text_repel.html"><code>geom_label_repel()</code></a> functions respectively in the <strong>ggrepel</strong> package.</p>
 <section id="working-with-ggrepel" class="level3">
 <h3 class="anchored" data-anchor-id="working-with-ggrepel">2.3.1 Working with ggrepel</h3>
-<p>The previous plot is re-plotted by replacing the <code>geom_label()</code> function in the <strong>ggplot2</strong> package with the <a href="https://ggrepel.slowkow.com/reference/geom_text_repel.html"><code>geom_label_repel()</code></a> function in the <strong>ggrepel</strong> package.</p>
+<p>The previous scatterplot is re-plotted by replacing the <code>geom_label()</code> function in the <strong>ggplot2</strong> package with the <a href="https://ggrepel.slowkow.com/reference/geom_text_repel.html"><code>geom_label_repel()</code></a> function in the <strong>ggrepel</strong> package.</p>
+<blockquote class="blockquote">
+<p><strong><em>Note</em></strong>: The annotations avoid the main clusters and labels potential outlier dots.</p>
+</blockquote>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Code</a></li></ul>
 <div class="tab-content">
@@ -383,7 +395,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="working-with-ggtheme-package" class="level3">
 <h3 class="anchored" data-anchor-id="working-with-ggtheme-package">2.4.1 Working with ggtheme package</h3>
 <p>The <strong>ggthemes</strong> package provides ggplot2 themes that replicate the look of plots by Edward Tufte, Stephen Few, Fivethirtyeight, The Economist, ‘Stata’, ‘Excel’, and The Wall Street Journal, etc. It also provides some extra geoms and scales for ggplot2.</p>
-<p>The previous plot is re-plotted with <em>The Economist</em> theme below.</p>
+<p>The previous plot is re-plotted with <em>The Economist</em> theme below, with the classic light blue background.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Code</a></li></ul>
 <div class="tab-content">
@@ -438,12 +450,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>The second goal of the <strong>hrbrthemes</strong> package is productivity for a production workflow. A “production workflow” is when the output of the work is to be put into a publication of some kind. While working through the analysis, the visual elements do not need to be perfect but are there to validate/support the work and are more of a starting point for the finished product.</p>
-<p>The previous plot is re-plotted with the <code>theme_ipsum</code> function below, with the addition of the following arguments:</p>
+<p>The previous plot is re-plotted with the <code>theme_ipsum</code> function below, with the addition of some arguments to customise the elements.</p>
+<blockquote class="blockquote">
+<p><strong><em>Note</em></strong>: The various arguments are:</p>
 <ul>
 <li><p>“axis_title_size” argument is used to increase the font size of the axis title to 18;</p></li>
 <li><p>“base_size” argument is used to increase the default axis label to 15; and</p></li>
 <li><p>“grid” argument is used to remove the x-axis grid lines and show only the y-axis grid lines.</p></li>
 </ul>
+</blockquote>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Code</a></li></ul>
 <div class="tab-content">
@@ -477,7 +492,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Often, multiple graphs are required to tell a compelling visual story. There are several ggplot2 extensions that provide functions to compose a figure with multiple graphs. A composite plot is created by combining multiple graphs.</p>
 <p>To start, three separate statistical graphics are created below, showing the distribution of Maths scores, the distribution of English scores, and the English scores versus Maths scores.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">Maths Scores Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">English Scores Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-3" role="tab" aria-controls="tabset-7-3" aria-selected="false">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-4" role="tab" aria-controls="tabset-7-4" aria-selected="false">Code</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">Maths</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">English</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-3" role="tab" aria-controls="tabset-7-3" aria-selected="false">Maths vs.&nbsp;English</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-4" role="tab" aria-controls="tabset-7-4" aria-selected="false">Code</a></li></ul>
 <div class="tab-content">
 <div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
 <div class="cell">
@@ -538,9 +553,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>There are several ggplot2 extension functions that support the preparation of a composite figure by combining several graphs. These functions include: <a href="https://cran.r-project.org/web/packages/gridExtra/vignettes/arrangeGrob.html"><code>grid.arrange()</code></a> in the <a href="https://www.linkedin.com/advice/3/how-can-you-arrange-multiple-visualizations-gp97e"><strong>gridExtra</strong></a> package and <a href="https://wilkelab.org/cowplot/reference/plot_grid.html"><code>plot_grid()</code></a> in the <a href="https://wilkelab.org/cowplot/"><strong>cowplot</strong></a> package.</p>
 <p>The ggplot2 extension <strong>patchwork</strong> package is specially designed for combining separate ggplot2 graphs into a single figure. It has a simple syntax to create <a href="https://patchwork.data-imaginist.com/articles/guides/assembly.html">layouts</a> easily:</p>
 <ul>
-<li><p>Two-Column Layout using ‘+’ (plus sign);</p></li>
-<li><p>() (parenthesis) to create a subplot group; and</p></li>
-<li><p>Two-Row Layout using ‘/’ (division sign).</p></li>
+<li><p>Two-column layout using “+”;</p></li>
+<li><p>“()” to create a subplot group; and</p></li>
+<li><p>Two-row layout using “/”.</p></li>
 </ul>
 </section>
 <section id="combining-two-ggplot2-graphs" class="level3">
@@ -595,7 +610,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="creating-a-composite-figure-with-tag">2.5.4 Creating A Composite Figure with Tag</h3>
 <p>The <strong>patchwork</strong> package also allow subplots to be identified in text using its auto-tagging capabilities.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">Plot (Roman Numerals)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">Plot (Alphabets)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-3" role="tab" aria-controls="tabset-10-3" aria-selected="false">Code</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">Roman Numerals</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">Arabic Numerals</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-3" role="tab" aria-controls="tabset-10-3" aria-selected="false">Alphabets</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-4" role="tab" aria-controls="tabset-10-4" aria-selected="false">Code</a></li></ul>
 <div class="tab-content">
 <div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
 <div class="cell">
@@ -613,11 +628,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div id="tabset-10-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-3-tab">
 <div class="cell">
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex02_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-10-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-4-tab">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>((p1 <span class="sc">/</span> p2) <span class="sc">|</span> p3) <span class="sc">+</span> </span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_annotation</span>(<span class="at">tag_levels =</span> <span class="st">'I'</span>)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>((p1 <span class="sc">/</span> p2) <span class="sc">|</span> p3) <span class="sc">+</span> </span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_annotation</span>(<span class="at">tag_levels =</span> <span class="st">'I'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_annotation</span>(<span class="at">tag_levels =</span> <span class="st">'1'</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>((p1 <span class="sc">/</span> p2) <span class="sc">|</span> p3) <span class="sc">+</span> </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_annotation</span>(<span class="at">tag_levels =</span> <span class="st">'I'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -632,7 +657,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="tabset-11-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-11-1-tab">
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="Hands-on_Ex02_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
+<p><img src="Hands-on_Ex02_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </div>
@@ -651,20 +676,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="creating-a-composite-figure-using-patchwork-and-ggtheme" class="level3">
 <h3 class="anchored" data-anchor-id="creating-a-composite-figure-using-patchwork-and-ggtheme">2.5.6 Creating A Composite Figure Using patchwork and ggtheme</h3>
 <p>Using both the <strong>ggthemes</strong> and <strong>patchwork</strong> packages, a composite figure with The Economist theme is created.</p>
+<blockquote class="blockquote">
+<p><strong><em>Note</em></strong>: The subplots are tagged with “A”, “B”, and “C” using the <code>plot_annotation()</code> function in the <strong>patchwork</strong> package. Also, the <code>theme()</code> function in the <strong>ggplot2</strong> package is used, with the “plot.title” argument to reduce the size of the titles to fit the composite figure.</p>
+</blockquote>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-12-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-1" role="tab" aria-controls="tabset-12-1" aria-selected="true">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-2" role="tab" aria-controls="tabset-12-2" aria-selected="false">Code</a></li></ul>
 <div class="tab-content">
 <div id="tabset-12-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-12-1-tab">
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="Hands-on_Ex02_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+<p><img src="Hands-on_Ex02_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </div>
 <div id="tabset-12-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-2-tab">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>patchwork <span class="ot">=</span> (p1 <span class="sc">/</span> p2) <span class="sc">|</span> p3</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>patchwork <span class="sc">&amp;</span> <span class="fu">theme_economist</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>patchwork <span class="sc">&amp;</span> <span class="fu">theme_economist</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
