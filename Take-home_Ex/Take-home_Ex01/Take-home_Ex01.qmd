@@ -1,6 +1,6 @@
 ---
 title: "Take-home Exercise 1"
-date: "14 January 2024"
+date: "18 January 2024"
 date-modified: "last-modified" #allows for updating to the latest date
 format: html
 execute: 
@@ -12,4 +12,470 @@ background-color: lightgrey;
 font-family:  Palatino Linotype;
 ---
 
-\<Placeholder\>
+# Creating Data Visualisation Beyond Default
+
+## 1 Introduction
+
+### 1.1 Background
+
+Singapore has come a long way since gaining independence in 1965. Without natural resources, human capital development through a well-planed education system is a critical part of Singapore's transformation from third world to first.
+
+Despite the success, there is still a correlation between socio-economic status and education achievement, as well as ingrained perceptions that some schools are better than others.
+
+Hence, there is a need to use data to analyse the performance of Singapore students across different subjects, and identify any relationships between performance in various subjects and factors such as gender, socioeconomic status, and type of school.
+
+### 1.2 Objective and the Analytical Questions
+
+In this take-home exercise, the objective is to use the appropriate **Exploratory Data Analysis (EDA) methods** and **ggplot2 functions** (part of the amazing tidyverse ecosystem) to answer the following analytical questions:
+
+-   What is the distribution of Singapore students' performance in Mathematics, Reading, and Science? What are the similarities and/or differences between the distributions for the three different subjects?
+
+-   Are there relationships between the students' performance in the three subjects and factors such as their gender, socioeconomic status, and school? If yes, what kind of relationships are present?
+
+-   Based on the analysis, what are the insights that can be derived from education policy planning?
+
+## 2 Getting Started
+
+### 2.1 Setting the Analytical Tools
+
+The R packages used in this take-home exercise are:
+
+-   [**haven**](https://haven.tidyverse.org/) for importing SAS files;
+
+-   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr, ggplot2) for performing data science tasks such as importing, tidying, and wrangling data, as well as creating graphics based on The Grammar of Graphics;
+
+-   [**ggrepel**](https://ggrepel.slowkow.com/) for geoms to repel overlapping text labels for ggplot2;
+
+-   [**ggthemes**](https://ggplot2.tidyverse.org/reference/ggtheme.html) for extra themes, geoms, and scales for ggplot2;
+
+-   [**hrbrthemes**](https://cinc.rud.is/web/packages/hrbrthemes/) for typography-centric themes and theme components for ggplot2; and
+
+-   [**patchwork**](https://patchwork.data-imaginist.com/) for preparing composite figures created using ggplot2.
+
+The code chunk below uses the `p_load()` function in the **pacman** package to check if the packages are installed in the computer. If yes, they are then loaded into the R environment. If no, they are installed, and then loaded into the R environment.
+
+```{r}
+pacman::p_load(haven, tidyverse, ggrepel,
+               ggthemes, hrbrthemes, patchwork)
+```
+
+### 2.2 Data Sources
+
+The OECD Programme for International Student Assessment (PISA) measures how well 15-year-old students in different countries are "prepared to meet the challenges of today's knowledge societies" by looking at "their ability to use their knowledge and skills to meet real-life challenges". The PISA surveys take place very three years, the latest being conducted in 2022.
+
+The [PISA 2022 database](https://www.oecd.org/pisa/data/2022database/) contains the full set of responses from individual students, school principals, and parents. There are a total of five data files and their contents are as follows:
+
+-   Student questionnaire data file;
+
+-   School questionnaire data file;
+
+-   Teacher questionnaire data file;
+
+-   Cognitive item data file; and
+
+-   Questionnaire timing data file.
+
+For the purpose of this take-home exercise, the "**Student questionnaire data file**" is used.
+
+## 3 Data Wrangling
+
+### 3.1 Importing Data
+
+The dataset used in this take-home exercise is the 2022 PISA student questionnaire data file, `cy08msp_stu_qqq.sas7bdat`, which is in the SAS file format.
+
+The file is imported into the R environment using the `read_sas()` function in the **haven** package and stored as the R object, `stu_qqq`.
+
+```{r}
+#| eval: false 
+stu_qqq = read_sas("data/cy08msp_stu_qqq.sas7bdat")
+```
+
+The tibble data frame, `stu_qqq`, has 1,279 columns (variables) and 613,744 rows (observations).
+
+### 3.2 Filtering for Singapore Observations
+
+There are 6,606 rows with the country code (i.e., CNT) value of "SGP", which represents Singapore. This count is cross-verified by the information provided in the "CY08MSP_STU_QQQ" sheet in the [codebook](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fwebfs.oecd.org%2Fpisa2022%2FCY08MSP_CODEBOOK_5thDecember23.xlsx&wdOrigin=BROWSELINK). The codebook also stated that Singapore students' made up 1.0763% of the entire global student population who took part in the 2022 PISA.
+
+The `filter()` function in the [**dplyr**](https://dplyr.tidyverse.org/) package is used to obtain these rows, and stored as the R object, `stu_qqq_SG`.
+
+```{r}
+#| eval: false 
+stu_qqq_SG = stu_qqq %>% filter(CNT == "SGP")
+```
+
+The tibble data frame, `stu_qqq_SG`, is then saved in the rds file format and imported into the R environment.
+
+```{r}
+#| eval: false 
+write_rds(stu_qqq_SG, "data/stu_qqq_SG.rds")
+```
+
+```{r}
+stu_qqq_SG = read_rds("data/stu_qqq_SG.rds")
+```
+
+### 3.3 Filtering for Relevant Variables
+
+Of the 1,279 variables (columns), the following 34 are selected to answer the analytical questions:
+
+-   International School ID ("CNTSCHID")
+
+-   International Student ID ("CNTSTUID")
+
+-   Student Gender ("ST004D01T") \[***Note***: "01" is Female, "02" is Male\]
+
+-   Index of Economic, Social, and Cultural Status ("ESCS")
+
+-   Plausible Values 1 to 10 in Mathematics ("PV1MATH" to "PV10MATH")
+
+-   Plausible Values 1 to 10 in Reading ("PV1READ" to "PV10READ")
+
+-   Plausible Values 1 to 10 in Science ("PV1SCIE" to "PV10SCIE")
+
+Again, the `select()` function in the **dplyr** package is used to obtain these rows, and stored as the R object, `stu_qqq_SG_final`.
+
+```{r}
+selcol = c("CNTSCHID", "CNTSTUID", "ST004D01T", "ESCS",
+           "PV1MATH", "PV2MATH", "PV3MATH", "PV4MATH", "PV5MATH", "PV6MATH", 
+           "PV7MATH", "PV8MATH", "PV9MATH", "PV10MATH", "PV1READ", "PV2READ", 
+           "PV3READ", "PV4READ", "PV5READ", "PV6READ", "PV7READ", "PV8READ", 
+           "PV9READ", "PV10READ", "PV1SCIE", "PV2SCIE", "PV3SCIE", "PV4SCIE", 
+           "PV5SCIE", "PV6SCIE", "PV7SCIE", "PV8SCIE", "PV9SCIE", "PV10SCIE")
+
+stu_qqq_SG_final = stu_qqq_SG %>% select(selcol)
+```
+
+### 3.4 Checking for Duplicates and Missing Values
+
+The dataset from PISA is expected to be relatively clean. Nevertheless, due diligence checks for duplicates and missing values are still made to confirm the assumption.
+
+The `duplicated()` function in the **base** package is used to check for duplicates in `stu_qqq_SG_final`. There are no duplicates in the tibble data frame.
+
+```{r}
+stu_qqq_SG_final[duplicated(stu_qqq_SG_final), ]
+```
+
+The `colSums()` function in the **base** package is used to check for missing values in `stu_qqq_SG_final`. There are no missing values in the tibble data frame for all columns except for the column containing values of the Index of Economic, Social, and Cultural Status ("ESCS"), which has 47 rows (observations) with NA values. As this makes up only 0.711% of the 6,606 observations, we will remove them from the subsequent analysis. Hence, the `na.omit()` function in the **stats** package is used to remove them from `stu_qqq_SG_final`, which now has 6,559 observations and 34 variables. A confirmatory check is then made with the `colSums()` function in the **base** package.
+
+```{r}
+colSums(is.na(stu_qqq_SG_final))
+```
+
+```{r}
+stu_qqq_SG_final = stu_qqq_SG_final %>%
+  na.omit()
+```
+
+```{r}
+colSums(is.na(stu_qqq_SG_final))
+```
+
+### 3.5 Renaming Columns and Replacing Gender Values
+
+For ease of use, the columns are renamed accordingly using the `rename()` function in the **dplyr** package.
+
+```{r}
+stu_qqq_SG_final = stu_qqq_SG_final %>%
+  rename(School = "CNTSCHID",
+         ID = "CNTSTUID",
+         Gender = "ST004D01T",
+         Socioeconomic_Status = "ESCS",
+         Math01 = "PV1MATH", Math02 = "PV2MATH", 
+         Math03 = "PV3MATH", Math04 = "PV4MATH", 
+         Math05 = "PV5MATH", Math06 = "PV6MATH", 
+         Math07 = "PV7MATH", Math08 = "PV8MATH", 
+         Math09 = "PV9MATH", Math10 = "PV10MATH", 
+         Read01 = "PV1READ", Read02 = "PV2READ", 
+         Read03 = "PV3READ", Read04 = "PV4READ", 
+         Read05 = "PV5READ", Read06 = "PV6READ", 
+         Read07 = "PV7READ", Read08 = "PV8READ", 
+         Read09 = "PV9READ", Read10 = "PV10READ", 
+         Sci01 = "PV1SCIE", Sci02 = "PV2SCIE", 
+         Sci03 = "PV3SCIE", Sci04 = "PV4SCIE",
+         Sci05 = "PV5SCIE", Sci06 = "PV6SCIE", 
+         Sci07 = "PV7SCIE", Sci08 = "PV8SCIE", 
+         Sci09 = "PV9SCIE", Sci10 = "PV10SCIE")
+```
+
+Also, for the ease of use, the numerical values for Gender are replaced with characters using the `ifelse()` function in the **base** package.
+
+```{r}
+stu_qqq_SG_final$Gender = ifelse(stu_qqq_SG_final$Gender == 01, "Female", "Male")
+```
+
+The tibble data frame, `stu_qqq_SG_final`, is then saved in the rds file format and imported into the R environment.
+
+```{r}
+#| eval: false   
+write_rds(stu_qqq_SG_final, "data/stu_qqq_SG_final.rds")
+```
+
+```{r}
+stu_qqq_SG_final = read_rds("data/stu_qqq_SG_final.rds")
+```
+
+## 4 Exploratory Data Analysis - Computing, Visualising, and Deriving Insights on Singapore's PISA Performance
+
+There are 10 Plausible Values (PVs) each for Mathematics, Reading, and Science. However, PISA [cautions](https://www.oecd-ilibrary.org/docserver/9789264056275-7-en.pdf?expires=1705577561&id=id&accname=guest&checksum=A7CDF453B78D6AD0A7094A25368CA20B) against averaging the PVs at the student level. Instead, it suggests that population statistics should be estimated using each PV separately - e.g., if one is interested in the correlation coefficient between the social index and the reading performance in PISA, 10 correlation coefficients should be computed and then averaged.
+
+For the purposes of EDA, the PV 1 values for all three subjects are plotted.
+
+### 4.1 Distribution of Students' PISA Performance in Mathematics, Reading, and Science
+
+xxx
+
+::: panel-tabset
+## Math
+
+```{r}
+#| eval: false
+m = ggplot(data = stu_qqq_SG_final, 
+             aes(x = Math01)) +
+  geom_histogram(bins = 20, 
+                 boundary = 100,
+                 color = "grey25", 
+                 fill = "#99CCFF") + 
+  coord_cartesian(xlim = c(0,1000)) +
+  ggtitle("Distribution of Maths Scores") + 
+  theme_minimal() + 
+  theme(plot.title = element_text(size=10)) +
+  geom_vline(aes(xintercept=mean(Math01)),
+             color="red", 
+             linetype="dashed", 
+             linewidth=1) +
+  geom_vline(aes(xintercept=median(Math01)),
+             color="grey30",
+             linetype="dashed", 
+             linewidth=1) +
+            xlab('Score') +
+            ylab('Count')
+```
+
+## Reading
+
+```{r}
+#| eval: false
+r = ggplot(data = stu_qqq_SG_final, 
+             aes(x = Read01)) +
+  geom_histogram(bins = 20, 
+                 boundary = 100,
+                 color = "grey25", 
+                 fill = "#CCCCFF") + 
+  coord_cartesian(xlim = c(0,1000)) +
+  ggtitle("Distribution of Reading Scores") + 
+  theme_minimal() + 
+  theme(plot.title = element_text(size=10)) +
+  geom_vline(aes(xintercept=mean(Read01)),
+             color="red", 
+             linetype="dashed", 
+             linewidth=1) +
+  geom_vline(aes(xintercept=median(Read01)),
+             color="grey30",
+             linetype="dashed", 
+             linewidth=1) +
+            xlab('Score') +
+            ylab('Count')
+```
+
+## Science
+
+```{r}
+#| eval: false
+s = ggplot(data = stu_qqq_SG_final, 
+             aes(x = Sci01)) +
+  geom_histogram(bins = 20, 
+                 boundary = 100,
+                 color = "grey25", 
+                 fill = "#CCFFCC") + 
+  coord_cartesian(xlim = c(0,1000)) +
+  ggtitle("Distribution of Science Scores") + 
+  theme_minimal() + 
+  theme(plot.title = element_text(size=10)) +
+  geom_vline(aes(xintercept=mean(Sci01)),
+             color="red", 
+             linetype="dashed", 
+             linewidth=1) +
+  geom_vline(aes(xintercept=median(Sci01)),
+             color="grey30",
+             linetype="dashed", 
+             linewidth=1) +
+            xlab('Score') +
+            ylab('Count')
+```
+:::
+
+xxx
+
+::: panel-tabset
+## Composite Plot
+
+```{r}
+#| echo: false  
+(m / r / s) + 
+  plot_annotation(tag_levels = 'A')
+```
+
+## Math
+
+```{r}
+#| echo: false  
+m
+```
+
+## Reading
+
+```{r}
+#| echo: false  
+r
+```
+
+## Science
+
+```{r}
+#| echo: false  
+s
+```
+:::
+
+***Observation***:
+
+### 4.2 Relationship between PISA Performance and Students' Schools, Gender and Socioeconomic Status
+
+There are 10 Plausible Values (PVs) each for Mathematics, Reading, and Science. However, PISA [cautions](https://www.oecd-ilibrary.org/docserver/9789264056275-7-en.pdf?expires=1705577561&id=id&accname=guest&checksum=A7CDF453B78D6AD0A7094A25368CA20B) against averaging the PVs at the student level. Instead, it suggests that population statistics should be estimated using each PV separately - e.g., if one is interested in the correlation coefficient between the social index and the reading performance in PISA, 10 correlation coefficients should be computed and then averaged.
+
+For the purposes of EDA, the PV 1 values for all three subjects are plotted below.
+
+#### 4.2.1 Performance vis-a-vis Gender
+
+xxx
+
+::: panel-tabset
+## Math
+
+```{r}
+#| code-fold: true
+#| code-summary: Code 
+m2 = ggplot(data = stu_qqq_SG_final, 
+            aes(x = Math01,
+                colour = Gender)) +
+  geom_density()
+
+m2
+```
+
+## Reading
+
+```{r}
+#| code-fold: true
+#| code-summary: Code 
+r2 = ggplot(data = stu_qqq_SG_final, 
+            aes(x = Read01, 
+                colour = Gender)) +
+  geom_density()
+
+r2
+```
+
+## Science
+
+```{r}
+#| code-fold: true
+#| code-summary: Code 
+s2 = ggplot(data = stu_qqq_SG_final,
+            aes(x = Sci01,
+                colour = Gender)) +
+  geom_density()
+
+s2
+```
+:::
+
+***Observation***:
+
+#### 4.2.2 Performance vis-a-vis Socioeconomic Status
+
+xxx
+
+::: panel-tabset
+## Math
+
+```{r}
+#| code-fold: true
+#| code-summary: Code
+m3 = ggplot(data = stu_qqq_SG_final, 
+            aes(x = Math01, 
+                y = Socioeconomic_Status)) +   
+  geom_point(alpha = 0.1) +
+  geom_smooth(linewidth = 0.5)
+ 
+m3
+```
+
+## Reading
+
+```{r}
+#| code-fold: true
+#| code-summary: Code
+r3 = ggplot(data = stu_qqq_SG_final,               
+            aes(x = Read01, 
+                y = Socioeconomic_Status)) +   
+  geom_point(alpha = 0.1) +
+  geom_smooth(linewidth = 0.5)
+ 
+r3
+```
+
+## Science
+
+```{r}
+#| code-fold: true
+#| code-summary: Code
+s3 = ggplot(data = stu_qqq_SG_final, 
+            aes(x = Sci01, 
+                y = Socioeconomic_Status)) +   
+  geom_point(alpha = 0.1) +
+  geom_smooth(linewidth = 0.5)
+ 
+s3
+```
+:::
+
+xxx
+
+#### 4.2.3 Performance vis-a-vis Schools
+
+xxx
+
+::: panel-tabset
+## Math
+
+```{r}
+m3 = ggplot(data = stu_qqq_SG_final, 
+            aes(x = Math01, 
+                y = School)) +   
+  geom_point(alpha = 0.1) +
+  geom_smooth(linewidth = 0.5)
+ 
+m3
+
+m4
+```
+
+## Reading
+
+```{r}
+```
+
+## Science
+
+```{r}
+```
+:::
+
+xxx
+
+## 5 Conclusion
+
+## 6 References
+
+[**\~\~\~ End of Take-home Exercise 1 \~\~\~**]{.smallcaps}

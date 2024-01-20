@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-01-14">
+<meta name="dcterms.date" content="2024-01-18">
 
 <title>ISSS608 - Take-home Exercise 1</title>
 <style>
@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -149,7 +183,40 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#creating-data-visualisation-beyond-default" id="toc-creating-data-visualisation-beyond-default" class="nav-link active" data-scroll-target="#creating-data-visualisation-beyond-default">Creating Data Visualisation Beyond Default</a>
+  <ul class="collapse">
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">1 Introduction</a>
+  <ul class="collapse">
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">1.1 Background</a></li>
+  <li><a href="#objective-and-the-analytical-questions" id="toc-objective-and-the-analytical-questions" class="nav-link" data-scroll-target="#objective-and-the-analytical-questions">1.2 Objective and the Analytical Questions</a></li>
+  </ul></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">2 Getting Started</a>
+  <ul class="collapse">
+  <li><a href="#setting-the-analytical-tools" id="toc-setting-the-analytical-tools" class="nav-link" data-scroll-target="#setting-the-analytical-tools">2.1 Setting the Analytical Tools</a></li>
+  <li><a href="#data-sources" id="toc-data-sources" class="nav-link" data-scroll-target="#data-sources">2.2 Data Sources</a></li>
+  </ul></li>
+  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling">3 Data Wrangling</a>
+  <ul class="collapse">
+  <li><a href="#importing-data" id="toc-importing-data" class="nav-link" data-scroll-target="#importing-data">3.1 Importing Data</a></li>
+  <li><a href="#filtering-for-singapore-observations" id="toc-filtering-for-singapore-observations" class="nav-link" data-scroll-target="#filtering-for-singapore-observations">3.2 Filtering for Singapore Observations</a></li>
+  <li><a href="#filtering-for-relevant-variables" id="toc-filtering-for-relevant-variables" class="nav-link" data-scroll-target="#filtering-for-relevant-variables">3.3 Filtering for Relevant Variables</a></li>
+  <li><a href="#checking-for-duplicates-and-missing-values" id="toc-checking-for-duplicates-and-missing-values" class="nav-link" data-scroll-target="#checking-for-duplicates-and-missing-values">3.4 Checking for Duplicates and Missing Values</a></li>
+  <li><a href="#renaming-columns-and-replacing-gender-values" id="toc-renaming-columns-and-replacing-gender-values" class="nav-link" data-scroll-target="#renaming-columns-and-replacing-gender-values">3.5 Renaming Columns and Replacing Gender Values</a></li>
+  </ul></li>
+  <li><a href="#exploratory-data-analysis---computing-visualising-and-deriving-insights-on-singapores-pisa-performance" id="toc-exploratory-data-analysis---computing-visualising-and-deriving-insights-on-singapores-pisa-performance" class="nav-link" data-scroll-target="#exploratory-data-analysis---computing-visualising-and-deriving-insights-on-singapores-pisa-performance">4 Exploratory Data Analysis - Computing, Visualising, and Deriving Insights on Singapore’s PISA Performance</a>
+  <ul class="collapse">
+  <li><a href="#distribution-of-students-pisa-performance-in-mathematics-reading-and-science" id="toc-distribution-of-students-pisa-performance-in-mathematics-reading-and-science" class="nav-link" data-scroll-target="#distribution-of-students-pisa-performance-in-mathematics-reading-and-science">4.1 Distribution of Students’ PISA Performance in Mathematics, Reading, and Science</a></li>
+  <li><a href="#relationship-between-pisa-performance-and-students-schools-gender-and-socioeconomic-status" id="toc-relationship-between-pisa-performance-and-students-schools-gender-and-socioeconomic-status" class="nav-link" data-scroll-target="#relationship-between-pisa-performance-and-students-schools-gender-and-socioeconomic-status">4.2 Relationship between PISA Performance and Students’ Schools, Gender and Socioeconomic Status</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">5 Conclusion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">6 References</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -167,14 +234,14 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 14, 2024</p>
+      <p class="date">January 18, 2024</p>
     </div>
   </div>
   
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">January 13, 2024</p>
+      <p class="date-modified">January 18, 2024</p>
     </div>
   </div>
     
@@ -183,9 +250,274 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>&lt;Placeholder&gt;</p>
+<section id="creating-data-visualisation-beyond-default" class="level1">
+<h1>Creating Data Visualisation Beyond Default</h1>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">1 Introduction</h2>
+<section id="background" class="level3">
+<h3 class="anchored" data-anchor-id="background">1.1 Background</h3>
+<p>Singapore has come a long way since gaining independence in 1965. Without natural resources, human capital development through a well-planed education system is a critical part of Singapore’s transformation from third world to first.</p>
+<p>Despite the success, there is still a correlation between socio-economic status and education achievement, as well as ingrained perceptions that some schools are better than others.</p>
+<p>Hence, there is a need to use data to analyse the performance of Singapore students across different subjects, and identify any relationships between performance in various subjects and factors such as gender, socioeconomic status, and type of school.</p>
+</section>
+<section id="objective-and-the-analytical-questions" class="level3">
+<h3 class="anchored" data-anchor-id="objective-and-the-analytical-questions">1.2 Objective and the Analytical Questions</h3>
+<p>In this take-home exercise, the objective is to use the appropriate <strong>Exploratory Data Analysis (EDA) methods</strong> and <strong>ggplot2 functions</strong> (part of the amazing tidyverse ecosystem) to answer the following analytical questions:</p>
+<ul>
+<li><p>What is the distribution of Singapore students’ performance in Mathematics, Reading, and Science? What are the similarities and/or differences between the distributions for the three different subjects?</p></li>
+<li><p>Are there relationships between the students’ performance in the three subjects and factors such as their gender, socioeconomic status, and school? If yes, what kind of relationships are present?</p></li>
+<li><p>Based on the analysis, what are the insights that can be derived from education policy planning?</p></li>
+</ul>
+</section>
+</section>
+<section id="getting-started" class="level2">
+<h2 class="anchored" data-anchor-id="getting-started">2 Getting Started</h2>
+<section id="setting-the-analytical-tools" class="level3">
+<h3 class="anchored" data-anchor-id="setting-the-analytical-tools">2.1 Setting the Analytical Tools</h3>
+<p>The R packages used in this take-home exercise are:</p>
+<ul>
+<li><p><a href="https://haven.tidyverse.org/"><strong>haven</strong></a> for importing SAS files;</p></li>
+<li><p><a href="https://www.tidyverse.org/"><strong>tidyverse</strong></a> (i.e.&nbsp;readr, tidyr, dplyr, ggplot2) for performing data science tasks such as importing, tidying, and wrangling data, as well as creating graphics based on The Grammar of Graphics;</p></li>
+<li><p><a href="https://ggrepel.slowkow.com/"><strong>ggrepel</strong></a> for geoms to repel overlapping text labels for ggplot2;</p></li>
+<li><p><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html"><strong>ggthemes</strong></a> for extra themes, geoms, and scales for ggplot2;</p></li>
+<li><p><a href="https://cinc.rud.is/web/packages/hrbrthemes/"><strong>hrbrthemes</strong></a> for typography-centric themes and theme components for ggplot2; and</p></li>
+<li><p><a href="https://patchwork.data-imaginist.com/"><strong>patchwork</strong></a> for preparing composite figures created using ggplot2.</p></li>
+</ul>
+<p>The code chunk below uses the <code>p_load()</code> function in the <strong>pacman</strong> package to check if the packages are installed in the computer. If yes, they are then loaded into the R environment. If no, they are installed, and then loaded into the R environment.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(haven, tidyverse, </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               ggrepel, ggthemes, </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>               hrbrthemes, patchwork)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="data-sources" class="level3">
+<h3 class="anchored" data-anchor-id="data-sources">2.2 Data Sources</h3>
+<p>The OECD Programme for International Student Assessment (PISA) measures how well 15-year-old students in different countries are “prepared to meet the challenges of today’s knowledge societies” by looking at “their ability to use their knowledge and skills to meet real-life challenges”. The PISA surveys take place very three years, the latest being conducted in 2022.</p>
+<p>The <a href="https://www.oecd.org/pisa/data/2022database/">PISA 2022 database</a> contains the full set of responses from individual students, school principals, and parents. There are a total of five data files and their contents are as follows:</p>
+<ul>
+<li><p>Student questionnaire data file;</p></li>
+<li><p>School questionnaire data file;</p></li>
+<li><p>Teacher questionnaire data file;</p></li>
+<li><p>Cognitive item data file; and</p></li>
+<li><p>Questionnaire timing data file.</p></li>
+</ul>
+<p>For the purpose of this take-home exercise, the “<strong>Student questionnaire data file</strong>” is used.</p>
+</section>
+</section>
+<section id="data-wrangling" class="level2">
+<h2 class="anchored" data-anchor-id="data-wrangling">3 Data Wrangling</h2>
+<section id="importing-data" class="level3">
+<h3 class="anchored" data-anchor-id="importing-data">3.1 Importing Data</h3>
+<p>The dataset used in this take-home exercise is the 2022 PISA student questionnaire data file, <code>cy08msp_stu_qqq.sas7bdat</code>, which is in the SAS file format.</p>
+<p>The file is imported into the R environment using the <code>read_sas()</code> function in the <strong>haven</strong> package and stored as the R object, <code>stu_qqq</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>stu_qqq <span class="ot">=</span> <span class="fu">read_sas</span>(<span class="st">"data/cy08msp_stu_qqq.sas7bdat"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The tibble data frame, <code>stu_qqq</code>, has 1,279 columns (variables) and 613,744 rows (observations).</p>
+</section>
+<section id="filtering-for-singapore-observations" class="level3">
+<h3 class="anchored" data-anchor-id="filtering-for-singapore-observations">3.2 Filtering for Singapore Observations</h3>
+<p>There are 6,606 rows with the country code (i.e., CNT) value of “SGP”, which represents Singapore. This count is cross-verified by the information provided in the “CY08MSP_STU_QQQ” sheet in the <a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fwebfs.oecd.org%2Fpisa2022%2FCY08MSP_CODEBOOK_5thDecember23.xlsx&amp;wdOrigin=BROWSELINK">codebook</a>. The codebook also stated that Singapore students’ made up 1.0763% of the entire global student population who took part in the 2022 PISA.</p>
+<p>The <code>filter()</code> function in the <a href="https://dplyr.tidyverse.org/"><strong>dplyr</strong></a> package is used to obtain these rows, and stored as the R object, <code>stu_qqq_SG</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>stu_qqq_SG <span class="ot">=</span> stu_qqq <span class="sc">%&gt;%</span> <span class="fu">filter</span>(CNT <span class="sc">==</span> <span class="st">"SGP"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The tibble data frame, <code>stu_qqq_SG</code>, is then saved in the rds file format and imported into the R environment.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(stu_qqq_SG, <span class="st">"data/stu_qqq_SG.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>stu_qqq_SG <span class="ot">=</span> <span class="fu">read_rds</span>(<span class="st">"data/stu_qqq_SG.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="filtering-for-relevant-variables" class="level3">
+<h3 class="anchored" data-anchor-id="filtering-for-relevant-variables">3.3 Filtering for Relevant Variables</h3>
+<p>Of the 1,279 variables (columns), the following 34 are selected to answer the analytical questions:</p>
+<ul>
+<li><p>International School ID (“CNTSCHID”)</p></li>
+<li><p>International Student ID (“CNTSTUID”)</p></li>
+<li><p>Student Gender (“ST004D01T”) [<strong><em>Note</em></strong>: “01” is Female, “02” is Male]</p></li>
+<li><p>Index of Economic, Social, and Cultural Status (“ESCS”)</p></li>
+<li><p>Plausible Values 1 to 10 in Mathematics (“PV1MATH” to “PV10MATH”)</p></li>
+<li><p>Plausible Values 1 to 10 in Reading (“PV1READ” to “PV10READ”)</p></li>
+<li><p>Plausible Values 1 to 10 in Science (“PV1SCIE” to “PV10SCIE”)</p></li>
+</ul>
+<p>Again, the <code>select()</code> function in the <strong>dplyr</strong> package is used to obtain these rows, and stored as the R object, <code>stu_qqq_SG_final</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>selcol <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"CNTSCHID"</span>, <span class="st">"CNTSTUID"</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>           <span class="st">"ST004D01T"</span>, <span class="st">"ESCS"</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>           <span class="st">"PV1MATH"</span>, <span class="st">"PV2MATH"</span>, <span class="st">"PV3MATH"</span>, </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>           <span class="st">"PV4MATH"</span>, <span class="st">"PV5MATH"</span>, <span class="st">"PV6MATH"</span>, </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>           <span class="st">"PV7MATH"</span>, <span class="st">"PV8MATH"</span>, <span class="st">"PV9MATH"</span>, </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>           <span class="st">"PV10MATH"</span>, <span class="st">"PV1READ"</span>, <span class="st">"PV2READ"</span>, </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>           <span class="st">"PV3READ"</span>, <span class="st">"PV4READ"</span>, <span class="st">"PV5READ"</span>, </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>           <span class="st">"PV6READ"</span>, <span class="st">"PV7READ"</span>, <span class="st">"PV8READ"</span>, </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>           <span class="st">"PV9READ"</span>, <span class="st">"PV10READ"</span>, <span class="st">"PV1SCIE"</span>, </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>           <span class="st">"PV2SCIE"</span>, <span class="st">"PV3SCIE"</span>, <span class="st">"PV4SCIE"</span>, </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>           <span class="st">"PV5SCIE"</span>, <span class="st">"PV6SCIE"</span>, <span class="st">"PV7SCIE"</span>, </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>           <span class="st">"PV8SCIE"</span>, <span class="st">"PV9SCIE"</span>, <span class="st">"PV10SCIE"</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>stu_qqq_SG_final <span class="ot">=</span> stu_qqq_SG <span class="sc">%&gt;%</span> <span class="fu">select</span>(selcol)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="checking-for-duplicates-and-missing-values" class="level3">
+<h3 class="anchored" data-anchor-id="checking-for-duplicates-and-missing-values">3.4 Checking for Duplicates and Missing Values</h3>
+<p>The dataset from PISA is expected to be relatively clean. Nevertheless, due diligence checks for duplicates and missing values are still made to confirm the assumption.</p>
+<p>The <code>duplicated()</code> function in the <strong>base</strong> package is used to check for duplicates in <code>stu_qqq_SG_final</code>. There are no duplicates in the tibble data frame.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>stu_qqq_SG_final[<span class="fu">duplicated</span>(stu_qqq_SG_final), ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 0 × 34
+# ℹ 34 variables: CNTSCHID &lt;dbl&gt;, CNTSTUID &lt;dbl&gt;, ST004D01T &lt;dbl&gt;, ESCS &lt;dbl&gt;,
+#   PV1MATH &lt;dbl&gt;, PV2MATH &lt;dbl&gt;, PV3MATH &lt;dbl&gt;, PV4MATH &lt;dbl&gt;, PV5MATH &lt;dbl&gt;,
+#   PV6MATH &lt;dbl&gt;, PV7MATH &lt;dbl&gt;, PV8MATH &lt;dbl&gt;, PV9MATH &lt;dbl&gt;, PV10MATH &lt;dbl&gt;,
+#   PV1READ &lt;dbl&gt;, PV2READ &lt;dbl&gt;, PV3READ &lt;dbl&gt;, PV4READ &lt;dbl&gt;, PV5READ &lt;dbl&gt;,
+#   PV6READ &lt;dbl&gt;, PV7READ &lt;dbl&gt;, PV8READ &lt;dbl&gt;, PV9READ &lt;dbl&gt;, PV10READ &lt;dbl&gt;,
+#   PV1SCIE &lt;dbl&gt;, PV2SCIE &lt;dbl&gt;, PV3SCIE &lt;dbl&gt;, PV4SCIE &lt;dbl&gt;, PV5SCIE &lt;dbl&gt;,
+#   PV6SCIE &lt;dbl&gt;, PV7SCIE &lt;dbl&gt;, PV8SCIE &lt;dbl&gt;, PV9SCIE &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+<p>The <code>colSums()</code> function in the <strong>base</strong> package is used to check for missing values in <code>stu_qqq_SG_final</code>. There are no missing values in the tibble data frame for all columns except for the column containing values of the Index of Economic, Social, and Cultural Status (“ESCS”), which has 47 rows (observations) with NA values. As this makes up only 0.711% of the 6,606 observations, we will remove them from the subsequent analysis. Hence, the <code>na.omit()</code> function in the <strong>stats</strong> package is used to remove them from <code>stu_qqq_SG_final</code>, which now has 6,559 observations and 34 variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(stu_qqq_SG_final))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> CNTSCHID  CNTSTUID ST004D01T      ESCS   PV1MATH   PV2MATH   PV3MATH   PV4MATH 
+        0         0         0        47         0         0         0         0 
+  PV5MATH   PV6MATH   PV7MATH   PV8MATH   PV9MATH  PV10MATH   PV1READ   PV2READ 
+        0         0         0         0         0         0         0         0 
+  PV3READ   PV4READ   PV5READ   PV6READ   PV7READ   PV8READ   PV9READ  PV10READ 
+        0         0         0         0         0         0         0         0 
+  PV1SCIE   PV2SCIE   PV3SCIE   PV4SCIE   PV5SCIE   PV6SCIE   PV7SCIE   PV8SCIE 
+        0         0         0         0         0         0         0         0 
+  PV9SCIE  PV10SCIE 
+        0         0 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>stu_qqq_SG_final <span class="ot">=</span> stu_qqq_SG_final <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="renaming-columns-and-replacing-gender-values" class="level3">
+<h3 class="anchored" data-anchor-id="renaming-columns-and-replacing-gender-values">3.5 Renaming Columns and Replacing Gender Values</h3>
+<p>For ease of use, the columns are renamed accordingly using the <code>rename()</code> function in the <strong>dplyr</strong> package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>stu_qqq_SG_final <span class="ot">=</span> stu_qqq_SG_final <span class="sc">%&gt;%</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">School =</span> <span class="st">"CNTSCHID"</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">ID =</span> <span class="st">"CNTSTUID"</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">Gender =</span> <span class="st">"ST004D01T"</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">Socioeconomic_Status =</span> <span class="st">"ESCS"</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">Math01 =</span> <span class="st">"PV1MATH"</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">Math02 =</span> <span class="st">"PV2MATH"</span>, </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">Math03 =</span> <span class="st">"PV3MATH"</span>, </span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">Math04 =</span> <span class="st">"PV4MATH"</span>, </span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">Math05 =</span> <span class="st">"PV5MATH"</span>, </span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">Math06 =</span> <span class="st">"PV6MATH"</span>, </span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">Math07 =</span> <span class="st">"PV7MATH"</span>, </span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">Math08 =</span> <span class="st">"PV8MATH"</span>, </span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>         <span class="at">Math09 =</span> <span class="st">"PV9MATH"</span>, </span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>         <span class="at">Math10 =</span> <span class="st">"PV10MATH"</span>, </span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">Read01 =</span> <span class="st">"PV1READ"</span>, </span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>         <span class="at">Read02 =</span> <span class="st">"PV2READ"</span>, </span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>         <span class="at">Read03 =</span> <span class="st">"PV3READ"</span>, </span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>         <span class="at">Read04 =</span> <span class="st">"PV4READ"</span>, </span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>         <span class="at">Read05 =</span> <span class="st">"PV5READ"</span>, </span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">Read06 =</span> <span class="st">"PV6READ"</span>, </span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>         <span class="at">Read07 =</span> <span class="st">"PV7READ"</span>, </span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>         <span class="at">Read08 =</span> <span class="st">"PV8READ"</span>, </span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>         <span class="at">Read09 =</span> <span class="st">"PV9READ"</span>, </span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>         <span class="at">Read10 =</span> <span class="st">"PV10READ"</span>, </span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>         <span class="at">Sci01 =</span> <span class="st">"PV1SCIE"</span>, </span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>         <span class="at">Sci02 =</span> <span class="st">"PV2SCIE"</span>, </span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>         <span class="at">Sci03 =</span> <span class="st">"PV3SCIE"</span>, </span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>         <span class="at">Sci04 =</span> <span class="st">"PV4SCIE"</span>,</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>         <span class="at">Sci05 =</span> <span class="st">"PV5SCIE"</span>, </span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>         <span class="at">Sci06 =</span> <span class="st">"PV6SCIE"</span>, </span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>         <span class="at">Sci07 =</span> <span class="st">"PV7SCIE"</span>,</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>         <span class="at">Sci08 =</span> <span class="st">"PV8SCIE"</span>, </span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>         <span class="at">Sci09 =</span> <span class="st">"PV9SCIE"</span>, </span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>         <span class="at">Sci10 =</span> <span class="st">"PV10SCIE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Also, for the ease of use, the numerical values for Gender are replaced with characters using the <code>ifelse()</code> function in the <strong>base</strong> package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>stu_qqq_SG_final<span class="sc">$</span>Gender <span class="ot">=</span> <span class="fu">ifelse</span>(stu_qqq_SG_final<span class="sc">$</span>Gender <span class="sc">==</span> <span class="dv">01</span>, <span class="st">"Female"</span>, <span class="st">"Male"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The tibble data frame, <code>stu_qqq_SG_final</code>, is then saved in the rds file format and imported into the R environment.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(stu_qqq_SG_final, <span class="st">"data/stu_qqq_SG_final.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>stu_qqq_SG_final <span class="ot">=</span> <span class="fu">read_rds</span>(<span class="st">"data/stu_qqq_SG_final.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="exploratory-data-analysis---computing-visualising-and-deriving-insights-on-singapores-pisa-performance" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-data-analysis---computing-visualising-and-deriving-insights-on-singapores-pisa-performance">4 Exploratory Data Analysis - Computing, Visualising, and Deriving Insights on Singapore’s PISA Performance</h2>
+<section id="distribution-of-students-pisa-performance-in-mathematics-reading-and-science" class="level3">
+<h3 class="anchored" data-anchor-id="distribution-of-students-pisa-performance-in-mathematics-reading-and-science">4.1 Distribution of Students’ PISA Performance in Mathematics, Reading, and Science</h3>
+<p>There are 10 Plausible Values (PVs) each for Mathematics, Reading, and Science. However, PISA <a href="https://www.oecd-ilibrary.org/docserver/9789264056275-7-en.pdf?expires=1705577561&amp;id=id&amp;accname=guest&amp;checksum=A7CDF453B78D6AD0A7094A25368CA20B">cautions</a> against averaging the PVs at the student level. Instead, it suggests that population statistics should be estimated using each PV separately - e.g., if one is interested in the correlation coefficient between the social index and the reading performance in PISA, 10 correlation coefficients should be computed and then averaged.</p>
+<p>For the purposes of EDA, the PV 1 values for all three subjects are plotted below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">=</span> <span class="fu">ggplot</span>(<span class="at">data =</span> stu_qqq_SG_final, </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> Math01)) <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">20</span>, </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">boundary =</span> <span class="dv">100</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">color =</span> <span class="st">"grey25"</span>, </span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fill =</span> <span class="st">"grey90"</span>) <span class="sc">+</span> </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1000</span>)) <span class="sc">+</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Distribution of Maths Scores"</span>)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>r <span class="ot">=</span> <span class="fu">ggplot</span>(<span class="at">data =</span> stu_qqq_SG_final, </span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> Read01)) <span class="sc">+</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">20</span>, </span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>                 <span class="at">boundary =</span> <span class="dv">100</span>,</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>                 <span class="at">color =</span> <span class="st">"grey25"</span>, </span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fill =</span> <span class="st">"grey90"</span>) <span class="sc">+</span> </span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1000</span>)) <span class="sc">+</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Distribution of Reading Scores"</span>)</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>s <span class="ot">=</span> <span class="fu">ggplot</span>(<span class="at">data =</span> stu_qqq_SG_final, </span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> Sci01)) <span class="sc">+</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">20</span>, </span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>                 <span class="at">boundary =</span> <span class="dv">100</span>,</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>                 <span class="at">color =</span> <span class="st">"grey25"</span>, </span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fill =</span> <span class="st">"grey90"</span>) <span class="sc">+</span> </span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1000</span>)) <span class="sc">+</span></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Distribution of Science Scores"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>combined <span class="ot">=</span> (m <span class="sc">/</span> r <span class="sc">/</span> s) <span class="sc">+</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_annotation</span>(<span class="at">tag_levels =</span> <span class="st">'A'</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>combined</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="relationship-between-pisa-performance-and-students-schools-gender-and-socioeconomic-status" class="level3">
+<h3 class="anchored" data-anchor-id="relationship-between-pisa-performance-and-students-schools-gender-and-socioeconomic-status">4.2 Relationship between PISA Performance and Students’ Schools, Gender and Socioeconomic Status</h3>
+<p>There are 10 Plausible Values (PVs) each for Mathematics, Reading, and Science. However, PISA <a href="https://www.oecd-ilibrary.org/docserver/9789264056275-7-en.pdf?expires=1705577561&amp;id=id&amp;accname=guest&amp;checksum=A7CDF453B78D6AD0A7094A25368CA20B">cautions</a> against averaging the PVs at the student level. Instead, it suggests that population statistics should be estimated using each PV separately - e.g., if one is interested in the correlation coefficient between the social index and the reading performance in PISA, 10 correlation coefficients should be computed and then averaged.</p>
+<section id="performance-vis-a-vis-schools" class="level4">
+<h4 class="anchored" data-anchor-id="performance-vis-a-vis-schools">4.2.1 Performance vis-a-vis Schools</h4>
+</section>
+<section id="performance-vis-a-vis-gender" class="level4">
+<h4 class="anchored" data-anchor-id="performance-vis-a-vis-gender">4.2.2 Performance vis-a-vis Gender</h4>
+</section>
+<section id="performance-vis-a-vis-socioeconomic-status" class="level4">
+<h4 class="anchored" data-anchor-id="performance-vis-a-vis-socioeconomic-status">4.2.3 Performance vis-a-vis Socioeconomic Status</h4>
+</section>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">5 Conclusion</h2>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">6 References</h2>
+<p><span class="smallcaps"><strong>~~~ End of Take-home Exercise 1 ~~~</strong></span></p>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

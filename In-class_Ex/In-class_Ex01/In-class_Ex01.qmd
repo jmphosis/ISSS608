@@ -12,6 +12,8 @@ background-color: lightgrey;
 font-family:  Palatino Linotype;
 ---
 
+***Note***: Updated on 18 January 2024 to make editorial edits.
+
 # Now You See It!
 
 ## 1 Overview and Learning Outcomes
@@ -36,14 +38,14 @@ pacman::p_load(tidyverse, haven)
 
 ## 3 Importing Data
 
-The dataset used in this in-class exercise is the PISA 2022 student questionnaire data file, which is in the SAS file format. It is imported into the R environment using the [`read_sas()`](https://haven.tidyverse.org/reference/read_sas.html) function in the [**haven**](https://haven.tidyverse.org/)package and stored as the R object, `stu_qqq`.
+The dataset used in this in-class exercise is the PISA 2022 student questionnaire data file, which is in the SAS file format. It is imported into the R environment using the [`read_sas()`](https://haven.tidyverse.org/reference/read_sas.html) function in the [**haven**](https://haven.tidyverse.org/) package and stored as the R object, `stu_qqq`.
 
 ```{r}
 #| eval: false
 stu_qqq = read_sas("data/cy08msp_stu_qqq.sas7bdat")
 ```
 
-The tibble data frame, `stu_qqq`, has 1,279 columns (variables) and 613,7 rows (observations).
+The tibble data frame, `stu_qqq`, has 1,279 columns (variables) and 613,744 rows (observations).
 
 There are 6,606 rows with the country code "SGP", which represents Singapore. The [`filter()`](https://dplyr.tidyverse.org/reference/filter.html) function in the [**dplyr**](https://dplyr.tidyverse.org/) package is used to obtain these rows, and stored as the R object, `stu_qqq_SG`.
 

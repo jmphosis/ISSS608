@@ -438,9 +438,9 @@ A more complex composite figure can be plotted using other appropriate operators
 
 For example, the composite figure below is plotted by using:
 
--   “\|” to stack two ggplot2 graphs;
+-   “/” to stack two ggplot2 graphs;
 
--   “/” to place the plots beside each other; and
+-   “\|” to place the plots beside each other; and
 
 -   “()” to define the sequence of the plotting.
 
@@ -500,7 +500,7 @@ The **patchwork** package also allow subplots to be identified in text using its
   plot_annotation(tag_levels = '1')
 
 ((p1 / p2) | p3) + 
-  plot_annotation(tag_levels = 'I')
+  plot_annotation(tag_levels = 'A')
 ```
 :::
 
