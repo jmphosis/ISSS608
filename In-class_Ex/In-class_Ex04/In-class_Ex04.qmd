@@ -1,6 +1,6 @@
 ---
-title: "In-class Exercise 2"
-date: "20 January 2024"
+title: "In-class Exercise 4"
+date: "3 February 2024"
 date-modified: "last-modified" #allows for updating to the latest date
 format: html
 execute: 
@@ -14,4 +14,4 @@ font-family:  Palatino Linotype;
 
 \<*placeholder*\>
 
-[**\~\~\~ End of In-class Exercise 2 \~\~\~**]{.smallcaps}
+[**\~\~\~ End of In-class Exercise 4 \~\~\~**]{.smallcaps}
