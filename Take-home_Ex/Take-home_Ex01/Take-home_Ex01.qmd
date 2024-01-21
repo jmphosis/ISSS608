@@ -12,7 +12,7 @@ background-color: lightgrey;
 font-family:  Palatino Linotype;
 ---
 
-# Creating Data Visualisation Beyond Default
+# Creating Data Visualisation Beyond Default: Investigating Singapore Students' Performance for PISA 2022
 
 ## 1 Introduction
 
@@ -411,7 +411,7 @@ ggplot(comb,
     quantiles = 4,
     quantile_lines = TRUE) +
   scale_fill_viridis_d(name = "Quartiles", alpha = 0.8) +
-  ggtitle(label = "SG Students Perform Best in Mathematics",
+  ggtitle(label = "SG Students Generally Perform Better in\nMathematics than Science & Reading",
           subtitle = "Distribution of Mathematics, Science and Reading Scores") +
   theme(plot.title = element_text(hjust = 0.5),
         axis.title.y = element_text(angle=360, 
@@ -441,7 +441,7 @@ ggplot(comb,
     quantiles = 4,
     quantile_lines = TRUE) +
   scale_fill_viridis_d(name = "Quartiles", alpha = 0.8) +
-  ggtitle(label = "SG Students Perform Best in Mathematics",
+  ggtitle(label = "SG Students Generally Perform Better in\nMathematics than Science & Reading",
           subtitle = "Distribution of Mathematics, Science and Reading Scores") +
   theme(plot.title = element_text(hjust = 0.5),
         axis.title.y = element_text(angle=360, 

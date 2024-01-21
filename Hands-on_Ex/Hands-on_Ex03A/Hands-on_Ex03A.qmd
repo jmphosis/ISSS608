@@ -1,5 +1,5 @@
 ---
-title: "Hands-on Exercise 3"
+title: "Hands-on Exercise 3A"
 date: "15 January 2024"
 date-modified: "last-modified" #allows for updating to the latest date
 format: html
