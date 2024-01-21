@@ -543,7 +543,7 @@ ggplot(stu_qqq_SG_final,
 
 Future research may consider why a relatively similar distribution in the Science performance of Singapore students at 15-year-old does not translate to a higher proportion of females undertaking S&T endeavours in college and beyond.
 
-### 4.2.2 Performance vis-a-vis School Type
+#### 4.2.2 Performance vis-a-vis School Type
 
 Parents in Singapore are often concerned about the type of schools their children enrol in as there is a strong, ingrained belief that some schools (i.e., Private) are better than others (i.e., Public). In this take-home exercise, we attempt to answer the question: "Do students in public schools perform poorer in Mathematics?" by creating a half-eye plot combined with a box plot for the Mathematics scores by type of school.
 
