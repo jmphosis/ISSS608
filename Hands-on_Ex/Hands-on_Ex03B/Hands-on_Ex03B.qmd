@@ -78,12 +78,12 @@ globalPop = read_xls("data/GlobalPopulation.xls",
   mutate(Year = as.integer(Year))
 ```
 
-However, the `mutate_each_()` function was deprecated in dplyr 0.7.0. and the `funs()` fgunction was deprecated in dplyr 0.8.0. In view of this, the code chunk is rewritten using the [`mutate_at()`](https://dplyr.tidyverse.org/reference/mutate_all.html) function in the **dplyr** package.
+However, the `mutate_each_()` function was deprecated in dplyr 0.7.0. and the `funs()` function was deprecated in dplyr 0.8.0. In view of this, the code chunk is rewritten using the [`mutate_at()`](https://dplyr.tidyverse.org/reference/mutate_all.html) function in the **dplyr** package.
 
 ```{r}
 col = c("Country", "Continent")
 
-globalPop <- read_xls("data/GlobalPopulation.xls",
+globalPop = read_xls("data/GlobalPopulation.xls",
                       sheet="Data") %>%
   mutate_at(col, as.factor) %>%
   mutate(Year = as.integer(Year))
@@ -101,7 +101,7 @@ globalPop = read_xls("data/GlobalPopulation.xls",
   mutate(Year = as.integer(Year))
 ```
 
-### 4.2.3 Explorting Data
+### 4.2.3 Exploring Data
 
 The tibble data frame, `globalPop`, has 6 columns and 6,204 rows.
 
@@ -208,7 +208,7 @@ ggplot(globalPop, aes(x = Old, y = Young,
 ```
 :::
 
-## 4.4 Animated Data Visualisation: plotly
+## 4.4 Animated Data Visualisation: plotly Methods
 
 Both the `plot_ly()` and `ggplotly()` functions in the **plotly** package can be used to support key frame animations through the "frame" aesthetic argument. They also support the "ids" aesthetic argument to ensure smooth transitions between objects with the same id (which helps facilitate object constancy).
 
