@@ -16,9 +16,21 @@ font-family:  Palatino Linotype;
 
 ## 10.1 Overview and Learning Outcomes
 
-This hands-on exercise is based on [Chapter 3](https://r4va.netlify.app/chap03) of the **R for Visual Analytics** book.
+This hands-on exercise is based on [Chapter 10](https://r4va.netlify.app/chap10) of the **R for Visual Analytics** book.
 
-The learning outcome is to create interactive data visualisation using functions in the [**ggiraph**](https://davidgohel.github.io/ggiraph/) and [**plotlyr**](https://plotly.com/r/) package.
+The learning outcomes are:
+
+-   Use the [**ggstatsplot**](https://indrajeetpatil.github.io/ggstatsplot/) package to create visual graphics with rich statistical information;
+
+    -   It is an extension of the [**ggplot2**](https://ggplot2.tidyverse.org/) package for creating graphics with details from statistical tests included in the information-rich plots themselves.
+
+    -   This provides alternative statistical inference methods by default.
+
+    -   It also follows the best practices for statistical reporting. For all statistical tests reported in the plots, the default template abides by the [APA](https://my.ilstu.edu/~jhkahn/apastats.html) standard for statistical reporting.
+
+-   Use the [**performance**](https://easystats.github.io/performance/) package to visualise model diagnostics; and
+
+-   Use the [**parameters**](https://easystats.github.io/parameters/) package to visualise model parameters.
 
 ## 10.2 Getting Started
 
@@ -26,24 +38,19 @@ The learning outcome is to create interactive data visualisation using functions
 
 In this hands-on exercise, the following R packages are used:
 
--   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data;
+-   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data; and
 
--   [**patchwork**](https://patchwork.data-imaginist.com/) for preparing composite figures created using ggplot2;
+-   [**ggstatsplot**](https://indrajeetpatil.github.io/ggstatsplot/) for plotting statistics;
 
--   [**DT**](https://rstudio.github.io/DT/) for interfacing with JavaScript library DataTables that create interactive tables on html pages;
+-   [**performance**](https://easystats.github.io/performance/) for assessment of model performance; and
 
--   [**ggiraph**](https://davidgohel.github.io/ggiraph/) for making ggplot graphics interactive;
-
--   [**plotlyr**](https://plotly.com/r/) for plotting interactive statistical graphs; and
-
--   [**crosstalk**](https://rstudio.github.io/crosstalk/) for inter-widget interactivity for html widgets.
+-   [**parameters**](https://easystats.github.io/parameters/)for processing of model parameters.
 
 The code chunk below uses the `p_load()` function in the **pacman** package to check if the packages are installed. If yes, they are then loaded into the R environment. If no, they are installed, then loaded into the R environment.
 
 ```{r}
-pacman::p_load(tidyverse, patchwork,
-               DT, ggiraph, plotly,
-               crosstalk)
+pacman::p_load(tidyverse, ggstatsplot,
+               performance, parameters)
 ```
 
 ### 10.2.2 Importing Data
@@ -51,7 +58,7 @@ pacman::p_load(tidyverse, patchwork,
 The dataset for this hands-on exercise is imported into the R environment using the `read_csv()` function in the **readr** package and stored as the R object, `exam_data`.
 
 ```{r}
-exam_data = read_csv("data/Exam_data.csv")
+exam = read_csv("data/Exam_data.csv")
 ```
 
 The tibble data frame, `exam_data`, has 7 columns and 322 rows.
@@ -64,15 +71,61 @@ The tibble data frame, `exam_data`, has 7 columns and 322 rows.
 
     -   Continuous: MATHS, ENGLISH, and SCIENCE.
 
-## 10.3 ???
+## 10.3 Using ggstatsplot Methods
 
 ### 10.3.1 One-sample Test: gghistostats()
 
-xxx
+The gghistostats() function is used to to build a plot of a one-sample test.
+
+Default information:
+
+-   Statistical details;
+
+-   Bayes factor;
+
+-   Sample sizes; and
+
+-   Distribution summary.
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false
+set.seed(1234)
+
+gghistostats(
+  data = exam,
+  x = ENGLISH,
+  type = "bayes",
+  test.value = 60,
+  xlab = "English Scores")
+```
+
+## Code
+
+```{r}
+#| eval: false
+set.seed(1234)
+
+gghistostats(
+  data = exam,
+  x = ENGLISH,
+  type = "bayes",
+  test.value = 60,
+  xlab = "English Scores")
+```
+:::
 
 ### 10.3.2 Unpacking the Bayes Factor
 
-xxx
+A Bayes factor is the ratio of the likelihood of one particular hypothesis to the likelihood of another. It can be interpreted as a measure of the strength of evidence in favour of one theory among two competing theories.
+
+The Bayes factor is a way to evaluate the data in favour of a null hypothesis, and to use external information to do so. It tells us what the weight of the evidence is in favour of a given hypothesis.
+
+When comparing two hypotheses, H1 (the alternate hypothesis) and H0 (the null hypothesis), the Bayes factor is often written as B10.
+
+The [Schwarz criterion](https://www.statisticshowto.com/bayesian-information-criterion/) is one of the easiest ways to calculate a rough approximation of the Bayes factor.
 
 ### 10.3.3 How to Interpret Bayes Factor
 

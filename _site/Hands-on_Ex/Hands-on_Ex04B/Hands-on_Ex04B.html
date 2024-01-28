@@ -171,7 +171,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html" rel="" target="">
  <span class="dropdown-text">Take-home Exercise 1</span></a>
   </li>  
-        <li class="dropdown-header">Take-home Exercise 2</li>
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html" rel="" target="">
+ <span class="dropdown-text">Take-home Exercise 2</span></a>
+  </li>  
     </ul>
   </li>
 </ul>
@@ -204,7 +207,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#installing-and-loading-required-libraries" id="toc-installing-and-loading-required-libraries" class="nav-link" data-scroll-target="#installing-and-loading-required-libraries">10.2.1 Installing and Loading Required Libraries</a></li>
   <li><a href="#importing-data" id="toc-importing-data" class="nav-link" data-scroll-target="#importing-data">10.2.2 Importing Data</a></li>
   </ul></li>
-  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section">10.3 ???</a>
+  <li><a href="#using-ggstatsplot-methods" id="toc-using-ggstatsplot-methods" class="nav-link" data-scroll-target="#using-ggstatsplot-methods">10.3 Using ggstatsplot Methods</a>
   <ul class="collapse">
   <li><a href="#one-sample-test-gghistostats" id="toc-one-sample-test-gghistostats" class="nav-link" data-scroll-target="#one-sample-test-gghistostats">10.3.1 One-sample Test: gghistostats()</a></li>
   <li><a href="#unpacking-the-bayes-factor" id="toc-unpacking-the-bayes-factor" class="nav-link" data-scroll-target="#unpacking-the-bayes-factor">10.3.2 Unpacking the Bayes Factor</a></li>
@@ -214,7 +217,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#significant-test-of-correlation-ggscatterstats" id="toc-significant-test-of-correlation-ggscatterstats" class="nav-link" data-scroll-target="#significant-test-of-correlation-ggscatterstats">10.3.6 Significant Test of Correlation: ggscatterstats()</a></li>
   <li><a href="#significant-test-of-association-dependence-ggbarstats" id="toc-significant-test-of-association-dependence-ggbarstats" class="nav-link" data-scroll-target="#significant-test-of-association-dependence-ggbarstats">10.3.7 Significant Test of Association (Dependence): ggbarstats()</a></li>
   </ul></li>
-  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1">10.4 ???</a>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section">10.4 ???</a>
   <ul class="collapse">
   <li><a href="#multiple-regression-model-with-lm" id="toc-multiple-regression-model-with-lm" class="nav-link" data-scroll-target="#multiple-regression-model-with-lm">10.4.1 Multiple Regression Model with lm()</a></li>
   <li><a href="#model-diagnostic-checking-for-multicollinearity" id="toc-model-diagnostic-checking-for-multicollinearity" class="nav-link" data-scroll-target="#model-diagnostic-checking-for-multicollinearity">10.4.2 Model Diagnostic: Checking for Multicollinearity</a></li>
@@ -251,7 +254,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">January 27, 2024</p>
+      <p class="date-modified">January 28, 2024</p>
     </div>
   </div>
     
@@ -264,8 +267,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>10 Visual Statistical Analysis</h1>
 <section id="overview-and-learning-outcomes" class="level2">
 <h2 class="anchored" data-anchor-id="overview-and-learning-outcomes">10.1 Overview and Learning Outcomes</h2>
-<p>This hands-on exercise is based on <a href="https://r4va.netlify.app/chap03">Chapter 3</a> of the <strong>R for Visual Analytics</strong> book.</p>
-<p>The learning outcome is to create interactive data visualisation using functions in the <a href="https://davidgohel.github.io/ggiraph/"><strong>ggiraph</strong></a> and <a href="https://plotly.com/r/"><strong>plotlyr</strong></a> package.</p>
+<p>This hands-on exercise is based on <a href="https://r4va.netlify.app/chap10">Chapter 10</a> of the <strong>R for Visual Analytics</strong> book.</p>
+<p>The learning outcomes are:</p>
+<ul>
+<li><p>Use the <a href="https://indrajeetpatil.github.io/ggstatsplot/"><strong>ggstatsplot</strong></a> package to create visual graphics with rich statistical information;</p>
+<ul>
+<li><p>It is an extension of the <a href="https://ggplot2.tidyverse.org/"><strong>ggplot2</strong></a> package for creating graphics with details from statistical tests included in the information-rich plots themselves.</p></li>
+<li><p>This provides alternative statistical inference methods by default.</p></li>
+<li><p>It also follows the best practices for statistical reporting. For all statistical tests reported in the plots, the default template abides by the <a href="https://my.ilstu.edu/~jhkahn/apastats.html">APA</a> standard for statistical reporting.</p></li>
+</ul></li>
+<li><p>Use the <a href="https://easystats.github.io/performance/"><strong>performance</strong></a> package to visualise model diagnostics; and</p></li>
+<li><p>Use the <a href="https://easystats.github.io/parameters/"><strong>parameters</strong></a> package to visualise model parameters.</p></li>
+</ul>
 </section>
 <section id="getting-started" class="level2">
 <h2 class="anchored" data-anchor-id="getting-started">10.2 Getting Started</h2>
@@ -273,25 +286,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="installing-and-loading-required-libraries">10.2.1 Installing and Loading Required Libraries</h3>
 <p>In this hands-on exercise, the following R packages are used:</p>
 <ul>
-<li><p><a href="https://www.tidyverse.org/"><strong>tidyverse</strong></a> (i.e.&nbsp;readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data;</p></li>
-<li><p><a href="https://patchwork.data-imaginist.com/"><strong>patchwork</strong></a> for preparing composite figures created using ggplot2;</p></li>
-<li><p><a href="https://rstudio.github.io/DT/"><strong>DT</strong></a> for interfacing with JavaScript library DataTables that create interactive tables on html pages;</p></li>
-<li><p><a href="https://davidgohel.github.io/ggiraph/"><strong>ggiraph</strong></a> for making ggplot graphics interactive;</p></li>
-<li><p><a href="https://plotly.com/r/"><strong>plotlyr</strong></a> for plotting interactive statistical graphs; and</p></li>
-<li><p><a href="https://rstudio.github.io/crosstalk/"><strong>crosstalk</strong></a> for inter-widget interactivity for html widgets.</p></li>
+<li><p><a href="https://www.tidyverse.org/"><strong>tidyverse</strong></a> (i.e.&nbsp;readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data; and</p></li>
+<li><p><a href="https://indrajeetpatil.github.io/ggstatsplot/"><strong>ggstatsplot</strong></a> for plotting statistics;</p></li>
+<li><p><a href="https://easystats.github.io/performance/"><strong>performance</strong></a> for assessment of model performance; and</p></li>
+<li><p><a href="https://easystats.github.io/parameters/"><strong>parameters</strong></a>for processing of model parameters.</p></li>
 </ul>
 <p>The code chunk below uses the <code>p_load()</code> function in the <strong>pacman</strong> package to check if the packages are installed. If yes, they are then loaded into the R environment. If no, they are installed, then loaded into the R environment.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, patchwork,</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               DT, ggiraph, plotly,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>               crosstalk)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, ggstatsplot,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               performance, parameters)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="importing-data" class="level3">
 <h3 class="anchored" data-anchor-id="importing-data">10.2.2 Importing Data</h3>
 <p>The dataset for this hands-on exercise is imported into the R environment using the <code>read_csv()</code> function in the <strong>readr</strong> package and stored as the R object, <code>exam_data</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>exam_data <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="st">"data/Exam_data.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>exam <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="st">"data/Exam_data.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The tibble data frame, <code>exam_data</code>, has 7 columns and 322 rows.</p>
 <ul>
@@ -304,15 +314,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 </section>
 </section>
-<section id="section" class="level2">
-<h2 class="anchored" data-anchor-id="section">10.3 ???</h2>
+<section id="using-ggstatsplot-methods" class="level2">
+<h2 class="anchored" data-anchor-id="using-ggstatsplot-methods">10.3 Using ggstatsplot Methods</h2>
 <section id="one-sample-test-gghistostats" class="level3">
 <h3 class="anchored" data-anchor-id="one-sample-test-gghistostats">10.3.1 One-sample Test: gghistostats()</h3>
-<p>xxx</p>
+<p>The gghistostats() function is used to to build a plot of a one-sample test.</p>
+<p>Default information:</p>
+<ul>
+<li><p>Statistical details;</p></li>
+<li><p>Bayes factor;</p></li>
+<li><p>Sample sizes; and</p></li>
+<li><p>Distribution summary.</p></li>
+</ul>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex04B_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">gghistostats</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> exam,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> ENGLISH,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"bayes"</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">test.value =</span> <span class="dv">60</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">"English Scores"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="unpacking-the-bayes-factor" class="level3">
 <h3 class="anchored" data-anchor-id="unpacking-the-bayes-factor">10.3.2 Unpacking the Bayes Factor</h3>
-<p>xxx</p>
+<p>A Bayes factor is the ratio of the likelihood of one particular hypothesis to the likelihood of another. It can be interpreted as a measure of the strength of evidence in favour of one theory among two competing theories.</p>
+<p>The Bayes factor is a way to evaluate the data in favour of a null hypothesis, and to use external information to do so. It tells us what the weight of the evidence is in favour of a given hypothesis.</p>
+<p>When comparing two hypotheses, H1 (the alternate hypothesis) and H0 (the null hypothesis), the Bayes factor is often written as B10.</p>
+<p>The <a href="https://www.statisticshowto.com/bayesian-information-criterion/">Schwarz criterion</a> is one of the easiest ways to calculate a rough approximation of the Bayes factor.</p>
 </section>
 <section id="how-to-interpret-bayes-factor" class="level3">
 <h3 class="anchored" data-anchor-id="how-to-interpret-bayes-factor">10.3.3 How to Interpret Bayes Factor</h3>
@@ -335,8 +379,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>xxx</p>
 </section>
 </section>
-<section id="section-1" class="level2">
-<h2 class="anchored" data-anchor-id="section-1">10.4 ???</h2>
+<section id="section" class="level2">
+<h2 class="anchored" data-anchor-id="section">10.4 ???</h2>
 <p>xxx</p>
 <section id="multiple-regression-model-with-lm" class="level3">
 <h3 class="anchored" data-anchor-id="multiple-regression-model-with-lm">10.4.1 Multiple Regression Model with lm()</h3>

@@ -28,6 +28,8 @@ In this hands-on exercise, the following R packages are used:
 
 -   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data;
 
+-   [**ggthemes**](https://ggplot2.tidyverse.org/reference/ggtheme.html) for extra themes, geoms, and scales for ggplot2;
+
 -   [**ggridges**](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html) for creating ridgeline plots; and
 
 -   [**ggdist**](https://mjskay.github.io/ggdist/) for visualising distributions and uncertainty.
@@ -35,17 +37,16 @@ In this hands-on exercise, the following R packages are used:
 The code chunk below uses the `p_load()` function in the **pacman** package to check if the packages are installed. If yes, they are then loaded into the R environment. If no, they are installed, then loaded into the R environment.
 
 ```{r}
-pacman::p_load(tidyverse, patchwork,
-               DT, ggiraph, plotly,
-               crosstalk)
+pacman::p_load(tidyverse, ggthemes,
+               ggridges, ggdist)
 ```
 
 ### 9.2.2 Importing Data
 
-The dataset for this hands-on exercise is imported into the R environment using the `read_csv()` function in the **readr** package and stored as the R object, `exam_data`.
+The dataset for this hands-on exercise is imported into the R environment using the `read_csv()` function in the **readr** package and stored as the R object, `exam`.
 
 ```{r}
-exam_data = read_csv("data/Exam_data.csv")
+exam = read_csv("data/Exam_data.csv")
 ```
 
 The tibble data frame, `exam_data`, has 7 columns and 322 rows.
@@ -60,371 +61,413 @@ The tibble data frame, `exam_data`, has 7 columns and 322 rows.
 
 ## 9.3 **Visualising Distribution with Ridgeline Plot**
 
-The **ggiraph** package is an html widget and a ggplot2 extension that allows ggplot graphics to be interactive. This is achieved using the [interactive geometries](https://davidgohel.github.io/ggiraph/reference/#section-interactive-geometries) that can understand three arguments:
+A ridgeline plot (also called joyplot) is a data visualisation technique for revealing the distribution of a numeric value for several groups. Distribution can be represented using histograms or density plots, all aligned to the same horizontal scale and presented with a slight overlap.
 
-1.  **tooltip**: a column of datasets that contain tooltips to be displayed when the mouse is pointing to the elements.;
+Such as plot makes sense when the number of groups to represent is medium to high, and thus, a classic window separation would take up too much space. The overlap of the groups allows for a more efficient use of space.
 
-2.  **onclick**: a column of datasets that contain a JavaScript function to be executed when the elements are clicked on; and
-
-3.  **data_id**: a column of datasets that contain an ID to be associated with the elements.
-
-If used within a [Shiny](https://davidgohel.github.io/ggiraph/reference/#working-with-shiny) application, the elements associated with an ID (data_id) can be selected and manipulated on the client and server sides.
+Also, it works well when there is a clear pattern in the result, like if there is an obvious ranking in groups. Otherwise, the groups will tend to overlap each other, leading to a messy plot that does not provide any insight.
 
 ### 9.3.1 Plotting Ridgeline Graph: ggridggs Method
 
-A typical code chunk to plot an interactive statistical graph using functions in the **ggiraph** package consists of two parts:
+There are several ways to plot a ridgeline plot with R. The **ggridges** package has two main geom functions to plot a ridgeline plot: [`geom_ridgeline()`](https://wilkelab.org/ggridges/reference/geom_ridgeline.html) and [`geom_density_ridges()`](https://wilkelab.org/ggridges/reference/geom_density_ridges.html). The former takes height values directly to draw the ridgelines, and the latter first estimates data densities and then draws those using ridgelines.
 
-1.  An interactive version of a ggplot object is created using the [`geom_dotplot_interactive()`](https://davidgohel.github.io/ggiraph/reference/geom_dotplot_interactive.html) function; and
-
-2.  The [`girafe()`](https://davidgohel.github.io/ggiraph/reference/girafe.html) function is then used to generate an interactive svg object to be displayed on the html page.
-
-The "tooltip" aesthetic argument of the `geom_dotplot_interactive()` function is used to specify the field that will be displayed in the tooltip.
-
-In the plot below, when the mouse pointer hovers over a data point of interest, the student’s ID is displayed.
+In the plot below, a ridgeline plot below is plotted using the `geom_density_ridges()` function.
 
 ::: panel-tabset
 ## Plot
 
 ```{r}
 #| echo: false
-p1 = ggplot(data = exam_data, 
-       aes(x = MATHS)) +
-  geom_dotplot_interactive(
-    aes(tooltip = ID),
-    stackgroups = TRUE, 
-    binwidth = 1, 
-    method = "histodot") +
-  scale_y_continuous(NULL, 
-                     breaks = NULL)
-
-girafe(ggobj = p1,
-       width_svg = 6,
-       height_svg = 6*0.618)
+ggplot(exam, 
+       aes(x = ENGLISH, 
+           y = CLASS)) +
+  geom_density_ridges(
+    scale = 3,
+    rel_min_height = 0.01,
+    bandwidth = 3.4,
+    fill = "#7097BB",
+    alpha = 0.8,
+    color = "white"
+  ) +
+  scale_x_continuous(
+    name = "English grades",
+    expand = c(0, 0)
+    ) +
+  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
+  theme_ridges()
 ```
 
 ## Code
 
 ```{r}
 #| eval: false
-p1 = ggplot(data = exam_data, 
-       aes(x = MATHS)) +
-  geom_dotplot_interactive(
-    aes(tooltip = ID),
-    stackgroups = TRUE, 
-    binwidth = 1, 
-    method = "histodot") +
-  scale_y_continuous(NULL, 
-                     breaks = NULL)
-
-girafe(ggobj = p1,
-       width_svg = 6,
-       height_svg = 6*0.618)
+ggplot(exam, 
+       aes(x = ENGLISH, 
+           y = CLASS)) +
+  geom_density_ridges(
+    scale = 3,
+    rel_min_height = 0.01,
+    bandwidth = 3.4,
+    fill = "#7097BB",
+    alpha = 0.8,
+    color = "white"
+  ) +
+  scale_x_continuous(
+    name = "English grades",
+    expand = c(0, 0)
+    ) +
+  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
+  theme_ridges()
 ```
 :::
 
 ### 9.3.2 Varying Fill Colours Along the x-axis
 
-The content of the tooltip can be customised by including a list object. A new field, `tooltip`, was created in the tibble data frame, `exam_data`. It is populated with information from the ID and CLASS fields. This tooltip is then used in place of ID in the "tooltip" aesthetic argument of the `geom_dotplot_interactive()` function.
-
-When the mouse pointer hovers over a data point of interest, the student’s ID and class are displayed.
+The area under a ridgeline plot can be filled with colours that vary along the x axis. This effect can be achieved by using either the [`geom_ridgeline_gradient()`](https://wilkelab.org/ggridges/reference/geom_ridgeline_gradient.html) or [`geom_density_ridges_gradient()`](https://wilkelab.org/ggridges/reference/geom_ridgeline_gradient.html) functions. Both geom functions work just like `geom_ridgeline()` and `geom_density_ridges()`, except that they allow for varying fill colors. However, they do not allow for the alpha argument for transparency in the fill.
 
 ::: panel-tabset
 ## Plot
 
 ```{r}
 #| echo: false 
-exam_data$tooltip = c(paste0(     
-  "Name = ", exam_data$ID,         
-  "\n Class = ", exam_data$CLASS)) 
-
-p2 = ggplot(data = exam_data, 
-       aes(x = MATHS)) +
-  geom_dotplot_interactive(
-    aes(tooltip = exam_data$tooltip), 
-    stackgroups = TRUE,
-    binwidth = 1,
-    method = "histodot") +
-  scale_y_continuous(NULL,               
-                     breaks = NULL)
-
-girafe(ggobj = p2,
-       width_svg = 8,
-       height_svg = 8*0.618)
+ggplot(exam, 
+       aes(x = ENGLISH, 
+           y = CLASS,
+           fill = stat(x))) +
+  geom_density_ridges_gradient(
+    scale = 3,
+    rel_min_height = 0.01) +
+  scale_fill_viridis_c(name = "Temp. [F]",
+                       option = "C") +
+  scale_x_continuous(
+    name = "English grades",
+    expand = c(0, 0)
+  ) +
+  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
+  theme_ridges()
 ```
 
 ## Code
 
 ```{r}
 #| eval: false 
-exam_data$tooltip = c(paste0(     
-  "Name = ", exam_data$ID,         
-  "\n Class = ", exam_data$CLASS)) 
-
-p2 = ggplot(data = exam_data, 
-       aes(x = MATHS)) +
-  geom_dotplot_interactive(
-    aes(tooltip = exam_data$tooltip), 
-    stackgroups = TRUE,
-    binwidth = 1,
-    method = "histodot") +
-  scale_y_continuous(NULL,               
-                     breaks = NULL)
-
-girafe(ggobj = p2,
-       width_svg = 8,
-       height_svg = 8*0.618)
+ggplot(exam, 
+       aes(x = ENGLISH, 
+           y = CLASS,
+           fill = stat(x))) +
+  geom_density_ridges_gradient(
+    scale = 3,
+    rel_min_height = 0.01) +
+  scale_fill_viridis_c(name = "Temp. [F]",
+                       option = "C") +
+  scale_x_continuous(
+    name = "English grades",
+    expand = c(0, 0)
+  ) +
+  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
+  theme_ridges()
 ```
 :::
 
 ### 9.3.3 Mapping Probabilities Directly Onto Colour
 
-The [`opts_tooltip()`](https://davidgohel.github.io/ggiraph/reference/opts_tooltip.html) function in the **ggiraph** package is used to customise the tooltip rendering by adding css declarations.
+Beside providing additional geom objects to support the need to plot a ridgeline plot, the **ggridges** package also provides a statistic function, [`stat_density_ridges()`](https://wilkelab.org/ggridges/reference/stat_density_ridges.html), that replaces the [`stat_density()`](https://ggplot2.tidyverse.org/reference/geom_density.html) function in the **ggplot2** package.
 
-> ***Note***: The background for the tooltip has been changed from black to white colour, and the text colour has been changed from white to black.
+The plot below uses the `stat(ecdf)` function to calculate the probabilities representing the empirical cumulative function for the distribution of scores.
+
+> ***Note***: It is important to set the argument "calc_ecdf" as TRUE in the `stat_density_ridges()` function.
 
 ::: panel-tabset
 ## Plot
 
 ```{r}
 #| echo: false 
-tooltip_css = "background-color:white; #<<
-font-style:bold; color:black;" #<<
-
-girafe(ggobj = p2,
-       width_svg = 6,
-       height_svg = 6*0.618,
-       options = list(    #<<
-         opts_tooltip(    #<<
-      css = tooltip_css)) #<<
-      )
+ggplot(exam,
+       aes(x = ENGLISH, 
+           y = CLASS, 
+           fill = 0.5 - abs(0.5-stat(ecdf)))) +
+  stat_density_ridges(geom = "density_ridges_gradient", 
+                      calc_ecdf = TRUE) +
+  scale_fill_viridis_c(name = "Tail probability",
+                       direction = -1) +
+  theme_ridges()
 ```
 
 ## Code
 
 ```{r}
 #| eval: false 
-tooltip_css = "background-color:white; #<<
-font-style:bold; color:black;" #<<
-
-girafe(ggobj = p2,
-       width_svg = 6,
-       height_svg = 6*0.618,
-       options = list(    #<<
-         opts_tooltip(    #<<
-      css = tooltip_css)) #<<
-      )
+ggplot(exam,
+       aes(x = ENGLISH, 
+           y = CLASS, 
+           fill = 0.5 - abs(0.5-stat(ecdf)))) +
+  stat_density_ridges(geom = "density_ridges_gradient", 
+                      calc_ecdf = TRUE) +
+  scale_fill_viridis_c(name = "Tail probability",
+                       direction = -1) +
+  theme_ridges()
 ```
 :::
 
 ### 9.3.4 Ridgeline Plots with Quantile Lines
 
-Derived statistics can also be displayed in a tooltip. In the example below, a function is used to compute the 90% confidence interval of the mean of Maths scores by RACE are plotted in a bar chart.
+A ridgeline plot that assigns different colours to different quantiles can be plotted using the [`geom_density_ridges_gradient()`](https://wilkelab.org/ggridges/reference/geom_ridgeline_gradient.html) function, and stating the the stat(quantile) as an aesthetic argument.
 
 ::: panel-tabset
 ## Plot
 
 ```{r}
 #| echo: false  
-tooltip = function(y, ymax, accuracy = .01) {
-  mean = scales::number(y, accuracy = accuracy)
-  sem = scales::number(ymax - y, accuracy = accuracy)
-  paste("Mean Maths Scores:", mean, "+/-", sem)
-}
-
-gg_point = ggplot(data = exam_data, 
-                   aes(x = RACE)) +
-  stat_summary(aes(y = MATHS, 
-                   tooltip = after_stat(  
-                     tooltip(y, ymax))),  
-    fun.data = "mean_se", 
-    geom = GeomInteractiveCol,  
-    fill = "light blue") +
-  stat_summary(aes(y = MATHS),
-    fun.data = mean_se,
-    geom = "errorbar", width = 0.2, size = 0.2)
-
-girafe(ggobj = gg_point,
-       width_svg = 8,
-       height_svg = 8*0.618)
+ggplot(exam,
+       aes(x = ENGLISH, 
+           y = CLASS, 
+           fill = factor(stat(quantile))
+           )) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE, 
+    quantiles = 4,
+    quantile_lines = TRUE) +
+  scale_fill_viridis_d(name = "Quartiles") +
+  theme_ridges()
 ```
 
 ## Code
 
 ```{r}
 #| eval: false
-tooltip = function(y, ymax, accuracy = .01) {
-  mean = scales::number(y, accuracy = accuracy)
-  sem = scales::number(ymax - y, accuracy = accuracy)
-  paste("Mean Maths Scores:", mean, "+/-", sem)
-}
-
-gg_point = ggplot(data = exam_data, 
-                   aes(x = RACE)) +
-  stat_summary(aes(y = MATHS, 
-                   tooltip = after_stat(  
-                     tooltip(y, ymax))),  
-    fun.data = "mean_se", 
-    geom = GeomInteractiveCol,  
-    fill = "light blue") +
-  stat_summary(aes(y = MATHS),
-    fun.data = mean_se,
-    geom = "errorbar", width = 0.2, size = 0.2)
-
-girafe(ggobj = gg_point,
-       width_svg = 8,
-       height_svg = 8*0.618)
+ggplot(exam,
+       aes(x = ENGLISH, 
+           y = CLASS, 
+           fill = factor(stat(quantile))
+           )) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE, 
+    quantiles = 4,
+    quantile_lines = TRUE) +
+  scale_fill_viridis_d(name = "Quartiles") +
+  theme_ridges()
 ```
 :::
 
-## 9.4 **Visualising Distribution with Raincloud Plot**
-
-The **plotly** package can be used to create interactive web graphics from ggplot2 graphs and/or a custom interface to the (MIT-licensed) JavaScript library [**plotly.js**](https://plotly.com/javascript/) inspired by the Grammar of Graphics. Unlike other plotly platforms, plot.R is free and open-source.
-
-There are two ways to create an interactive graph using the **plotly** package:
-
-1.  Using the `plot_ly()` function; and
-
-2.  Using the `ggplotly()` function.
-
-### 9.4.1 Plotting a Half Eye Graph
-
-A basic interactive plot is created using the `plot_ly()` function.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false  
-plot_ly(data = exam_data, 
-             x = ~MATHS, 
-             y = ~ENGLISH)
-```
-
-## Code
-
-```{r}
-#| eval: false
-plot_ly(data = exam_data, 
-             x = ~MATHS, 
-             y = ~ENGLISH)
-```
-:::
-
-### 9.4.2 Adding Boxplot with geom_boxplot()
-
-The "colour" argument is used to map a qualitative visual variable (e.g. RACE).
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-plot_ly(data = exam_data, 
-        x = ~ENGLISH, 
-        y = ~MATHS, 
-        color = ~RACE)
-```
-
-## Code
-
-```{r}
-#| eval: false
-plot_ly(data = exam_data, 
-        x = ~ENGLISH, 
-        y = ~MATHS, 
-        color = ~RACE)
-```
-:::
-
-### 9.4.3 Adding Dot Plot with stat_dots()
-
-A basic interactive plot is created using the `gglotly()` function.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-p8 = ggplot(data=exam_data, 
-            aes(x = MATHS,
-                y = ENGLISH)) +
-  geom_point(size = 1) +
-  coord_cartesian(xlim = c(0,100),
-                  ylim = c(0,100))
-
-ggplotly(p8)
-```
-
-## Code
-
-```{r}
-#| eval: false 
-p8 = ggplot(data=exam_data, 
-            aes(x = MATHS,
-                y = ENGLISH)) +
-  geom_point(size = 1) +
-  coord_cartesian(xlim = c(0,100),
-                  ylim = c(0,100))
-
-ggplotly(p8)
-```
-:::
-
-### 9.4.4 Finishing Touch
-
-A coordinated linked plot can be created using the **plotly** package function in three steps:
-
-1.  The [`highlight_key()`](https://www.rdocumentation.org/packages/plotly/versions/4.9.2/topics/highlight_key) function in the **plotly** package is used as shared data.
-
-2.  The two scatterplots are created by using functions in the **ggplot2** package.
-
-3.  The [subplot()](https://plotly.com/r/subplots/) function in the **plotly** package is used to place the two scatterplots side-by-side.
+Instead of using a number to define the number of quantiles, cut-off points (e.g., 2.5% and 97.5% tails) can also be used to colour a ridgeline plot.
 
 ::: panel-tabset
 ## Plot
 
 ```{r}
 #| echo: false
-d = highlight_key(exam_data)
-p9 = ggplot(data = d, 
-            aes(x = MATHS,
-                y = ENGLISH)) +
-  geom_point(size = 1) +
-  coord_cartesian(xlim = c(0,100),
-                  ylim = c(0,100))
+ggplot(exam,
+       aes(x = ENGLISH, 
+           y = CLASS, 
+           fill = factor(stat(quantile))
+           )) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE, 
+    quantiles = c(0.025, 0.975)
+    ) +
+  scale_fill_manual(
+    name = "Probability",
+    values = c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
+    labels = c("(0, 0.025]", "(0.025, 0.975]", "(0.975, 1]")
+  ) +
+  theme_ridges()
+```
 
-p10 = ggplot(data = d, 
-            aes(x = MATHS,
-                y = SCIENCE)) +
-  geom_point(size = 1) +
-  coord_cartesian(xlim = c(0,100),
-                  ylim = c(0,100))
+## Code
 
-subplot(ggplotly(p9),
-        ggplotly(p10))
+```{r}
+#| eval: false
+ggplot(exam,
+       aes(x = ENGLISH, 
+           y = CLASS, 
+           fill = factor(stat(quantile))
+           )) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE, 
+    quantiles = c(0.025, 0.975)
+    ) +
+  scale_fill_manual(
+    name = "Probability",
+    values = c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
+    labels = c("(0, 0.025]", "(0.025, 0.975]", "(0.975, 1]")
+  ) +
+  theme_ridges()
+```
+:::
+
+## 9.4 **Visualising Distribution with Raincloud Plot**
+
+A raincloud plot is a data visualisation technique that produces a half-density of a distribution plot. It gets the name because the density plot is in the shape of a “raincloud”. The raincloud (half-density) plot enhances the traditional box-plot by highlighting the presence of multiple modalities (an indicator that different groups may exist). A boxplot does not show where densities are clustered, but a raincloud plot does.
+
+The functions from **ggdist** and **ggplot2** packages are used to create a raincloud plot.
+
+### 9.4.1 Plotting a Half Eye Graph
+
+First, a half-eye plot is plotted using the [`stat_halfeye()`](https://mjskay.github.io/ggdist/reference/stat_halfeye.html) function of the **ggdist** package.
+
+> ***Note***: The slab interval can be removed by setting the ".width" argument to 0 and "point_colour" argument to NA.
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false  
+ggplot(exam, 
+       aes(x = RACE, 
+           y = ENGLISH)) +
+  stat_halfeye(adjust = 0.5,
+               justification = -0.2,
+               .width = 0,
+               point_colour = NA)
+```
+
+## Code
+
+```{r}
+#| eval: false
+ggplot(exam, 
+       aes(x = RACE, 
+           y = ENGLISH)) +
+  stat_halfeye(adjust = 0.5,
+               justification = -0.2,
+               .width = 0,
+               point_colour = NA)
+```
+:::
+
+### 9.4.2 Adding Boxplot with geom_boxplot()
+
+Second, the [`geom_boxplot()`](https://ggplot2.tidyverse.org/reference/geom_boxplot.html) function in the **ggplot2** package is used to add a narrow boxplot. The width and opacity are adjusted accordingly.
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false 
+ggplot(exam, 
+       aes(x = RACE, 
+           y = ENGLISH)) +
+  stat_halfeye(adjust = 0.5,
+               justification = -0.2,
+               .width = 0,
+               point_colour = NA) +
+  geom_boxplot(width = .20,
+               outlier.shape = NA)
+```
+
+## Code
+
+```{r}
+#| eval: false
+ggplot(exam, 
+       aes(x = RACE, 
+           y = ENGLISH)) +
+  stat_halfeye(adjust = 0.5,
+               justification = -0.2,
+               .width = 0,
+               point_colour = NA) +
+  geom_boxplot(width = .20,
+               outlier.shape = NA)
+```
+:::
+
+### 9.4.3 Adding Dot Plot with stat_dots()
+
+Third, the [`stat_dots()`](https://mjskay.github.io/ggdist/reference/stat_dots.html) function in the **ggdist** package is used to produce a half-dotplot, which is similar to a histogram that indicates the number of samples (number of dots) in each bin.
+
+The "side" argument is set to "left" to place it on the left-hand side.
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false 
+ggplot(exam, 
+       aes(x = RACE, 
+           y = ENGLISH)) +
+  stat_halfeye(adjust = 0.5,
+               justification = -0.2,
+               .width = 0,
+               point_colour = NA) +
+  geom_boxplot(width = .20,
+               outlier.shape = NA) +
+  stat_dots(side = "left", 
+            justification = 1.2, 
+            binwidth = .5,
+            dotsize = 2)
 ```
 
 ## Code
 
 ```{r}
 #| eval: false 
-d = highlight_key(exam_data)
-p9 = ggplot(data = d, 
-            aes(x = MATHS,
-                y = ENGLISH)) +
-  geom_point(size = 1) +
-  coord_cartesian(xlim = c(0,100),
-                  ylim = c(0,100))
+ggplot(exam, 
+       aes(x = RACE, 
+           y = ENGLISH)) +
+  stat_halfeye(adjust = 0.5,
+               justification = -0.2,
+               .width = 0,
+               point_colour = NA) +
+  geom_boxplot(width = .20,
+               outlier.shape = NA) +
+  stat_dots(side = "left", 
+            justification = 1.2, 
+            binwidth = .5,
+            dotsize = 2)
+```
+:::
 
-p10 = ggplot(data = d, 
-            aes(x = MATHS,
-                y = SCIENCE)) +
-  geom_point(size = 1) +
-  coord_cartesian(xlim = c(0,100),
-                  ylim = c(0,100))
+### 9.4.4 Finishing Touch
 
-subplot(ggplotly(p9),
-        ggplotly(p10))
+Last, the [`coord_flip()`](https://ggplot2.tidyverse.org/reference/coord_flip.html) function in the **ggplot2** package is used to flip the raincloud plot horizontally to give it the raincloud appearance.
+
+The `theme_economist()` function in the **ggthemes** package is added to give the raincloud chart a standard professional publishing appearance.
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false
+ggplot(exam, 
+       aes(x = RACE, 
+           y = ENGLISH)) +
+  stat_halfeye(adjust = 0.5,
+               justification = -0.2,
+               .width = 0,
+               point_colour = NA) +
+  geom_boxplot(width = .20,
+               outlier.shape = NA) +
+  stat_dots(side = "left", 
+            justification = 1.2, 
+            binwidth = .5,
+            dotsize = 1.5) +
+  coord_flip() +
+  theme_economist()
+```
+
+## Code
+
+```{r}
+#| eval: false 
+ggplot(exam, 
+       aes(x = RACE, 
+           y = ENGLISH)) +
+  stat_halfeye(adjust = 0.5,
+               justification = -0.2,
+               .width = 0,
+               point_colour = NA) +
+  geom_boxplot(width = .20,
+               outlier.shape = NA) +
+  stat_dots(side = "left", 
+            justification = 1.2, 
+            binwidth = .5,
+            dotsize = 1.5) +
+  coord_flip() +
+  theme_economist()
 ```
 :::
 
