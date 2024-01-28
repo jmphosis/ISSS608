@@ -490,7 +490,7 @@ exam %>%
 ```
 :::
 
-## 11.5 **Visualising Uncertainty with Hypothetical Outcome Plots (HOPs)**
+## 11.5 Visualising Uncertainty with Hypothetical Outcome Plots (HOPs)
 
 An animated plot the the hypothetical outcome plots is created below.
 

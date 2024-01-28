@@ -361,7 +361,7 @@ fp_ggplotly
 ```
 :::
 
-## 12.5 **References**
+## 12.5 References
 
 -   [funnelPlotR](https://nhs-r-community.github.io/FunnelPlotR/) package.
 

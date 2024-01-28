@@ -137,10 +137,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex03B/Hands-on_Ex03B.html" rel="" target="">
  <span class="dropdown-text">Hands-on Exercise 3B</span></a>
   </li>  
-        <li class="dropdown-header">Hands-on Exercise 4A</li>
-        <li class="dropdown-header">Hands-on Exercise 4B</li>
-        <li class="dropdown-header">Hands-on Exercise 4C</li>
-        <li class="dropdown-header">Hands-on Exercise 4D</li>
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04A/Hands-on_Ex04A.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 4A</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04B/Hands-on_Ex04B.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 4B</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04C/Hands-on_Ex04C.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 4C</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04D/Hands-on_Ex04D.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 4D</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -151,10 +163,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li>
     <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex01/In-class_Ex01.html" rel="" target="">
  <span class="dropdown-text">In-class Exercise 1</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex03/In-class_Ex03.html" rel="" target="">
- <span class="dropdown-text">In-class Exercise 3</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex04/In-class_Ex04.html" rel="" target="">
@@ -207,14 +215,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#installing-and-loading-required-libraries" id="toc-installing-and-loading-required-libraries" class="nav-link" data-scroll-target="#installing-and-loading-required-libraries">9.2.1 Installing and Loading Required Libraries</a></li>
   <li><a href="#importing-data" id="toc-importing-data" class="nav-link" data-scroll-target="#importing-data">9.2.2 Importing Data</a></li>
   </ul></li>
-  <li><a href="#visualising-distribution-with-ridgeline-plot" id="toc-visualising-distribution-with-ridgeline-plot" class="nav-link" data-scroll-target="#visualising-distribution-with-ridgeline-plot">9.3 <strong>Visualising Distribution with Ridgeline Plot</strong></a>
+  <li><a href="#visualising-distribution-with-ridgeline-plot" id="toc-visualising-distribution-with-ridgeline-plot" class="nav-link" data-scroll-target="#visualising-distribution-with-ridgeline-plot">9.3 Visualising Distribution with Ridgeline Plot</a>
   <ul class="collapse">
   <li><a href="#plotting-ridgeline-graph-ggridggs-method" id="toc-plotting-ridgeline-graph-ggridggs-method" class="nav-link" data-scroll-target="#plotting-ridgeline-graph-ggridggs-method">9.3.1 Plotting Ridgeline Graph: ggridggs Method</a></li>
   <li><a href="#varying-fill-colours-along-the-x-axis" id="toc-varying-fill-colours-along-the-x-axis" class="nav-link" data-scroll-target="#varying-fill-colours-along-the-x-axis">9.3.2 Varying Fill Colours Along the x-axis</a></li>
   <li><a href="#mapping-probabilities-directly-onto-colour" id="toc-mapping-probabilities-directly-onto-colour" class="nav-link" data-scroll-target="#mapping-probabilities-directly-onto-colour">9.3.3 Mapping Probabilities Directly Onto Colour</a></li>
   <li><a href="#ridgeline-plots-with-quantile-lines" id="toc-ridgeline-plots-with-quantile-lines" class="nav-link" data-scroll-target="#ridgeline-plots-with-quantile-lines">9.3.4 Ridgeline Plots with Quantile Lines</a></li>
   </ul></li>
-  <li><a href="#visualising-distribution-with-raincloud-plot" id="toc-visualising-distribution-with-raincloud-plot" class="nav-link" data-scroll-target="#visualising-distribution-with-raincloud-plot">9.4 <strong>Visualising Distribution with Raincloud Plot</strong></a>
+  <li><a href="#visualising-distribution-with-raincloud-plot" id="toc-visualising-distribution-with-raincloud-plot" class="nav-link" data-scroll-target="#visualising-distribution-with-raincloud-plot">9.4 Visualising Distribution with Raincloud Plot</a>
   <ul class="collapse">
   <li><a href="#plotting-a-half-eye-graph" id="toc-plotting-a-half-eye-graph" class="nav-link" data-scroll-target="#plotting-a-half-eye-graph">9.4.1 Plotting a Half Eye Graph</a></li>
   <li><a href="#adding-boxplot-with-geom_boxplot" id="toc-adding-boxplot-with-geom_boxplot" class="nav-link" data-scroll-target="#adding-boxplot-with-geom_boxplot">9.4.2 Adding Boxplot with geom_boxplot()</a></li>
@@ -248,7 +256,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">January 28, 2024</p>
+      <p class="date-modified">January 29, 2024</p>
     </div>
   </div>
     
@@ -299,7 +307,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 </section>
 <section id="visualising-distribution-with-ridgeline-plot" class="level2">
-<h2 class="anchored" data-anchor-id="visualising-distribution-with-ridgeline-plot">9.3 <strong>Visualising Distribution with Ridgeline Plot</strong></h2>
+<h2 class="anchored" data-anchor-id="visualising-distribution-with-ridgeline-plot">9.3 Visualising Distribution with Ridgeline Plot</h2>
 <p>A ridgeline plot (also called joyplot) is a data visualisation technique for revealing the distribution of a numeric value for several groups. Distribution can be represented using histograms or density plots, all aligned to the same horizontal scale and presented with a slight overlap.</p>
 <p>Such as plot makes sense when the number of groups to represent is medium to high, and thus, a classic window separation would take up too much space. The overlap of the groups allows for a more efficient use of space.</p>
 <p>Also, it works well when there is a clear pattern in the result, like if there is an obvious ranking in groups. Otherwise, the groups will tend to overlap each other, leading to a messy plot that does not provide any insight.</p>
@@ -476,7 +484,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 </section>
 <section id="visualising-distribution-with-raincloud-plot" class="level2">
-<h2 class="anchored" data-anchor-id="visualising-distribution-with-raincloud-plot">9.4 <strong>Visualising Distribution with Raincloud Plot</strong></h2>
+<h2 class="anchored" data-anchor-id="visualising-distribution-with-raincloud-plot">9.4 Visualising Distribution with Raincloud Plot</h2>
 <p>A raincloud plot is a data visualisation technique that produces a half-density of a distribution plot. It gets the name because the density plot is in the shape of a “raincloud”. The raincloud (half-density) plot enhances the traditional box-plot by highlighting the presence of multiple modalities (an indicator that different groups may exist). A boxplot does not show where densities are clustered, but a raincloud plot does.</p>
 <p>The functions from <strong>ggdist</strong> and <strong>ggplot2</strong> packages are used to create a raincloud plot.</p>
 <section id="plotting-a-half-eye-graph" class="level3">

@@ -59,7 +59,7 @@ The tibble data frame, `exam_data`, has 7 columns and 322 rows.
 
     -   Continuous: MATHS, ENGLISH, and SCIENCE.
 
-## 9.3 **Visualising Distribution with Ridgeline Plot**
+## 9.3 Visualising Distribution with Ridgeline Plot
 
 A ridgeline plot (also called joyplot) is a data visualisation technique for revealing the distribution of a numeric value for several groups. Distribution can be represented using histograms or density plots, all aligned to the same horizontal scale and presented with a slight overlap.
 
@@ -299,7 +299,7 @@ ggplot(exam,
 ```
 :::
 
-## 9.4 **Visualising Distribution with Raincloud Plot**
+## 9.4 Visualising Distribution with Raincloud Plot
 
 A raincloud plot is a data visualisation technique that produces a half-density of a distribution plot. It gets the name because the density plot is in the shape of a “raincloud”. The raincloud (half-density) plot enhances the traditional box-plot by highlighting the presence of multiple modalities (an indicator that different groups may exist). A boxplot does not show where densities are clustered, but a raincloud plot does.
 
