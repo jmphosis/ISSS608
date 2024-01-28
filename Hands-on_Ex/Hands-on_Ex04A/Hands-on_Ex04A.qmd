@@ -1,0 +1,431 @@
+---
+title: "Hands-on Exercise 4A"
+date: "28 January 2024"
+date-modified: "last-modified" #allows for updating to the latest date
+format: html
+execute: 
+  echo: true #shows the code
+  eval: true #shows the outcomes of the code
+  warning: false #does not show the warnings
+editor: visual
+background-color: lightgrey;
+font-family:  Palatino Linotype;
+---
+
+# 9 Visualising Distribution
+
+## 9.1 Overview and Learning Outcomes
+
+This hands-on exercise is based on [Chapter 9](https://r4va.netlify.app/chap09) of the **R for Visual Analytics** book.
+
+Visualising distribution is not new in statistical analysis. [Chapter 1](https://r4va.netlify.app/chap01) covered some of the popular statistical graphic methods for visualising distribution. They are histogram, probability density curve (pdf), boxplot, notch plot, and violin plot, using the [**ggplot2**](https://ggplot2.tidyverse.org/) package. Chapter 9 will cover two relatively new statistical graphic methods for visualising distribution. They are ridgeline plot and raincloud plot using the **ggplot2** package and its extensions.
+
+## 9.2 Getting Started
+
+### 9.2.1 Installing and Loading Required Libraries
+
+In this hands-on exercise, the following R packages are used:
+
+-   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data;
+
+-   [**ggridges**](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html) for creating ridgeline plots; and
+
+-   [**ggdist**](https://mjskay.github.io/ggdist/) for visualising distributions and uncertainty.
+
+The code chunk below uses the `p_load()` function in the **pacman** package to check if the packages are installed. If yes, they are then loaded into the R environment. If no, they are installed, then loaded into the R environment.
+
+```{r}
+pacman::p_load(tidyverse, patchwork,
+               DT, ggiraph, plotly,
+               crosstalk)
+```
+
+### 9.2.2 Importing Data
+
+The dataset for this hands-on exercise is imported into the R environment using the `read_csv()` function in the **readr** package and stored as the R object, `exam_data`.
+
+```{r}
+exam_data = read_csv("data/Exam_data.csv")
+```
+
+The tibble data frame, `exam_data`, has 7 columns and 322 rows.
+
+-   It consists of the year-end examination grades of a cohort of 322 Primary 3 students from a local school.
+
+-   The 7 variables/attributes are:
+
+    -   Categorical: ID, CLASS, GENDER, and RACE.
+
+    -   Continuous: MATHS, ENGLISH, and SCIENCE.
+
+## 9.3 **Visualising Distribution with Ridgeline Plot**
+
+The **ggiraph** package is an html widget and a ggplot2 extension that allows ggplot graphics to be interactive. This is achieved using the [interactive geometries](https://davidgohel.github.io/ggiraph/reference/#section-interactive-geometries) that can understand three arguments:
+
+1.  **tooltip**: a column of datasets that contain tooltips to be displayed when the mouse is pointing to the elements.;
+
+2.  **onclick**: a column of datasets that contain a JavaScript function to be executed when the elements are clicked on; and
+
+3.  **data_id**: a column of datasets that contain an ID to be associated with the elements.
+
+If used within a [Shiny](https://davidgohel.github.io/ggiraph/reference/#working-with-shiny) application, the elements associated with an ID (data_id) can be selected and manipulated on the client and server sides.
+
+### 9.3.1 Plotting Ridgeline Graph: ggridggs Method
+
+A typical code chunk to plot an interactive statistical graph using functions in the **ggiraph** package consists of two parts:
+
+1.  An interactive version of a ggplot object is created using the [`geom_dotplot_interactive()`](https://davidgohel.github.io/ggiraph/reference/geom_dotplot_interactive.html) function; and
+
+2.  The [`girafe()`](https://davidgohel.github.io/ggiraph/reference/girafe.html) function is then used to generate an interactive svg object to be displayed on the html page.
+
+The "tooltip" aesthetic argument of the `geom_dotplot_interactive()` function is used to specify the field that will be displayed in the tooltip.
+
+In the plot below, when the mouse pointer hovers over a data point of interest, the student’s ID is displayed.
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false
+p1 = ggplot(data = exam_data, 
+       aes(x = MATHS)) +
+  geom_dotplot_interactive(
+    aes(tooltip = ID),
+    stackgroups = TRUE, 
+    binwidth = 1, 
+    method = "histodot") +
+  scale_y_continuous(NULL, 
+                     breaks = NULL)
+
+girafe(ggobj = p1,
+       width_svg = 6,
+       height_svg = 6*0.618)
+```
+
+## Code
+
+```{r}
+#| eval: false
+p1 = ggplot(data = exam_data, 
+       aes(x = MATHS)) +
+  geom_dotplot_interactive(
+    aes(tooltip = ID),
+    stackgroups = TRUE, 
+    binwidth = 1, 
+    method = "histodot") +
+  scale_y_continuous(NULL, 
+                     breaks = NULL)
+
+girafe(ggobj = p1,
+       width_svg = 6,
+       height_svg = 6*0.618)
+```
+:::
+
+### 9.3.2 Varying Fill Colours Along the x-axis
+
+The content of the tooltip can be customised by including a list object. A new field, `tooltip`, was created in the tibble data frame, `exam_data`. It is populated with information from the ID and CLASS fields. This tooltip is then used in place of ID in the "tooltip" aesthetic argument of the `geom_dotplot_interactive()` function.
+
+When the mouse pointer hovers over a data point of interest, the student’s ID and class are displayed.
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false 
+exam_data$tooltip = c(paste0(     
+  "Name = ", exam_data$ID,         
+  "\n Class = ", exam_data$CLASS)) 
+
+p2 = ggplot(data = exam_data, 
+       aes(x = MATHS)) +
+  geom_dotplot_interactive(
+    aes(tooltip = exam_data$tooltip), 
+    stackgroups = TRUE,
+    binwidth = 1,
+    method = "histodot") +
+  scale_y_continuous(NULL,               
+                     breaks = NULL)
+
+girafe(ggobj = p2,
+       width_svg = 8,
+       height_svg = 8*0.618)
+```
+
+## Code
+
+```{r}
+#| eval: false 
+exam_data$tooltip = c(paste0(     
+  "Name = ", exam_data$ID,         
+  "\n Class = ", exam_data$CLASS)) 
+
+p2 = ggplot(data = exam_data, 
+       aes(x = MATHS)) +
+  geom_dotplot_interactive(
+    aes(tooltip = exam_data$tooltip), 
+    stackgroups = TRUE,
+    binwidth = 1,
+    method = "histodot") +
+  scale_y_continuous(NULL,               
+                     breaks = NULL)
+
+girafe(ggobj = p2,
+       width_svg = 8,
+       height_svg = 8*0.618)
+```
+:::
+
+### 9.3.3 Mapping Probabilities Directly Onto Colour
+
+The [`opts_tooltip()`](https://davidgohel.github.io/ggiraph/reference/opts_tooltip.html) function in the **ggiraph** package is used to customise the tooltip rendering by adding css declarations.
+
+> ***Note***: The background for the tooltip has been changed from black to white colour, and the text colour has been changed from white to black.
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false 
+tooltip_css = "background-color:white; #<<
+font-style:bold; color:black;" #<<
+
+girafe(ggobj = p2,
+       width_svg = 6,
+       height_svg = 6*0.618,
+       options = list(    #<<
+         opts_tooltip(    #<<
+      css = tooltip_css)) #<<
+      )
+```
+
+## Code
+
+```{r}
+#| eval: false 
+tooltip_css = "background-color:white; #<<
+font-style:bold; color:black;" #<<
+
+girafe(ggobj = p2,
+       width_svg = 6,
+       height_svg = 6*0.618,
+       options = list(    #<<
+         opts_tooltip(    #<<
+      css = tooltip_css)) #<<
+      )
+```
+:::
+
+### 9.3.4 Ridgeline Plots with Quantile Lines
+
+Derived statistics can also be displayed in a tooltip. In the example below, a function is used to compute the 90% confidence interval of the mean of Maths scores by RACE are plotted in a bar chart.
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false  
+tooltip = function(y, ymax, accuracy = .01) {
+  mean = scales::number(y, accuracy = accuracy)
+  sem = scales::number(ymax - y, accuracy = accuracy)
+  paste("Mean Maths Scores:", mean, "+/-", sem)
+}
+
+gg_point = ggplot(data = exam_data, 
+                   aes(x = RACE)) +
+  stat_summary(aes(y = MATHS, 
+                   tooltip = after_stat(  
+                     tooltip(y, ymax))),  
+    fun.data = "mean_se", 
+    geom = GeomInteractiveCol,  
+    fill = "light blue") +
+  stat_summary(aes(y = MATHS),
+    fun.data = mean_se,
+    geom = "errorbar", width = 0.2, size = 0.2)
+
+girafe(ggobj = gg_point,
+       width_svg = 8,
+       height_svg = 8*0.618)
+```
+
+## Code
+
+```{r}
+#| eval: false
+tooltip = function(y, ymax, accuracy = .01) {
+  mean = scales::number(y, accuracy = accuracy)
+  sem = scales::number(ymax - y, accuracy = accuracy)
+  paste("Mean Maths Scores:", mean, "+/-", sem)
+}
+
+gg_point = ggplot(data = exam_data, 
+                   aes(x = RACE)) +
+  stat_summary(aes(y = MATHS, 
+                   tooltip = after_stat(  
+                     tooltip(y, ymax))),  
+    fun.data = "mean_se", 
+    geom = GeomInteractiveCol,  
+    fill = "light blue") +
+  stat_summary(aes(y = MATHS),
+    fun.data = mean_se,
+    geom = "errorbar", width = 0.2, size = 0.2)
+
+girafe(ggobj = gg_point,
+       width_svg = 8,
+       height_svg = 8*0.618)
+```
+:::
+
+## 9.4 **Visualising Distribution with Raincloud Plot**
+
+The **plotly** package can be used to create interactive web graphics from ggplot2 graphs and/or a custom interface to the (MIT-licensed) JavaScript library [**plotly.js**](https://plotly.com/javascript/) inspired by the Grammar of Graphics. Unlike other plotly platforms, plot.R is free and open-source.
+
+There are two ways to create an interactive graph using the **plotly** package:
+
+1.  Using the `plot_ly()` function; and
+
+2.  Using the `ggplotly()` function.
+
+### 9.4.1 Plotting a Half Eye Graph
+
+A basic interactive plot is created using the `plot_ly()` function.
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false  
+plot_ly(data = exam_data, 
+             x = ~MATHS, 
+             y = ~ENGLISH)
+```
+
+## Code
+
+```{r}
+#| eval: false
+plot_ly(data = exam_data, 
+             x = ~MATHS, 
+             y = ~ENGLISH)
+```
+:::
+
+### 9.4.2 Adding Boxplot with geom_boxplot()
+
+The "colour" argument is used to map a qualitative visual variable (e.g. RACE).
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false 
+plot_ly(data = exam_data, 
+        x = ~ENGLISH, 
+        y = ~MATHS, 
+        color = ~RACE)
+```
+
+## Code
+
+```{r}
+#| eval: false
+plot_ly(data = exam_data, 
+        x = ~ENGLISH, 
+        y = ~MATHS, 
+        color = ~RACE)
+```
+:::
+
+### 9.4.3 Adding Dot Plot with stat_dots()
+
+A basic interactive plot is created using the `gglotly()` function.
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false 
+p8 = ggplot(data=exam_data, 
+            aes(x = MATHS,
+                y = ENGLISH)) +
+  geom_point(size = 1) +
+  coord_cartesian(xlim = c(0,100),
+                  ylim = c(0,100))
+
+ggplotly(p8)
+```
+
+## Code
+
+```{r}
+#| eval: false 
+p8 = ggplot(data=exam_data, 
+            aes(x = MATHS,
+                y = ENGLISH)) +
+  geom_point(size = 1) +
+  coord_cartesian(xlim = c(0,100),
+                  ylim = c(0,100))
+
+ggplotly(p8)
+```
+:::
+
+### 9.4.4 Finishing Touch
+
+A coordinated linked plot can be created using the **plotly** package function in three steps:
+
+1.  The [`highlight_key()`](https://www.rdocumentation.org/packages/plotly/versions/4.9.2/topics/highlight_key) function in the **plotly** package is used as shared data.
+
+2.  The two scatterplots are created by using functions in the **ggplot2** package.
+
+3.  The [subplot()](https://plotly.com/r/subplots/) function in the **plotly** package is used to place the two scatterplots side-by-side.
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false
+d = highlight_key(exam_data)
+p9 = ggplot(data = d, 
+            aes(x = MATHS,
+                y = ENGLISH)) +
+  geom_point(size = 1) +
+  coord_cartesian(xlim = c(0,100),
+                  ylim = c(0,100))
+
+p10 = ggplot(data = d, 
+            aes(x = MATHS,
+                y = SCIENCE)) +
+  geom_point(size = 1) +
+  coord_cartesian(xlim = c(0,100),
+                  ylim = c(0,100))
+
+subplot(ggplotly(p9),
+        ggplotly(p10))
+```
+
+## Code
+
+```{r}
+#| eval: false 
+d = highlight_key(exam_data)
+p9 = ggplot(data = d, 
+            aes(x = MATHS,
+                y = ENGLISH)) +
+  geom_point(size = 1) +
+  coord_cartesian(xlim = c(0,100),
+                  ylim = c(0,100))
+
+p10 = ggplot(data = d, 
+            aes(x = MATHS,
+                y = SCIENCE)) +
+  geom_point(size = 1) +
+  coord_cartesian(xlim = c(0,100),
+                  ylim = c(0,100))
+
+subplot(ggplotly(p9),
+        ggplotly(p10))
+```
+:::
+
+[**\~\~\~ End of Hands-on Exercise 4A \~\~\~**]{.smallcaps}

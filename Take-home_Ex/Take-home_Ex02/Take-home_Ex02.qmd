@@ -66,7 +66,7 @@ pacman::p_load(haven, tidyverse, reshape2,
                ggpubr)
 ```
 
-### 2.2 Data Sources
+### 2.2 Data Source
 
 The OECD Programme for International Student Assessment (PISA) measures how well 15-year-old students in different countries are "prepared to meet the challenges of today's knowledge societies" by looking at "their ability to use their knowledge and skills to meet real-life challenges". The PISA surveys take place very three years, the latest being conducted in 2022.
 
@@ -127,47 +127,50 @@ Using the chosen [submission](https://isss608-ay2024-gaoya.netlify.app/take-home
 
 ```{r}
 #| eval: false
+#| code-fold: true
+#| code-summary: Code
+
 #  PREPARE MAIN DATA-FRAME
-student_columns <- "CNTSTUID"
-gender_columns <- "ST004D01T"
-school_columns <- "CNTSCHID"
+student_columns = "CNTSTUID"
+gender_columns = "ST004D01T"
+school_columns = "CNTSCHID"
 
-education_column_mother <- "ST005Q01JA"
-education_column_father <- "ST007Q01JA"
+education_column_mother = "ST005Q01JA"
+education_column_father = "ST007Q01JA"
 
-training_column_mother <- "ST006Q01JA"
-training_column_father <- "ST008Q01JA"
-possession_room_column <- "ST250Q01JA"
-possession_computer_column <- "ST250Q02JA"
-possession_software_column <- "ST250Q03JA"
-possession_phone_column <- "ST250Q04JA"
-possession_internet_column <- "ST250Q05JA"
-possession_book_column <- "ST255Q01JA"
+training_column_mother = "ST006Q01JA"
+training_column_father = "ST008Q01JA"
+possession_room_column = "ST250Q01JA"
+possession_computer_column = "ST250Q02JA"
+possession_software_column = "ST250Q03JA"
+possession_phone_column = "ST250Q04JA"
+possession_internet_column = "ST250Q05JA"
+possession_book_column = "ST255Q01JA"
 
-math_columns <- c("PV1MATH", "PV2MATH", "PV3MATH", "PV4MATH", "PV5MATH", "PV6MATH", "PV7MATH", "PV8MATH", "PV9MATH", "PV10MATH")
-reading_columns <- c("PV1READ", "PV2READ", "PV3READ", "PV4READ", "PV5READ", "PV6READ", "PV7READ", "PV8READ", "PV9READ", "PV10READ")
-science_columns <- c("PV1SCIE", "PV2SCIE", "PV3SCIE", "PV4SCIE", "PV5SCIE", "PV6SCIE", "PV7SCIE", "PV8SCIE", "PV9SCIE", "PV10SCIE")
+math_columns = c("PV1MATH", "PV2MATH", "PV3MATH", "PV4MATH", "PV5MATH", "PV6MATH", "PV7MATH", "PV8MATH", "PV9MATH", "PV10MATH")
+reading_columns = c("PV1READ", "PV2READ", "PV3READ", "PV4READ", "PV5READ", "PV6READ", "PV7READ", "PV8READ", "PV9READ", "PV10READ")
+science_columns = c("PV1SCIE", "PV2SCIE", "PV3SCIE", "PV4SCIE", "PV5SCIE", "PV6SCIE", "PV7SCIE", "PV8SCIE", "PV9SCIE", "PV10SCIE")
 
-student_ID <- stu_qqq_SG[, student_columns, drop = FALSE]
-gender <- stu_qqq_SG[, gender_columns, drop = FALSE]
-school_ID <- stu_qqq_SG[, school_columns, drop = FALSE]
-education_mother <- stu_qqq_SG[, education_column_mother, drop = FALSE]
-education_father <- stu_qqq_SG[, education_column_father, drop = FALSE]
+student_ID = stu_qqq_SG[, student_columns, drop = FALSE]
+gender = stu_qqq_SG[, gender_columns, drop = FALSE]
+school_ID = stu_qqq_SG[, school_columns, drop = FALSE]
+education_mother = stu_qqq_SG[, education_column_mother, drop = FALSE]
+education_father = stu_qqq_SG[, education_column_father, drop = FALSE]
 
-training_mother <- stu_qqq_SG[, training_column_mother, drop = FALSE]
-training_father <- stu_qqq_SG[, training_column_father, drop = FALSE]
-possession_room <- stu_qqq_SG[, possession_room_column, drop = FALSE]
-possession_computer <- stu_qqq_SG[, possession_computer_column, drop = FALSE]
-possession_software <- stu_qqq_SG[, possession_software_column, drop = FALSE]
-possession_phone <- stu_qqq_SG[, possession_phone_column, drop = FALSE]
-possession_internet <- stu_qqq_SG[, possession_internet_column, drop = FALSE]
-possession_book <- stu_qqq_SG[, possession_book_column, drop = FALSE]
+training_mother = stu_qqq_SG[, training_column_mother, drop = FALSE]
+training_father = stu_qqq_SG[, training_column_father, drop = FALSE]
+possession_room = stu_qqq_SG[, possession_room_column, drop = FALSE]
+possession_computer = stu_qqq_SG[, possession_computer_column, drop = FALSE]
+possession_software = stu_qqq_SG[, possession_software_column, drop = FALSE]
+possession_phone = stu_qqq_SG[, possession_phone_column, drop = FALSE]
+possession_internet = stu_qqq_SG[, possession_internet_column, drop = FALSE]
+possession_book = stu_qqq_SG[, possession_book_column, drop = FALSE]
 
-math_avg <- rowMeans(stu_qqq_SG[, math_columns, drop = FALSE])
-reading_avg <- rowMeans(stu_qqq_SG[, reading_columns, drop = FALSE])
-science_avg <- rowMeans(stu_qqq_SG[, science_columns, drop = FALSE])
+math_avg = rowMeans(stu_qqq_SG[, math_columns, drop = FALSE])
+reading_avg = rowMeans(stu_qqq_SG[, reading_columns, drop = FALSE])
+science_avg = rowMeans(stu_qqq_SG[, science_columns, drop = FALSE])
 
-stu_df <- data.frame(Student_ID = student_ID,
+stu_df = data.frame(Student_ID = student_ID,
   Gender = gender,
   School_ID = school_ID,
   Education_mother = education_mother,
@@ -187,14 +190,14 @@ stu_df <- data.frame(Student_ID = student_ID,
   Science_Average = round(science_avg,digits=2),
 Average_score=round(((math_avg+reading_avg+science_avg)/3),digits=2))
 
-names(stu_df) <- c("Student_ID","Gender","School_ID","Education_mother",
+names(stu_df) = c("Student_ID","Gender","School_ID","Education_mother",
                    "Education_father","Possession_room","Possession_computer",
                    "Possession_software","Possession_phone",
                    "Possession_internet","Possession_book","Math_Average",
                    "Reading_Average","Science_Average","Average_Score")
 ```
 
-The finalised tibble data frames, `stu_df`, and `Score_by_School` are then saved in the rds file format and imported into the R environment.
+The finalised tibble data frames, `stu_df` is then saved in the rds file format and imported into the R environment.
 
 ```{r}
 #| eval: false    
@@ -215,9 +218,8 @@ The original visualisation at [Section 3](https://isss608-ay2024-gaoya.netlify.a
 
 ```{r}
 #| echo: false
-average_sci <- mean(stu_df$Average_Score, na.rm = TRUE)
-median_sci <- median(stu_df$Average_Score, na.rm = TRUE)
-
+average_sci = mean(stu_df$Average_Score, na.rm = TRUE)
+median_sci = median(stu_df$Average_Score, na.rm = TRUE)
 
 ggplot(stu_df, aes(x = Average_Score)) +
   geom_histogram(binwidth = 20, fill = "cadetblue3", color = "grey95", alpha = 0.7)+
@@ -242,27 +244,31 @@ The observation made:
 
 **Clarity**
 
--   *Right Visualisation*. The use of a histogram provides a clear representation of the distribution of the average scores among the students, and the use of the mean and median vertical dashed lines shows the left-skewness of the distribution.
+-   😊 *Right Visualisation*. The use of a histogram provides a clear representation of the distribution of the average scores among the students, and the use of the mean and median vertical dashed lines shows the left-skewness of the distribution.
 
--   *Missing Key Message in Title*. However, the key message stated in the observation is not included in the title (which is factual). Stating the key message in the title would help the reader zoom in on the intended message of the plot.
+-   😕 *Missing Key Message in Title*. The key message stated in the observation is not included in the title (which is factual). Stating the key message in the title would help the reader zoom in on the intended message of the plot.
+
+-   😕 *Missing Source Caption*. It would be useful to credit the source of the data directly in the plot to give the reader the appropriate context for interpreting plot.
 
 **Aesthetics**
 
--   *Graphical Integrity Maintained*. The y-axis starts from zero, ensuring that the histogram is not distorted.
+-   😊 *Graphical Integrity Maintained*. The y-axis starts from zero, ensuring that the histogram is not distorted.
 
--   *Simple Colours/Font Used*. The plot uses an easy-to-read font and colour. However, this can be enhanced by using a professional theme.
+-   😊 *Simple Colours & Font Used*. The plot uses an easy-to-read font and colour. However, this can be enhanced by using a professional theme.
 
--   *Overcrowding of Details*. The x-axis labels use values that are too detailed (not rounded up). Also, each column of the histogram is labelled with the corresponding frequency for that range of scores. These details may be overwhelming and distract from the intended message. The placement of the mean and median values can also be better adjusted to avoid overlapping with the histogram. The decimal values in the mean and median may also be removed to improve readability given that the differences in the two values is more than 1 point.
+-   😕 *Overcrowding of Details & Labels*. The x-axis labels use values that are too detailed (not rounded up). Also, each column of the histogram is labelled with the corresponding frequency for that range of scores. These details are overwhelming and distract from the intended message. The placement of the mean and median values can also be better adjusted to avoid overlapping with the histogram. The decimal values in the mean and median may also be removed for simplicity to improve readability given that the difference in the two values is more than 1 point.
 
--   *Orientation of Label*. The y-axis title can be rotated for easier reading.
+-   😕 *Orientation of Label*. The y-axis title can be rotated for easier reading.
 
 #### 4.1.3 Sketch of Alternative Design
 
+The sketch of the alternative design is as follows:
+
+![](images/413.JPG){fig-align="center"}
+
 #### 4.1.4 Improved Visualisation
 
-An improved plot is made by making the following changes:
-
--   
+An improved plot is made as follows:
 
 ::: panel-tabset
 ## Improved Plot
@@ -279,13 +285,14 @@ ggplot(stu_df, aes(x = Average_Score)) +
   labs(title = "More Students Score Above Mean Average Score",
        subtitle = "Distribution of Average Scores",
        x = "Average Score",
-       y = "Frequency") +
-  theme_economist() +
-  scale_x_continuous(n.breaks = 20) +
-  scale_y_continuous(n.breaks = 8) +
+       y = "Frequency", 
+       caption = "Source: PISA 2022") +
+  theme_minimal() +
+  scale_x_continuous(n.breaks = 10) +
+  scale_y_continuous(n.breaks = 6) +
   geom_vline(xintercept = average_sci, color = "navy", linetype = "dashed", size = 1) +
   geom_text(aes(x = average_sci-60, y = 900, label = paste("Mean:", round(average_sci))), vjust = 2, color = "navy",size =4) +
-  geom_vline(xintercept = median_sci, color = "maroon", linetype = "dashed", size = 1) +
+  geom_vline(xintercept = median_sci, color = "maroon", linetype = "dotdash", size = 1) +
   geom_text(aes(x = median_sci+100, y = 900, label = paste("Median:", round(median_sci))), vjust = 2, color = "maroon",size=4) +
   theme(plot.title = element_text(hjust = 0.5),
         axis.title.y = element_text(angle=360, 
@@ -306,13 +313,14 @@ ggplot(stu_df, aes(x = Average_Score)) +
   labs(title = "More Students Score Above Mean Average Score",
        subtitle = "Distribution of Average Scores",
        x = "Average Score",
-       y = "Frequency") +
-  theme_economist() +
-  scale_x_continuous(n.breaks = 20) +
-  scale_y_continuous(n.breaks = 8) +
+       y = "Frequency", 
+       caption = "Source: PISA 2022") +
+  theme_minimal() +
+  scale_x_continuous(n.breaks = 10) +
+  scale_y_continuous(n.breaks = 6) +
   geom_vline(xintercept = average_sci, color = "navy", linetype = "dashed", size = 1) +
   geom_text(aes(x = average_sci-60, y = 900, label = paste("Mean:", round(average_sci))), vjust = 2, color = "navy",size =4) +
-  geom_vline(xintercept = median_sci, color = "maroon", linetype = "dashed", size = 1) +
+  geom_vline(xintercept = median_sci, color = "maroon", linetype = "dotdash", size = 1) +
   geom_text(aes(x = median_sci+100, y = 900, label = paste("Median:", round(median_sci))), vjust = 2, color = "maroon",size=4) +
   theme(plot.title = element_text(hjust = 0.5),
         axis.title.y = element_text(angle=360, 
@@ -375,25 +383,33 @@ The relevant observations made:
 
 **Clarity**
 
--   *(Almost) Right Visualisation*. The use of two violin plots shows the distributions of the average scores for female and male students. The use of the box plots in the middle of the violin plots shows the median average scores. However, as the two violin plots do not overlap, the comparison of average scores based on gender is more difficult to make visually. A density plot grouped by gender, with vertical lines added to show the median average scores, may be more appropriate for comparison purposes.
+-   😊😕 *(Almost) Right Visualisation*. The use of two violin plots shows the distributions of the average scores for female and male students. The use of the box plots in the middle of the violin plots shows the median average scores. However, as the two violin plots do not overlap, the comparison of average scores based on gender is more difficult to make visually. A density plot grouped by gender, with vertical lines added to show the median average scores, may be more appropriate for comparison purposes.
 
--   *Missing Key Message in Title*. However, the key message stated in the observation is not included in the title (which is factual). Stating the key message in the title would help the reader zoom in on the intended message of the plot.
+-   😕 *Missing Key Message in Title*. The key message stated in the observation is not included in the title (which is factual). Stating the key message in the title would help the reader zoom in on the intended message of the plot.
+
+-   😕 *Missing Source Caption*. It would be useful to credit the source of the data directly in the plot to give the reader the appropriate context for interpreting plot.
 
 **Aesthetics**
 
--   *Simple Colours/Font Used*. The plot uses an easy-to-read font and the stereotypical colours associated with each gender (pink for female; blue for male). However, this can be enhanced by using a simpler/minimalist theme for the background to keep the focus on the coloured density plots.
+-   😊 *Simple Colours & Font Used*. The plot uses an easy-to-read font and the stereotypical colours associated with each gender (pink for female; blue for male). However, this can be enhanced by using a simpler/minimalist theme for the background to keep the focus on the coloured density plots.
 
--   *Redundant Legend*. The legend is redundant given that the x-axis is labelled. Hence, it can be removed.
+-   😕 *Redundant Legend*. The legend is redundant given that the x-axis is labelled.
 
--   *Unclear Labels for Mean and Median Values*. The subtitle states the colours corresponding to the mean and median values for each gender which requires the reader to read and match, and reconfirm each time he/she views the plot. This is less intuitive then putting the labels together with the values.
+-   😕 *Unclear Labels for Mean and Median Values*. The subtitle states the colours corresponding to the mean and median values for each gender which requires the reader to read and match accordingly, and reconfirm each time he/she views the plot. This is less intuitive than putting the labels together with the values.
 
--   *Orientation of Label*. The y-axis title can be rotated for easier reading.
+-   😕 *Orientation of Label*. The y-axis title can be rotated for easier reading.
 
--   Mis-titled Y-axis. The y-axis title was mistakenly labelled as "Reading Score" instead of "Average Score".
+-   😕 *Mis-titled Y-axis*. The y-axis title was mistakenly labelled as "Reading Score" instead of "Average Score".
 
 #### 4.2.3 Sketch of Alternative Design
 
+The sketch of the alternative design is as follows:
+
+![](images/423.JPG){fig-align="center"}
+
 #### 4.2.4 Improved Visualisation
+
+An improved plot is made as follows:
 
 ::: panel-tabset
 ## Improved Plot
@@ -439,6 +455,7 @@ ggplot(stu_df,
         axis.title.y = element_text(angle=360, 
                                     vjust=.5, hjust=1)) +
   theme_minimal() +
+  labs(caption = "Source: PISA 2022") +
   geom_vline(aes(xintercept=median(f$Average_Score)),
              color="#CC3366", 
              linetype="dashed", 
@@ -446,7 +463,7 @@ ggplot(stu_df,
              alpha = 0.5) +
   geom_vline(aes(xintercept=median(m$Average_Score)),
              color="#033336", 
-             linetype="dashed", 
+             linetype="dotdash", 
              linewidth=1,
              alpha = 0.5) +
   geom_text(aes(x = 690, y = 0.0045, label = paste("Median:", round(median(m$Average_Score)))), vjust = 2, color = "#033336",size =4) +
@@ -491,6 +508,7 @@ ggplot(stu_df,
              alpha = 0.5) +
   ggtitle(label = "On Average, Boys and Girls Perform Similarly",
           subtitle= "Distribution of Average Scores by Gender") + 
+  labs(caption = "Source: PISA 2022") +
   ylab("Density") + xlab("Average Score") +
   theme(plot.title = element_text(hjust = 0.5),
         axis.title.y = element_text(angle=360, 
@@ -503,7 +521,7 @@ ggplot(stu_df,
              alpha = 0.5) +
   geom_vline(aes(xintercept=median(m$Average_Score)),
              color="#033336", 
-             linetype="dashed", 
+             linetype="dotdash", 
              linewidth=1,
              alpha = 0.5) +
   geom_text(aes(x = 690, y = 0.0045, label = paste("Median:", round(median(m$Average_Score)))), vjust = 2, color = "#033336",size =4) +
@@ -518,7 +536,7 @@ ggplot(stu_df,
 
 ### 4.3 Relationship between Performance and Number of Books at Home
 
-#### 4.2.1 Original Visualisation
+#### 4.3.1 Original Visualisation
 
 The original visualisation at [Section 4.3.2](https://isss608-ay2024-gaoya.netlify.app/take-home_ex/take-home_ex01/take-home_ex01#performance-distribution-by-number-of-book-in-students-home) (Distribution of by Number of Book in Students' Home) of the submission is reproduced below. The plot on the reading score is chosen.
 
@@ -558,29 +576,37 @@ The observation made:
 >
 > ***In summary, the density plot illustrates a positive association between the number of books in the home and student performance. However, the deviation observed for the “more than 500 books” category suggests a nuanced relationship, highlighting the need to consider optimal conditions for leveraging the positive influence of books on academic outcomes.***"
 
-#### 4.2.2 Critique
+#### 4.3.2 Critique
 
 **Clarity**
 
--   *(Almost) Right Visualisation*. The use of density plots, with vertical lines showing the median reading scores, is useful for comparing the distributions of reading scores based on the number of books at home. However, this can be further enhanced with the use of a ridgelines plot.
+-   😊😕 *(Almost) Right Visualisation*. The use of density plots, with vertical lines showing the median reading scores, is useful for comparing the distributions of reading scores based on the number of books at home. However, this can be further enhanced with the use of a ridgelines plot.
 
--   *Missing Key Message in Title*. However, the key message stated in the observation is not included in the title (which is factual). Stating the key message in the title would help the reader zoom in on the intended message of the plot.
+-   😕 *Missing Key Message in Title*. The key message stated in the observation is not included in the title (which is factual). Stating the key message in the title would help the reader zoom in on the intended message of the plot.
 
--   *Difficult to Compare Distributions*. Given that there are many categories, it is difficult to compare the distributions. It may be useful to showcase the quartile cut-offs to allow for better comparisons across different density plots.
+-   😕 *Difficult to Compare Distributions*. Given that there are many categories, it is difficult to compare the distributions. It may be useful to showcase the quartile cut-offs to allow for better comparisons across different density plots.
+
+-   😕 *Missing Source Caption*. It would be useful to credit the source of the data directly in the plot to give the reader the appropriate context for interpreting plot.
 
 **Aesthetics**
 
--   *Unclear Colours Used*. The plot uses an easy-to-read font. However, the choice of gradient colours is not appropriate as it does not allow distinction between the distinct categories of answers to the question in the questionnaire on the number of books at home.
+-   😕 *Unclear Colours Used*. The plot uses an easy-to-read font. However, the choice of gradient colours is not appropriate as the answers form a categorical, not continuous, variable. The use of gradient colours does not allow the reader to differentiate the distinct categories of answers to the question in the questionnaire on the number of books at home.
 
--   *Lack of Labels for Categories*. The categories representing different ranges of the number of books at home requires a separate table for interpretation. This inconveniences the reader. Hence, it would be better to label each density plot directly for easier identification.
+-   😕 *Lack of Labels for Categories*. The categories representing different ranges of the number of books at home requires a separate table for interpretation. This inconveniences the reader. Hence, it would be better to label each density plot directly for easier identification.
 
--   *No Labels for Mean Values*. The values of the dashed vertical lines are not labelled. It may be useful to label some of them to allow for direct comparison. Alternatively, overall mean and overall median lines could be added for broad comparisons.
+-   😕 *No Labels for Mean Values*. The values of the dashed vertical lines are not labelled. It may be useful to label some of them to allow for direct comparison. Alternatively, to prevent clutter, it may be useful to add just two vertical lines - overall mean and overall median for broad comparisons.
 
--   *Orientation of Label*. The y-axis title can be rotated for easier reading.
+-   😕 *Orientation of Label*. The y-axis title can be rotated for easier reading.
 
 #### 4.3.3 Sketch of Alternative Design
 
+The sketch of the alternative design is as follows:
+
+![](images/433.JPG){fig-align="center"}
+
 #### 4.3.4 Improved Visualisation
+
+An improved plot is made as follows:
 
 ::: panel-tabset
 ## Improved Plot
@@ -622,10 +648,11 @@ ggplot(r,
     calc_ecdf = TRUE, 
     quantiles = 2,
     quantile_lines = TRUE) +
-  scale_fill_viridis_d(alpha = 0.8) +
-  ggtitle(label = "More Books at Home Generally Correspond to Higher Reading Scores",
+  scale_fill_brewer(type = "seq", palette = "Set3") +
+  ggtitle(label = "More Books at Home Generally Correspond to\nHigher Reading Scores",
           subtitle = "Distribution of Reading Scores vis-a-vis Number of Books at Home") +
   xlab("Score") + ylab("No.of\nBooks") +
+  labs(caption = "Source: PISA 2022") +
   theme(plot.title = element_text(hjust = 0.5),
         axis.title.y = element_text(angle=360, 
                                     vjust=.5, hjust=1), 
@@ -635,21 +662,72 @@ ggplot(r,
              linetype="dashed", 
              linewidth=1,
              alpha = 0.5) + 
-  annotate("text", x=680, y=0.8, label=paste("Overall Median:", round(median(r$Reading_Average))), color = "red") +
+  annotate("text", x=690, y=0.75, label=paste("Overall Median:", round(median(r$Reading_Average))), color = "red") +
   geom_vline(aes(xintercept=mean(Reading_Average)),
              color="blue", 
-             linetype="dashed", 
+             linetype="dotdash", 
              linewidth=1,
              alpha = 0.5) + 
-  annotate("text", x=430, y=0.8, label=paste("Overall Mean:", round(mean(r$Reading_Average))), color = "blue")
-
+  annotate("text", x=420, y=0.75, label=paste("Overall Mean:", round(mean(r$Reading_Average))), color = "blue")
 ```
 
 ## Code
 
 ```{r}
 #| eval: false
+stu_df$Possession_book = as.character(stu_df$Possession_book)
+stu_df = stu_df %>% 
+  mutate(Possession_book = recode(Possession_book,
+                        "1" = "0 Book",
+                        "2" = "1-10 Books",
+                        "3" = "11-25 Books",
+                        "4" = "26-100 Books",
+                        "5" = "101-200 Books",
+                        "6" = "201-500 Books",
+                        "7" = ">500 Books"))
 
+r = stu_df %>% 
+  select(Possession_book, Reading_Average) %>%
+  na.omit() %>%
+  mutate(Books = fct_relevel(Possession_book, 
+                              "0 Book", 
+                              "1-10 Books",
+                              "11-25 Books",
+                              "26-100 Books",
+                              "101-200 Books",
+                              "201-500 Books",
+                              ">500 Books"))
+                        
+ggplot(r, 
+       aes(x = Reading_Average, 
+           y = Books,
+           fill = factor(after_stat(quantile)))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE, 
+    quantiles = 2,
+    quantile_lines = TRUE) +
+  scale_fill_brewer(type = "seq", palette = "Set3") +
+  ggtitle(label = "More Books at Home Generally Correspond to\nHigher Reading Scores",
+          subtitle = "Distribution of Reading Scores vis-a-vis Number of Books at Home") +
+  xlab("Score") + ylab("No.of\nBooks") +
+  labs(caption = "Source: PISA 2022") +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.title.y = element_text(angle=360, 
+                                    vjust=.5, hjust=1), 
+        legend.position = "none") +
+  geom_vline(aes(xintercept=median(Reading_Average)),
+             color="red", 
+             linetype="dashed", 
+             linewidth=1,
+             alpha = 0.5) + 
+  annotate("text", x=690, y=0.75, label=paste("Overall Median:", round(median(r$Reading_Average))), color = "red") +
+  geom_vline(aes(xintercept=mean(Reading_Average)),
+             color="blue", 
+             linetype="dotdash", 
+             linewidth=1,
+             alpha = 0.5) + 
+  annotate("text", x=420, y=0.75, label=paste("Overall Mean:", round(mean(r$Reading_Average))), color = "blue")
 ```
 :::
 
@@ -659,9 +737,23 @@ ggplot(r,
 
 In conclusion, the **ggplot2** package is a powerful package for exploratory data analysis through visualisation. However, it is insufficient if effort is not made to select, clean, categorise, and moderate the data properly, and the visualisation process does not take into account information design, visual encoding, and interface design.
 
-The step-by-step process of a data visualisation makeover in this take-home exercise highlights the importance of paying attention to details when making a plot. The personal checklist of important points to consider elucidated from the makeover attempts above are summarised as follows:
+The step-by-step process of a data visualisation makeover in this take-home exercise highlights the importance of paying attention to details when making a plot. A personal checklist of important points to consider that are elucidated from the makeover attempts above are summarised as follows:
 
--   
+-   Does the plot have a clear key message?
+
+-   Is the correct type of chart used?
+
+-   Is the plot telling a lie? Are the scales of the axes distorted?
+
+-   Are the components of the graph (titles, axes, labels, tick marks, legend, grid lines, caption) accurate, relevant, and easy-to-view, or are they erroneous, confusing or redundant?
+
+-   Is annotation required?
+
+-   Are colours and fonts used appropriately in the plot?
+
+-   Take note of data-ink by reducing non-data-ink, and enhancing data-ink. The use of an appropriate theme helps!
+
+-   Aim for a Quadrant I plot that is clear and beautiful!
 
 ## 6 Key References
 

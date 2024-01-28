@@ -1,0 +1,111 @@
+---
+title: "Hands-on Exercise 4D"
+date: "28 January 2024"
+date-modified: "last-modified" #allows for updating to the latest date
+format: html
+execute: 
+  echo: true #shows the code
+  eval: true #shows the outcomes of the code
+  warning: false #does not show the warnings
+editor: visual
+background-color: lightgrey;
+font-family:  Palatino Linotype;
+---
+
+# 12 Funnel Plots for Fair Comparisons
+
+## 12.1 Overview and Learning Outcomes
+
+This hands-on exercise is based on [Chapter 3](https://r4va.netlify.app/chap03) of the **R for Visual Analytics** book.
+
+The learning outcome is to create interactive data visualisation using functions in the [**ggiraph**](https://davidgohel.github.io/ggiraph/) and [**plotlyr**](https://plotly.com/r/) package.
+
+## 12.2 Getting Started
+
+### 12.2.1 Installing and Loading Required Libraries
+
+In this hands-on exercise, the following R packages are used:
+
+-   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data;
+
+-   [**patchwork**](https://patchwork.data-imaginist.com/) for preparing composite figures created using ggplot2;
+
+-   [**DT**](https://rstudio.github.io/DT/) for interfacing with JavaScript library DataTables that create interactive tables on html pages;
+
+-   [**ggiraph**](https://davidgohel.github.io/ggiraph/) for making ggplot graphics interactive;
+
+-   [**plotlyr**](https://plotly.com/r/) for plotting interactive statistical graphs; and
+
+-   [**crosstalk**](https://rstudio.github.io/crosstalk/) for inter-widget interactivity for html widgets.
+
+The code chunk below uses the `p_load()` function in the **pacman** package to check if the packages are installed. If yes, they are then loaded into the R environment. If no, they are installed, then loaded into the R environment.
+
+```{r}
+pacman::p_load(tidyverse, patchwork,
+               DT, ggiraph, plotly,
+               crosstalk)
+```
+
+### 12.2.2 Importing Data
+
+The dataset for this hands-on exercise is imported into the R environment using the `read_csv()` function in the **readr** package and stored as the R object, `exam_data`.
+
+```{r}
+exam_data = read_csv("data/Exam_data.csv")
+```
+
+The tibble data frame, `exam_data`, has 7 columns and 322 rows.
+
+-   It consists of the year-end examination grades of a cohort of 322 Primary 3 students from a local school.
+
+-   The 7 variables/attributes are:
+
+    -   Categorical: ID, CLASS, GENDER, and RACE.
+
+    -   Continuous: MATHS, ENGLISH, and SCIENCE.
+
+## 12.3 FunnelPlotR Methods
+
+### 12.3.1 FunnelPlotR Methods: The Basic Plot
+
+xxx
+
+### 12.3.2 FunnelPlotR Methods: Makeover 1
+
+xxx
+
+### 12.3.3 FunnelPlotR Methods: Makeover 2
+
+xxx
+
+## 12.4 Funnel Plot for Fair Visual Comparison: ggplot2 Methods
+
+xxx
+
+### 12.4.1 Computing the Basic Derived Fields
+
+xxx
+
+### 12.4.2 Calculating Lower and Upper Limits for 95% and 99.9% Confidence Interval
+
+xxx
+
+### 12.4.3 Plotting A Static Funnel Plot
+
+xxx
+
+### 12.4.4 Interactive Funnel Plot: plotly + ggplot2
+
+xxx
+
+## 12.5 **References**
+
+-   [funnelPlotR](https://nhs-r-community.github.io/FunnelPlotR/) package.
+
+-   [Funnel Plots for Indirectly-standardised ratios](https://nhs-r-community.github.io/FunnelPlotR/articles/funnel_plots.html).
+
+-   [Changing funnel plot options](https://nhs-r-community.github.io/FunnelPlotR/articles/changing_funnel_plot_options.html)
+
+-   [ggplot2](https://ggplot2.tidyverse.org/) package.
+
+[**\~\~\~ End of Hands-on Exercise 4D \~\~\~**]{.smallcaps}
