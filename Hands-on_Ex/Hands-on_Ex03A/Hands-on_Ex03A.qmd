@@ -34,7 +34,7 @@ In this hands-on exercise, the following R packages are used:
 
 -   [**ggiraph**](https://davidgohel.github.io/ggiraph/) for making ggplot graphics interactive;
 
--   [**plotlyr**](https://plotly.com/r/) for plotting interactive statistical graphs; and
+-   [**plotly**](https://plotly.com/r/) for plotting interactive statistical graphs; and
 
 -   [**crosstalk**](https://rstudio.github.io/crosstalk/) for inter-widget interactivity for html widgets.
 

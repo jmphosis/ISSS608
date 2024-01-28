@@ -40,28 +40,40 @@ In this hands-on exercise, the following R packages are used:
 
 -   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data; and
 
+-   [**readxl**](https://readxl.tidyverse.org/) for reading Excel files;
+
 -   [**ggstatsplot**](https://indrajeetpatil.github.io/ggstatsplot/) for plotting statistics;
 
--   [**performance**](https://easystats.github.io/performance/) for assessment of model performance; and
+-   [**performance**](https://easystats.github.io/performance/) for assessment of model performance;
 
--   [**parameters**](https://easystats.github.io/parameters/)for processing of model parameters.
+-   [**parameters**](https://easystats.github.io/parameters/) for processing of model parameters; and
+
+-   [**see**](https://easystats.github.io/see/) for model visualisation in ggplot2 and easystats.
 
 The code chunk below uses the `p_load()` function in the **pacman** package to check if the packages are installed. If yes, they are then loaded into the R environment. If no, they are installed, then loaded into the R environment.
 
 ```{r}
-pacman::p_load(tidyverse, ggstatsplot,
-               performance, parameters)
+pacman::p_load(tidyverse, readxl,
+               ggstatsplot, 
+               performance, parameters,
+               see)
 ```
 
 ### 10.2.2 Importing Data
 
-The dataset for this hands-on exercise is imported into the R environment using the `read_csv()` function in the **readr** package and stored as the R object, `exam_data`.
+The datasets for this hands-on exercise are imported into the R environment:
+
+-   Using the `read_csv()` function in the **readr** package and stored as the R object, `exam`.
+
+-   Using the [`read_xls()`](https://readxl.tidyverse.org/reference/read_excel.html) function in the **readxl** package and stored as the R object, car_resale.
 
 ```{r}
 exam = read_csv("data/Exam_data.csv")
+car_resale = read_xls("data/ToyotaCorolla.xls", 
+                       "data")
 ```
 
-The tibble data frame, `exam_data`, has 7 columns and 322 rows.
+The tibble data frame, `exam`, has 7 columns and 322 rows.
 
 -   It consists of the year-end examination grades of a cohort of 322 Primary 3 students from a local school.
 
@@ -71,11 +83,45 @@ The tibble data frame, `exam_data`, has 7 columns and 322 rows.
 
     -   Continuous: MATHS, ENGLISH, and SCIENCE.
 
+The tibble data frame, `car_resale`, has 38 columns and 1,436 rows.
+
+```{r}
+head(car_resale)
+```
+
 ## 10.3 Using ggstatsplot Methods
 
 ### 10.3.1 One-sample Test: gghistostats()
 
-The gghistostats() function is used to to build a plot of a one-sample test.
+The [`gghistostats()`](https://indrajeetpatil.github.io/ggstatsplot/reference/gghistostats.html) function is used to to build a plot of a one-sample test for English scores.
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false
+set.seed(1234)
+
+gghistostats(data = exam,
+             x = ENGLISH,
+             type = "bayes",
+             test.value = 60,
+             xlab = "English Scores")
+```
+
+## Code
+
+```{r}
+#| eval: false
+set.seed(1234)
+
+gghistostats(data = exam,
+             x = ENGLISH,
+             type = "bayes",
+             test.value = 60,
+             xlab = "English Scores")
+```
+:::
 
 Default information:
 
@@ -86,36 +132,6 @@ Default information:
 -   Sample sizes; and
 
 -   Distribution summary.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false
-set.seed(1234)
-
-gghistostats(
-  data = exam,
-  x = ENGLISH,
-  type = "bayes",
-  test.value = 60,
-  xlab = "English Scores")
-```
-
-## Code
-
-```{r}
-#| eval: false
-set.seed(1234)
-
-gghistostats(
-  data = exam,
-  x = ENGLISH,
-  type = "bayes",
-  test.value = 60,
-  xlab = "English Scores")
-```
-:::
 
 ### 10.3.2 Unpacking the Bayes Factor
 
@@ -129,54 +145,222 @@ The [Schwarz criterion](https://www.statisticshowto.com/bayesian-information-cri
 
 ### 10.3.3 How to Interpret Bayes Factor
 
-xxx
+A **Bayes factor** can be any positive number. One of the most common interpretations was first proposed by Harold Jeffereys (1961) and slightly modified by [Lee and Wagenmakers](https://www-tandfonline-com.libproxy.smu.edu.sg/doi/pdf/10.1080/00031305.1999.10474443?needAccess=true) in 2013.
 
 ### 10.3.4 Two-sample Mean Test: ggbetweenstats()
 
-xxx
+The [`ggbetweenstats()`](https://indrajeetpatil.github.io/ggstatsplot/reference/ggbetweenstats.html) is used to build a plot of a two-sample mean test of Maths scores by gender.
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false
+ggbetweenstats(data = exam,
+               x = GENDER, 
+               y = MATHS,
+               type = "np",
+               messages = FALSE)
+```
+
+## Code
+
+```{r}
+#| eval: false
+ggbetweenstats(data = exam,
+               x = GENDER, 
+               y = MATHS,
+               type = "np",
+               messages = FALSE)
+```
+:::
+
+Default information:
+
+-   Statistical details;
+
+-   Bayes factor;
+
+-   Sample sizes; and
+
+-   Distribution summary.
 
 ### 10.3.5 One-way ANOVA Test: ggbetweenstats()
 
-xxx
+The [`ggbetweenstats()`](https://indrajeetpatil.github.io/ggstatsplot/reference/ggbetweenstats.html) is used to build a plot for a one-way ANOVA test on English scores by race.
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false
+ggbetweenstats(data = exam,
+               x = RACE, 
+               y = ENGLISH,
+               type = "p",
+               mean.ci = TRUE, 
+               pairwise.comparisons = TRUE, 
+               pairwise.display = "s",
+               p.adjust.method = "fdr",
+               messages = FALSE)
+```
+
+## Code
+
+```{r}
+#| eval: false
+ggbetweenstats(data = exam,
+               x = RACE, 
+               y = ENGLISH,
+               type = "p",
+               mean.ci = TRUE, 
+               pairwise.comparisons = TRUE, 
+               pairwise.display = "s",
+               p.adjust.method = "fdr",
+               messages = FALSE)
+```
+:::
+
+For "pairwise.display" argument:
+
+-   “ns” means only non-significant;
+
+-   “s” means only significant; and
+
+-   “all” means everything.
 
 ### 10.3.6 Significant Test of Correlation: ggscatterstats()
 
-xxx
+The [`ggscatterstats()`](https://indrajeetpatil.github.io/ggstatsplot/reference/ggscatterstats.html) function is used to build a plot for a significant test of correlation between Maths scores and English scores.
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false
+ggscatterstats(data = exam,
+               x = MATHS,
+               y = ENGLISH,
+               marginal = FALSE)
+```
+
+## Code
+
+```{r}
+#| eval: false
+ggscatterstats(data = exam,
+               x = MATHS,
+               y = ENGLISH,
+               marginal = FALSE)
+```
+:::
 
 ### 10.3.7 Significant Test of Association (Dependence): ggbarstats()
 
-xxx
+The Maths scores is binned into a 4-class variable using the [`cut()`](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/cut) function in the **base R** package.
 
-## 10.4 ???
+```{r}
+exam1 = exam %>% 
+  mutate(MATHS_bins = cut(MATHS, 
+                          breaks = c(0,60,75,85,100)))
+```
 
-xxx
+The [`ggbarstats()`](https://indrajeetpatil.github.io/ggstatsplot/reference/ggbarstats.html) function is used to build a plot for a significant test of association.
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| echo: false
+ggbarstats(exam1, 
+           x = MATHS_bins, 
+           y = GENDER)
+```
+
+## Code
+
+```{r}
+#| eval: false
+ggbarstats(exam1, 
+           x = MATHS_bins, 
+           y = GENDER)
+```
+:::
+
+## 10.4 Visualising Models Using performance Package
+
+Model diagnostic and model parameters are visualised using the **performance** and **parameters** packages. The Toyota Corolla case study is used. The goal is to build a model to discover factors affecting prices of used cars by considering a set of explanatory variables.
 
 ### 10.4.1 Multiple Regression Model with lm()
 
-xxx
+A multiple linear regression model is calibrated using the `lm()` function of the **stats** package.
+
+```{r}
+model = lm(Price ~ Age_08_04 + Mfg_Year + KM + 
+              Weight + Guarantee_Period, data = car_resale)
+model
+```
 
 ### 10.4.2 Model Diagnostic: Checking for Multicollinearity
 
-xxx
+The [`check_collinearity()`](https://easystats.github.io/performance/reference/check_collinearity.html) function is used to check for multicollinearity amongst the factors.
+
+```{r}
+check_collinearity(model)
+```
+
+```{r}
+plot(check_collinearity(model))
+```
+
+> ***Observation***: There is high collinearity between age of car and manufacturing year, which is expected.
 
 ### 10.4.3 Model Diagnostic: Checking for Normality Assumption
 
-xxx
+The [`check_normality()`](https://easystats.github.io/performance/reference/check_normality.html) function is used to check the normality assumption regarding the residuals in the model.
+
+```{r}
+model1 = lm(Price ~ Age_08_04 + KM + 
+              Weight + Guarantee_Period, data = car_resale)
+
+plot(check_normality(model1))
+```
+
+> ***Observation***: Most residuals are distributed around zero, which implies that the model captures the main patterns and sources of variation in the data, and the errors are random and independent.
 
 ### 10.4.4 Model Diagnostic: Checking for Homogeneity of Variances
 
-xxx
+The [`check_heteroscedasticity()`](https://easystats.github.io/performance/reference/check_heteroscedasticity.html) function is used to check for the homogeneity of variances in the model.
+
+```{r}
+plot(check_heteroscedasticity(model1))
+```
+
+> ***Observation***: The line is generally flat and horizontal for the majority of values.
 
 ### 10.4.5 Model Diagnostic: Complete Check
 
-xxx
+The complete check can be performed using the [`check_model()`](https://easystats.github.io/performance/reference/check_model.html) function.
 
-### 10.4.6 Visualising Regression Parameters: plot()
+```{r}
+check_model(model1)
+```
 
-xxx
+## 10.5 Visualising Regression Parameters
 
-### 10.4.7 Visualising Regression Parameters: ggcoefstats()
+The parameters of a regression model can be visualised using the `plot()` function in the **see** package, or the [`ggcoefstats()`](https://indrajeetpatil.github.io/ggstatsplot/reference/ggcoefstats.html) function in the **ggstatsplot** package.
 
-xxx
+### 10.5.1 Visualising Regression Parameters: plot()
+
+```{r}
+plot(parameters(model1))
+```
+
+### 10.5.2 Visualising Regression Parameters: ggcoefstats()
+
+```{r}
+ggcoefstats(model1, 
+            output = "plot")
+```
 
 [**\~\~\~ End of Hands-on Exercise 4B \~\~\~**]{.smallcaps}
