@@ -133,6 +133,8 @@ Default information:
 
 -   Distribution summary.
 
+> ***Observation***: Using the test value of 60, the value of LOG(BF01) of -31.45 shows that there is strong evidence that the null hypothesis (that the mean value is 60) is rejected. In fact, the mean score is higher than 60.
+
 ### 10.3.2 Unpacking the Bayes Factor
 
 A Bayes factor is the ratio of the likelihood of one particular hypothesis to the likelihood of another. It can be interpreted as a measure of the strength of evidence in favour of one theory among two competing theories.
@@ -185,6 +187,8 @@ Default information:
 
 -   Distribution summary.
 
+> ***Observation***: The p-value of 0.91 means that there is insufficient evidence to reject the null hypothesis that the mean Maths scores between the two genders are the same.
+
 ### 10.3.5 One-way ANOVA Test: ggbetweenstats()
 
 The [`ggbetweenstats()`](https://indrajeetpatil.github.io/ggstatsplot/reference/ggbetweenstats.html) is used to build a plot for a one-way ANOVA test on English scores by race.
@@ -229,6 +233,8 @@ For "pairwise.display" argument:
 
 -   “all” means everything.
 
+> ***Observation***: The p-value of 1.71e-04 means that there is sufficient evidence to reject the null hypothesis that the mean English scores between the four races are the same.
+
 ### 10.3.6 Significant Test of Correlation: ggscatterstats()
 
 The [`ggscatterstats()`](https://indrajeetpatil.github.io/ggstatsplot/reference/ggscatterstats.html) function is used to build a plot for a significant test of correlation between Maths scores and English scores.
@@ -254,6 +260,8 @@ ggscatterstats(data = exam,
                marginal = FALSE)
 ```
 :::
+
+> ***Observation***: The p-value of 1.70e-83 means that there is sufficient evidence to reject the null hypothesis that there is no correlation between Maths scores and English scores.
 
 ### 10.3.7 Significant Test of Association (Dependence): ggbarstats()
 
@@ -286,6 +294,8 @@ ggbarstats(exam1,
            y = GENDER)
 ```
 :::
+
+> ***Observation***: The p-value of 0.79 means that there is insufficient evidence to reject the null hypothesis that there is no association between gender and binned Maths scores.
 
 ## 10.4 Visualising Models Using performance Package
 
@@ -336,7 +346,7 @@ The [`check_heteroscedasticity()`](https://easystats.github.io/performance/refer
 plot(check_heteroscedasticity(model1))
 ```
 
-> ***Observation***: The line is generally flat and horizontal for the majority of values.
+> ***Observation***: There is heteroscedasticity, i.e., the variances are not homogeneous.
 
 ### 10.4.5 Model Diagnostic: Complete Check
 

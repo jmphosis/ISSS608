@@ -167,7 +167,7 @@ funnel_plot(
   xrange = c(0, 6500),  
   yrange = c(0, 0.05),
   label = NA,
-  title = "Cumulative COVID-19 Fatality Rate by Cumulative Total Number of COVID-19 Positive Cases", #<<           
+  title = "Cumulative COVID-19 Fatality Rate by\nCumulative Total Number of COVID-19 Positive Cases", #<<           
   x_label = "Cumulative COVID-19 Positive Cases", #<<
   y_label = "Cumulative Fatality Rate"  #<<
 )
@@ -185,7 +185,7 @@ funnel_plot(
   xrange = c(0, 6500),  
   yrange = c(0, 0.05),
   label = NA,
-  title = "Cumulative COVID-19 Fatality Rate by Cumulative Total Number of COVID-19 Positive Cases", #<<           
+  title = "Cumulative COVID-19 Fatality Rate by\nCumulative Total Number of COVID-19 Positive Cases", #<<           
   x_label = "Cumulative COVID-19 Positive Cases", #<<
   y_label = "Cumulative Fatality Rate"  #<<
 )
