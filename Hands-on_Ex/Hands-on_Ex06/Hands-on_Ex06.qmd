@@ -16,9 +16,17 @@ font-family:  Palatino Linotype;
 
 ## 17.1 Overview and Learning Outcomes
 
-This hands-on exercise is based on [Chapter 9](https://r4va.netlify.app/chap09) of the **R for Visual Analytics** book.
+This hands-on exercise is based on [Chapter 17](https://r4va.netlify.app/chap17) of the **R for Visual Analytics** book.
 
-Visualising distribution is not new in statistical analysis. [Chapter 1](https://r4va.netlify.app/chap01) covered some of the popular statistical graphic methods for visualising distribution. They are histogram, probability density curve (pdf), boxplot, notch plot, and violin plot, using the [**ggplot2**](https://ggplot2.tidyverse.org/) package. Chapter 9 will cover two relatively new statistical graphic methods for visualising distribution. They are ridgeline plot and raincloud plot using the **ggplot2** package and its extensions.
+The learning outcomes are:
+
+-   Plot a calender heatmap using functions in the **ggplot2** package.
+
+-   Plot a cycle plot using functions in the **ggplot2** package.
+
+-   Plot a slopegraph.
+
+-   Plot a horizon chart.
 
 ## 17.2 Getting Started
 
@@ -28,71 +36,293 @@ In this hands-on exercise, the following R packages are used:
 
 -   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data;
 
+-   [**readxl**](https://readxl.tidyverse.org/) for reading Excel files;
+
+-   [**data.table**](https://www.datacamp.com/cheat-sheet/the-datatable-r-package-cheat-sheet) for extending the data.frame package;
+
+-   [**scales**](https://scales.r-lib.org/) for scale functions for visualisation;
+
+-   [**viridis**](https://ggplot2.tidyverse.org/reference/scale_viridis.html) for colourblind-friendly colour maps;
+
+-   [**lubridate**](https://lubridate.tidyverse.org/) for dealing with dates;
+
 -   [**ggthemes**](https://ggplot2.tidyverse.org/reference/ggtheme.html) for extra themes, geoms, and scales for ggplot2;
 
--   [**ggridges**](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html) for creating ridgeline plots; and
+-   [**gridExtra**](http://www.sthda.com/english/wiki/wiki.php?id_contents=7930) for miscellaneous functions for "grid" graphics;
 
--   [**ggdist**](https://mjskay.github.io/ggdist/) for visualising distributions and uncertainty.
+-   [**knitr**](https://yihui.org/knitr/) for dynamic report generation;
+
+-   [**CGPfunctions**](https://ibecav.github.io/CGPfunctionsb/) for miscellaneous function for statistics; and
+
+-   [**ggHoriPlot**](https://rivasiker.github.io/ggHoriPlot/) for building horizon plots in ggplot2.
 
 The code chunk below uses the `p_load()` function in the **pacman** package to check if the packages are installed. If yes, they are then loaded into the R environment. If no, they are installed, then loaded into the R environment.
 
 ```{r}
-#| eval: false
 
-pacman::p_load(tidyverse, ggthemes,
-               ggridges, ggdist)
+pacman::p_load(tidyverse, scales, viridis, 
+               readxl, data.table, lubridate, 
+               ggthemes, gridExtra, knitr, 
+               CGPfunctions, ggHoriPlot)
 ```
 
 ### 17.2.2 Importing Data
 
-The dataset for this hands-on exercise is imported into the R environment using the `read_csv()` function in the **readr** package and stored as the R object, `exam`.
+Two of the datasets for this hands-on exercise are imported into the R environment using the `read_csv()` function in the **readr** package and stored as the R object, `attacks` and `rice` respectively.
+
+One of the datasets is imported into the R environment using the read_excel() function in the readxl package and stored as the R object, `air`.
 
 ```{r}
-#| eval: false
-
-exam = read_csv("data/Exam_data.csv")
+attacks = read_csv("data/eventlog.csv")
+air = read_excel("data/arrivals_by_air.xlsx")
+rice = read_csv("data/rice.csv")
 ```
-
-The tibble data frame, `exam_data`, has 7 columns and 322 rows.
-
--   It consists of the year-end examination grades of a cohort of 322 Primary 3 students from a local school.
-
--   The 7 variables/attributes are:
-
-    -   Categorical: ID, CLASS, GENDER, and RACE.
-
-    -   Continuous: MATHS, ENGLISH, and SCIENCE.
 
 ### 17.2.3 Preparing Data - Calendar Heatmap
 
-xxx
+The tibble data frame, `attacks`, has 3 columns and 199,999 rows. The columns are:
+
+-   "timestamp" field stores the date-time values in POSIXct format.
+
+-   "source_country" field stores the source of the attack. It is in ISO 3166-1 alpha-2 country code.
+
+-   *"*tz*"* field stores the time zone of the source IP address.
+
+```{r}
+kable(head(attacks))
+```
+
+First, the "weekday" and "hour of day" fields would need to be derived. A function is written to do so.
+
+```{r}
+make_hr_wkday = function(ts, sc, tz) {
+  real_times = ymd_hms(ts, 
+                        tz = tz[1], 
+                        quiet = TRUE)
+  dt = data.table(source_country = sc,
+                   wkday = weekdays(real_times),
+                   hour = hour(real_times))
+  return(dt)}
+```
+
+> ***Note***:
+>
+> -   The [`ymd_hms()`](https://lubridate.tidyverse.org/reference/ymd_hms.html) and [`hour()`](https://lubridate.tidyverse.org/reference/hour.html) functions are in the [**lubridate**](https://lubridate.tidyverse.org/) package.
+>
+> -   The [`weekdays()`](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/weekdays) function is in the **base** R package.
+
+Next, the attacks tibble data frame is derived.
+
+```{r}
+wkday_levels = c('Saturday', 'Friday', 
+                  'Thursday', 'Wednesday', 
+                  'Tuesday', 'Monday', 
+                  'Sunday')
+
+attacks = attacks %>%
+  group_by(tz) %>%
+  do(make_hr_wkday(.$timestamp, 
+                   .$source_country, 
+                   .$tz)) %>% 
+  ungroup() %>% 
+  mutate(wkday = factor(
+    wkday, levels = wkday_levels),
+    hour  = factor(
+      hour, levels = 0:23))
+```
+
+> ***Note***: Besides extracting the necessary data into the attacks data frame, the mutate() function in the dplyr package is also used to conver the "wkday" and "hour" fields into factor so that they will be ordered when plotting.
+
+The tidied tibble table, attacks, after the processing is shown below.
+
+```{r}
+kable(head(attacks))
+```
 
 ### 17.2.4 Preparing Data - Cycle Plot
 
-xxx
+The tibble data frame, `air`, has 36 columns and 240 rows.
 
 ### 17.2.5 Preparing Data - Slopegraph
 
-xxx
+The tibble data frame, `rice`, has 4 columns and 550 rows.
 
 ## 17.3 Building Calendar Heatmap
 
-xxx
-
 ### 17.3.1 Plotting Single Calendar Heatmap
 
-xxx
+A single calendar heatmap is plotted.
+
+First, a tibble data table, `grouped`, is derived by aggregating the attack by "wkday*"* and "hour*"* fields.
+
+Then, a new field, "n", is derived by using the `group_by()` and `count()` functions.
+
+The `na.omit()` function is used to exclude missing values.
+
+The `geom_tile()` function is used to plot tiles (grids) at each x and y position.
+
+The "color" and "size" arguments are used to specify the border color and line size of the tiles.
+
+The [`theme_tufte()`](https://jrnold.github.io/ggthemes/reference/theme_tufte.html) function in the **ggthemes** package is used to remove unnecessary chart junk.
+
+The `coord_equal()` function is used to ensure the plot will have an aspect ratio of 1:1.
+
+The `scale_fill_gradient()` function is used to create a two colour gradient (low-high).
+
+```{r}
+grouped = attacks %>% 
+  count(wkday, hour) %>% 
+  ungroup() %>%
+  na.omit()
+
+ggplot(grouped, 
+       aes(hour, 
+           wkday, 
+           fill = n)) + 
+geom_tile(color = "white", 
+          size = 0.1) + 
+theme_tufte(base_family = "Helvetica") + 
+coord_equal() +
+scale_fill_gradient(name = "# of attacks",
+                    low = "sky blue", 
+                    high = "dark blue") +
+labs(x = NULL, 
+     y = NULL, 
+     title = "Attacks by weekday and time of day") +
+theme(axis.ticks = element_blank(),
+      plot.title = element_text(hjust = 0.5),
+      legend.title = element_text(size = 8),
+      legend.text = element_text(size = 6) )
+```
 
 ### 17.3.2 Plotting Multiple Calendar Heatmaps
 
-xxx
+First, an object for attacks by country is derived.
+
+In order to identify the top 4 countries with the highest number of attacks, the following steps are required:
+
+-   Count the number of attacks by country;
+
+-   Calculate the percent of attacks by country; and
+
+-   Save the results in a tibble data frame.
+
+```{r}
+attacks_by_country = count(
+  attacks, source_country) %>%
+  mutate(percent = percent(n/sum(n))) %>%
+  arrange(desc(n))
+```
+
+Next, the attack records of the top 4 countries from the `attacks` data frame is extracted and saved in a new tibble data frame, `top4_attacks`.
+
+```{r}
+top4 = attacks_by_country$source_country[1:4]
+
+top4_attacks = attacks %>%
+  filter(source_country %in% top4) %>%
+  count(source_country, wkday, hour) %>%
+  ungroup() %>%
+  mutate(source_country = factor(
+    source_country, levels = top4)) %>%
+  na.omit()
+```
+
+Last, the multiple calender heatmap is plotted using functions in the **ggplot2** package.
+
+```{r}
+ggplot(top4_attacks, 
+       aes(hour, 
+           wkday, 
+           fill = n)) + 
+  geom_tile(color = "white", 
+          size = 0.1) + 
+  theme_tufte(base_family = "Helvetica") + 
+  coord_equal() +
+  scale_fill_gradient(name = "# of attacks",
+                    low = "sky blue", 
+                    high = "dark blue") +
+  facet_wrap(~source_country, ncol = 2) +
+  labs(x = NULL, y = NULL, 
+     title = "Attacks on top 4 countries by weekday and time of day") +
+  theme(axis.ticks = element_blank(),
+        axis.text.x = element_text(size = 7),
+        plot.title = element_text(hjust = 0.5),
+        legend.title = element_text(size = 8),
+        legend.text = element_text(size = 6) )
+```
 
 ## 17.4 Plotting Cycle Plot
 
-xxx
+A cycle plot showing the time-series patterns and trend of visitor arrivals from Vietnam using functions in the **ggplot2** package is plotted.
+
+First, two new fields, "month", and "year" are derived from the "Month-Year" field.
+
+```{r}
+air$month = factor(month(air$`Month-Year`), 
+                    levels=1:12, 
+                    labels=month.abb, 
+                    ordered=TRUE) 
+
+air$year = year(ymd(air$`Month-Year`))
+```
+
+Next, the data for the target country (i.e., Vietnam) is extracted.
+
+```{r}
+Vietnam = air %>% 
+  select(`Vietnam`, 
+         month, 
+         year) %>%
+  filter(year >= 2010)
+```
+
+Then, the group_by and summarise() functions in the dplyr package are used to compute average arrivals by month.
+
+```{r}
+hline.data = Vietnam %>% 
+  group_by(month) %>%
+  summarise(avgvalue = mean(`Vietnam`))
+```
+
+The cycle plot is then plotted using functions in the ggplot2 package.
+
+```{r}
+ggplot() + 
+  geom_line(data=Vietnam,
+            aes(x=year, 
+                y=`Vietnam`, 
+                group=month), 
+            colour="black") +
+  geom_hline(aes(yintercept=avgvalue), 
+             data=hline.data, 
+             linetype=6, 
+             colour="red", 
+             size=0.5) + 
+  facet_grid(~month) +
+  labs(axis.text.x = element_blank(),
+       title = "Visitor arrivals from Vietnam by air, Jan 2010-Dec 2019") +
+  xlab("") +
+  ylab("No. of Visitors") +
+  theme_tufte(base_family = "Helvetica")
+```
 
 ## 17.5 Plotting Slopegraph
 
-xxx
+A [slopegraph](https://www.storytellingwithdata.com/blog/2020/7/27/what-is-a-slopegraph) is plotted to show the changes in the rice yield of the top 11 Asian countries from 1961 to 1980.
+
+For effective data visualisation design, the `factor()` function is used convert the value type ofthe "Year" field from numeric to factor.
+
+> ***Note***: Reference for [u](https://cran.r-project.org/web/packages/CGPfunctions/vignettes/Using-newggslopegraph.html)[sing newggslopegraph](https://cran.r-project.org/web/packages/CGPfunctions/vignettes/Using-newggslopegraph.html).
+
+```{r}
+rice %>% 
+  mutate(Year = factor(Year)) %>%
+  filter(Year %in% c(1961, 1980)) %>%
+  newggslopegraph(Year, Yield, Country,
+                Title = "Rice Yield of Top 11 Asian Countries",
+                SubTitle = "1961-1980",
+                Caption = "Prepared by: Dr. Kam Tin Seong")
+```
 
 [**\~\~\~ End of Hands-on Exercise 6 \~\~\~**]{.smallcaps}
