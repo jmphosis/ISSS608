@@ -16,9 +16,15 @@ font-family:  Palatino Linotype;
 
 ## 16.1 Overview and Learning Outcomes
 
-This hands-on exercise is based on [Chapter 9](https://r4va.netlify.app/chap09) of the **R for Visual Analytics** book.
+This hands-on exercise is based on [Chapter 16](https://r4va.netlify.app/chap16) of the **R for Visual Analytics** book.
 
-Visualising distribution is not new in statistical analysis. [Chapter 1](https://r4va.netlify.app/chap01) covered some of the popular statistical graphic methods for visualising distribution. They are histogram, probability density curve (pdf), boxplot, notch plot, and violin plot, using the [**ggplot2**](https://ggplot2.tidyverse.org/) package. Chapter 9 will cover two relatively new statistical graphic methods for visualising distribution. They are ridgeline plot and raincloud plot using the **ggplot2** package and its extensions.
+The learning outcomes are:
+
+-   Manipulate transaction data into a treemap stccuture using selected functions provided in the **dplyr** package.
+
+-   Plot static treemaps using the **treemap** package.
+
+-   Design interactive treemaps using the **d3treeR** package.
 
 ## 16.2 Getting Started
 
@@ -28,507 +34,286 @@ In this hands-on exercise, the following R packages are used:
 
 -   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data;
 
--   [**ggthemes**](https://ggplot2.tidyverse.org/reference/ggtheme.html) for extra themes, geoms, and scales for ggplot2;
+-   [**treemap**](https://www.rdocumentation.org/packages/treemap/versions/2.4-3) for plotting treemaps; and
 
--   [**ggridges**](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html) for creating ridgeline plots; and
-
--   [**ggdist**](https://mjskay.github.io/ggdist/) for visualising distributions and uncertainty.
+-   [**d3treeR**](https://www.rdocumentation.org/packages/d3treeR/versions/0.1/topics/d3tree) for plotting interactive treemaps.
 
 The code chunk below uses the `p_load()` function in the **pacman** package to check if the packages are installed. If yes, they are then loaded into the R environment. If no, they are installed, then loaded into the R environment.
 
 ```{r}
-pacman::p_load(tidyverse, ggthemes,
-               ggridges, ggdist)
+pacman::p_load(tidyverse, treemap,
+               treemapify, d3treeR)
 ```
 
 ### 16.2.2 Importing Data
 
-The dataset for this hands-on exercise is imported into the R environment using the `read_csv()` function in the **readr** package and stored as the R object, `exam`.
+The dataset for this hands-on exercise is imported into the R environment using the `read_csv()` function in the **readr** package and stored as the R object, `realis2018`. The data contains information regarding private property transaction records in 2018 from the Urban Redevelopment Authority.
 
 ```{r}
-exam = read_csv("data/Exam_data.csv")
+realis2018 = read_csv("data/realis2018.csv")
 ```
 
-The tibble data frame, `exam_data`, has 7 columns and 322 rows.
-
--   It consists of the year-end examination grades of a cohort of 322 Primary 3 students from a local school.
-
--   The 7 variables/attributes are:
-
-    -   Categorical: ID, CLASS, GENDER, and RACE.
-
-    -   Continuous: MATHS, ENGLISH, and SCIENCE.
+The tibble data frame, `realis2018`, has 20 columns and 23,205 rows.
 
 ### 16.2.3 Preparing Data
 
-xxx
+The data frame, `realis2018`, is in trasaction record form, which is highly disaggregated and not appropriate to be used to plot a treemap.
+
+Hence, the raw data frame should be manipulated to prepre a suitable data frame by:
+
+-   Grouping transaction records by "Project Name", "Planning Region", "Planning Area", "Property Type", and "Type of Sale", and
+
+-   Computing "Total Unit Sold", "Total Area", "Median Unit Price", and "Median Transacted Price" by applying the appropriate summary statistics on "No. of Units", "Area (sqm)", "Unit Price (\$ psm)", and "Transacted Price (\$)" respectively.
+
+The following functions in the **dplyr** package would be used:
+
+-   `group_by()` breaks down a data frame into specified groups of rows; and
+
+-   `summarise()` computes the summary for each group.
+
+Grouping affects the verbs as follows:
+
+-   Grouped `select()` is the same as ungrouped `select()`, except that grouping variables are always retained.
+
+-   Grouped `arrange()` is the same as ungrouped; unless ".by_group = TRUE*" is set*, in which case it orders first by the grouping variables.
+
+-   `mutate()` and `filter()` are most useful in conjunction with window functions (like `rank()`, or `min(x) == x`). They are described in detail in vignette (“window-functions”).
+
+-   `sample_n()` and `sample_frac()` sample the specified number/fraction of rows in each group.
+
+```{r}
+realis2018_summarised = realis2018 %>% 
+  group_by(`Project Name`,`Planning Region`, 
+           `Planning Area`, `Property Type`, 
+           `Type of Sale`) %>%
+  summarise(`Total Unit Sold` = sum(`No. of Units`, na.rm = TRUE), 
+            `Total Area` = sum(`Area (sqm)`, na.rm = TRUE),
+            `Median Unit Price ($ psm)` = median(`Unit Price ($ psm)`, na.rm = TRUE),
+            `Median Transacted Price` = median(`Transacted Price ($)`, na.rm = TRUE))
+```
+
+> ***Note***: Aggregation functions such as `sum()` and `median()` obey the usual rule of missing values: if there is any missing value in the input, the output will be a missing value. The "na.rm" argument set as "TRUE" removes the missing values prior to computation.
 
 ## 16.4 Designing Treemap: treemap Package
 
-xxx
+The **treemap** package is specially designed to offer great flexibility in drawing treemaps. The core function, `treemap()`, offers at least 43 arguments.
 
 ### 16.4.1 Designing Static Treemap
 
-xxx
+The `treemap()` function in the **treemap** package is used to plot a treemap to show the distribution of median unit prices and total unit sold of resale condominium by geographical hierarchy in 2017.
+
+First, the records of resale condominium are selected using the filter() function in the **dplyr** package.
+
+```{r}
+realis2018_selected = realis2018_summarised %>%
+  filter(`Property Type` == "Condominium", `Type of Sale` == "Resale")
+```
 
 ### 16.4.2 Using Basic Arguments
 
-xxx
+A basic treempa is plotted using the treemap() function, with the three core arguments of "index", "vSize", and "vColor".
 
-### 16.4.3 Working with vColour and type Arguments
+-   The "index" vector must consist of at least two column names or else no hierarchy treemap will be plotted. If multiple column names are provided, the first name is the highest aggregation level, the second name the second highest aggregation level, etc.
 
-xxx
+-   The "vSize" argument must be a column that does not contain negative values. This is because its values will be used to map the sizes of the rectangles of the treemaps.
+
+```{r}
+treemap(realis2018_selected,
+        index=c("Planning Region", "Planning Area", "Project Name"),
+        vSize="Total Unit Sold",
+        vColor="Median Unit Price ($ psm)",
+        title="Resale Condominium by Planning Region and Area, 2017",
+        title.legend = "Median Unit Price (S$ per sq. m)")
+```
+
+> ***Note***: The treemap above was wrongly coloured. For a correctly designed treemap, the colours of the rectangles should be in different intensity showing, in the case above, median unit prices. Hence, the "vColor" argument is used in combination with the "type" argument to determine the colours of the rectangles. Without defining the "type" argument, it is assumed that "type = index", in the case above, the hierarchy of planning areas.
+
+### 16.4.3 Working with vColor and type Arguments
+
+Hence, the "type" argument set as "value" is added.
+
+The rectangles are then coloured with different intensities of green, reflecting their respective median unit prices. The legend reveals that the values are binned into ten bins (i.e. 0-5000, 5000-10000, etc.) with an equal interval of 5000.
+
+```{r}
+treemap(realis2018_selected,
+        index=c("Planning Region", "Planning Area", "Project Name"),
+        vSize="Total Unit Sold",
+        vColor="Median Unit Price ($ psm)",
+        type = "value",
+        title="Resale Condominium by Planning Region and Area, 2017",
+        title.legend = "Median Unit Price (S$ per sq. m)"        )
+```
 
 ### 16.4.4 Colours in treemap Package
 
-xxx
+There are two arguments that determine the mapping to colour palettes: "mapping", and "palette". The only difference between “value” and “manual” is the default value for mapping.
+
+-   The “value” treemap considers palette to be a diverging color palette (e.g., ColorBrewer’s “RdYlBu”), and maps it in such a way that 0 corresponds to the middle color (typically white or yellow), -max(abs(values)) to the left-end color, and max(abs(values)), to the right-end color.
+
+-   The “manual” treemap simply maps min(values) to the left-end color, max(values) to the right-end color, and mean(range(values)) to the middle color.
 
 ### 16.4.5 "Value" Type treemap
 
-xxx
+A "value" type treemap is plotted below.
+
+Although the colour palette used is RdYlBu but there are no red rectangles in the treemap because all the median unit prices are positive. The reason why we see only 5000 to 45000 in the legend is because the *range* argument is by default c(min(values, max(values)) with some pretty rounding.
+
+```{r}
+treemap(realis2018_selected,
+        index=c("Planning Region", "Planning Area", "Project Name"),
+        vSize="Total Unit Sold",
+        vColor="Median Unit Price ($ psm)",
+        type="value",
+        palette="RdYlBu", 
+        title="Resale Condominium by Planning Region and Area, 2017",
+        title.legend = "Median Unit Price (S$ per sq. m)"        )
+```
 
 ### 16.4.6 "Manual" Type treemap
 
-xxx
+The “manual” type does not interpret the values as the “value” type does. Instead, the value range is mapped linearly to the colour palette.
 
-### 16.4.7 Treempa Layout
+The colour scheme used is very confusing because mapping = (min(values), mean(range(values)), max(values)). It is not wise to use diverging colour palette such as RdYlBu if the values are all positive or negative.
 
-xxx
+```{r}
+treemap(realis2018_selected,
+        index=c("Planning Region", "Planning Area", "Project Name"),
+        vSize="Total Unit Sold",
+        vColor="Median Unit Price ($ psm)",
+        type="manual",
+        palette="RdYlBu", 
+        title="Resale Condominium by Planning Region and Area, 2017",
+        title.legend = "Median Unit Price (S$ per sq. m)")
+```
+
+A single colour palette such as Blues is used instead.
+
+```{r}
+treemap(realis2018_selected,
+        index=c("Planning Region", "Planning Area", "Project Name"),
+        vSize="Total Unit Sold",
+        vColor="Median Unit Price ($ psm)",
+        type="manual",
+        palette="Blues", 
+        title="Resale Condominium by Planning Region and Area, 2017",
+        title.legend = "Median Unit Price (S$ per sq. m)")
+```
+
+### 16.4.7 Treemap Layout
+
+The `treemap()` function supports two popular treemap layouts: “squarified”, and “pivotSize”. The default is “pivotSize”.
+
+-   The squarified treemap algorithm (Bruls et al., 2000) produces good aspect ratios, but ignores the sorting order of the rectangles (sortID).
+
+-   The ordered treemap, pivot-by-size, algorithm (Bederson et al., 2002) takes the sorting order (sortID) into account while aspect ratios are still acceptable.
 
 ### 16.4.8 Working with algorithm Argument
 
-xxx
+A squarified treemap is plotted by changing the "algorithm" argument.
+
+```{r}
+treemap(realis2018_selected,
+        index=c("Planning Region", "Planning Area", "Project Name"),
+        vSize="Total Unit Sold",
+        vColor="Median Unit Price ($ psm)",
+        type="manual",
+        palette="Blues", 
+        algorithm = "squarified",
+        title="Resale Condominium by Planning Region and Area, 2017",
+        title.legend = "Median Unit Price (S$ per sq. m)")
+```
 
 ### 16.4.9 Using sortID Argument
 
-xxx
+When the “pivotSize” algorithm is used, the "sortID" argument can be used to dertemine the order in which the rectangles are placed from top left to bottom right.
+
+```{r}
+treemap(realis2018_selected,
+        index=c("Planning Region", "Planning Area", "Project Name"),
+        vSize="Total Unit Sold",
+        vColor="Median Unit Price ($ psm)",
+        type="manual",
+        palette="Blues", 
+        algorithm = "pivotSize",
+        sortID = "Median Transacted Price",
+        title="Resale Condominium by Planning Region and Area, 2017",
+        title.legend = "Median Unit Price (S$ per sq. m)")
+```
 
 ## 16.5 Designing Treemap: treemapify Package
 
-xxx
+The **treemapify** package is specially developed to draw treemaps in **ggplot2**.
 
 ### 16.5.1 Designing Basic Treemap
 
-xxx
+```{r}
+ggplot(data=realis2018_selected, 
+       aes(area = `Total Unit Sold`,
+           fill = `Median Unit Price ($ psm)`),
+       layout = "scol",
+       start = "bottomleft") + 
+  geom_treemap() +
+  scale_fill_gradient(low = "light blue", high = "blue")
+```
 
 ### 16.5.2 Defining Hierarchy
 
-xxx
+The treemap is plotted by grouping by "Planning Region".
+
+```{r}
+ggplot(data=realis2018_selected, 
+       aes(area = `Total Unit Sold`,
+           fill = `Median Unit Price ($ psm)`,
+           subgroup = `Planning Region`),
+       start = "topleft") + 
+  geom_treemap()
+```
+
+The treemap is plotted by further grouping by "Planning Area".
+
+```{r}
+ggplot(data=realis2018_selected, 
+       aes(area = `Total Unit Sold`,
+           fill = `Median Unit Price ($ psm)`,
+           subgroup = `Planning Region`,
+           subgroup2 = `Planning Area`)) + 
+  geom_treemap()
+```
+
+Boundary lines are then added.
+
+```{r}
+ggplot(data=realis2018_selected, 
+       aes(area = `Total Unit Sold`,
+           fill = `Median Unit Price ($ psm)`,
+           subgroup = `Planning Region`,
+           subgroup2 = `Planning Area`)) + 
+  geom_treemap() +
+  geom_treemap_subgroup2_border(colour = "gray40",
+                                size = 2) +
+  geom_treemap_subgroup_border(colour = "gray20")
+```
 
 ## 16.6 Designing Interactive Treemap: d3treeR Package
 
-xxx
+An interactive treemap is created using two steps:
 
-xxx
+First, the `treemap()` function is used to build a treemap, `tm`, using the selected variables.
+
+```{r}
+tm = treemap(realis2018_summarised,
+        index=c("Planning Region", "Planning Area"),
+        vSize="Total Unit Sold",
+        vColor="Median Unit Price ($ psm)",
+        type="value",
+        title="Private Residential Property Sold, 2017",
+        title.legend = "Median Unit Price (S$ per sq. m)")
+```
+
+Then, the `d3tree()` function is used to build an interactive treemap.
+
+```{r}
+d3tree(tm,rootname = "Singapore" )
+```
 
 [**\~\~\~ End of Hands-on Exercise 5E \~\~\~**]{.smallcaps}
-
-A ridgeline plot (also called joyplot) is a data visualisation technique for revealing the distribution of a numeric value for several groups. Distribution can be represented using histograms or density plots, all aligned to the same horizontal scale and presented with a slight overlap.
-
-Such as plot makes sense when the number of groups to represent is medium to high, and thus, a classic window separation would take up too much space. The overlap of the groups allows for a more efficient use of space.
-
-Also, it works well when there is a clear pattern in the result, like if there is an obvious ranking in groups. Otherwise, the groups will tend to overlap each other, leading to a messy plot that does not provide any insight.
-
-### 9.3.1 Plotting Ridgeline Graph: ggridggs Method
-
-There are several ways to plot a ridgeline plot with R. The **ggridges** package has two main geom functions to plot a ridgeline plot: [`geom_ridgeline()`](https://wilkelab.org/ggridges/reference/geom_ridgeline.html) and [`geom_density_ridges()`](https://wilkelab.org/ggridges/reference/geom_density_ridges.html). The former takes height values directly to draw the ridgelines, and the latter first estimates data densities and then draws those using ridgelines.
-
-In the plot below, a ridgeline plot below is plotted using the `geom_density_ridges()` function.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false
-ggplot(exam, 
-       aes(x = ENGLISH, 
-           y = CLASS)) +
-  geom_density_ridges(
-    scale = 3,
-    rel_min_height = 0.01,
-    bandwidth = 3.4,
-    fill = "#7097BB",
-    alpha = 0.8,
-    color = "white"
-  ) +
-  scale_x_continuous(
-    name = "English grades",
-    expand = c(0, 0)
-    ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam, 
-       aes(x = ENGLISH, 
-           y = CLASS)) +
-  geom_density_ridges(
-    scale = 3,
-    rel_min_height = 0.01,
-    bandwidth = 3.4,
-    fill = "#7097BB",
-    alpha = 0.8,
-    color = "white"
-  ) +
-  scale_x_continuous(
-    name = "English grades",
-    expand = c(0, 0)
-    ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-:::
-
-### 9.3.2 Varying Fill Colours Along the x-axis
-
-The area under a ridgeline plot can be filled with colours that vary along the x axis. This effect can be achieved by using either the [`geom_ridgeline_gradient()`](https://wilkelab.org/ggridges/reference/geom_ridgeline_gradient.html) or [`geom_density_ridges_gradient()`](https://wilkelab.org/ggridges/reference/geom_ridgeline_gradient.html) functions. Both geom functions work just like `geom_ridgeline()` and `geom_density_ridges()`, except that they allow for varying fill colors. However, they do not allow for the alpha argument for transparency in the fill.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-ggplot(exam, 
-       aes(x = ENGLISH, 
-           y = CLASS,
-           fill = stat(x))) +
-  geom_density_ridges_gradient(
-    scale = 3,
-    rel_min_height = 0.01) +
-  scale_fill_viridis_c(name = "Temp. [F]",
-                       option = "C") +
-  scale_x_continuous(
-    name = "English grades",
-    expand = c(0, 0)
-  ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false 
-ggplot(exam, 
-       aes(x = ENGLISH, 
-           y = CLASS,
-           fill = stat(x))) +
-  geom_density_ridges_gradient(
-    scale = 3,
-    rel_min_height = 0.01) +
-  scale_fill_viridis_c(name = "Temp. [F]",
-                       option = "C") +
-  scale_x_continuous(
-    name = "English grades",
-    expand = c(0, 0)
-  ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-:::
-
-### 9.3.3 Mapping Probabilities Directly Onto Colour
-
-Beside providing additional geom objects to support the need to plot a ridgeline plot, the **ggridges** package also provides a statistic function, [`stat_density_ridges()`](https://wilkelab.org/ggridges/reference/stat_density_ridges.html), that replaces the [`stat_density()`](https://ggplot2.tidyverse.org/reference/geom_density.html) function in the **ggplot2** package.
-
-The plot below uses the `stat(ecdf)` function to calculate the probabilities representing the empirical cumulative function for the distribution of scores.
-
-> ***Note***: It is important to set the argument "calc_ecdf" as TRUE in the `stat_density_ridges()` function.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = 0.5 - abs(0.5-stat(ecdf)))) +
-  stat_density_ridges(geom = "density_ridges_gradient", 
-                      calc_ecdf = TRUE) +
-  scale_fill_viridis_c(name = "Tail probability",
-                       direction = -1) +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false 
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = 0.5 - abs(0.5-stat(ecdf)))) +
-  stat_density_ridges(geom = "density_ridges_gradient", 
-                      calc_ecdf = TRUE) +
-  scale_fill_viridis_c(name = "Tail probability",
-                       direction = -1) +
-  theme_ridges()
-```
-:::
-
-### 9.3.4 Ridgeline Plots with Quantile Lines
-
-A ridgeline plot that assigns different colours to different quantiles can be plotted using the [`geom_density_ridges_gradient()`](https://wilkelab.org/ggridges/reference/geom_ridgeline_gradient.html) function, and stating the the stat(quantile) as an aesthetic argument.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false  
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = factor(stat(quantile))
-           )) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE, 
-    quantiles = 4,
-    quantile_lines = TRUE) +
-  scale_fill_viridis_d(name = "Quartiles") +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = factor(stat(quantile))
-           )) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE, 
-    quantiles = 4,
-    quantile_lines = TRUE) +
-  scale_fill_viridis_d(name = "Quartiles") +
-  theme_ridges()
-```
-:::
-
-Instead of using a number to define the number of quantiles, cut-off points (e.g., 2.5% and 97.5% tails) can also be used to colour a ridgeline plot.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = factor(stat(quantile))
-           )) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE, 
-    quantiles = c(0.025, 0.975)
-    ) +
-  scale_fill_manual(
-    name = "Probability",
-    values = c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
-    labels = c("(0, 0.025]", "(0.025, 0.975]", "(0.975, 1]")
-  ) +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = factor(stat(quantile))
-           )) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE, 
-    quantiles = c(0.025, 0.975)
-    ) +
-  scale_fill_manual(
-    name = "Probability",
-    values = c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
-    labels = c("(0, 0.025]", "(0.025, 0.975]", "(0.975, 1]")
-  ) +
-  theme_ridges()
-```
-:::
-
-## 9.4 Visualising Distribution with Raincloud Plot
-
-A raincloud plot is a data visualisation technique that produces a half-density of a distribution plot. It gets the name because the density plot is in the shape of a “raincloud”. The raincloud (half-density) plot enhances the traditional box-plot by highlighting the presence of multiple modalities (an indicator that different groups may exist). A boxplot does not show where densities are clustered, but a raincloud plot does.
-
-The functions from **ggdist** and **ggplot2** packages are used to create a raincloud plot.
-
-### 9.4.1 Plotting a Half Eye Graph
-
-First, a half-eye plot is plotted using the [`stat_halfeye()`](https://mjskay.github.io/ggdist/reference/stat_halfeye.html) function of the **ggdist** package.
-
-> ***Note***: The slab interval can be removed by setting the ".width" argument to 0 and "point_colour" argument to NA.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false  
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA)
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA)
-```
-:::
-
-### 9.4.2 Adding Boxplot with geom_boxplot()
-
-Second, the [`geom_boxplot()`](https://ggplot2.tidyverse.org/reference/geom_boxplot.html) function in the **ggplot2** package is used to add a narrow boxplot. The width and opacity are adjusted accordingly.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA)
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA)
-```
-:::
-
-### 9.4.3 Adding Dot Plot with stat_dots()
-
-Third, the [`stat_dots()`](https://mjskay.github.io/ggdist/reference/stat_dots.html) function in the **ggdist** package is used to produce a half-dotplot, which is similar to a histogram that indicates the number of samples (number of dots) in each bin.
-
-The "side" argument is set to "left" to place it on the left-hand side.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA) +
-  stat_dots(side = "left", 
-            justification = 1.2, 
-            binwidth = .5,
-            dotsize = 2)
-```
-
-## Code
-
-```{r}
-#| eval: false 
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA) +
-  stat_dots(side = "left", 
-            justification = 1.2, 
-            binwidth = .5,
-            dotsize = 2)
-```
-:::
-
-### 9.4.4 Finishing Touch
-
-Last, the [`coord_flip()`](https://ggplot2.tidyverse.org/reference/coord_flip.html) function in the **ggplot2** package is used to flip the raincloud plot horizontally to give it the raincloud appearance.
-
-The `theme_economist()` function in the **ggthemes** package is added to give the raincloud chart a standard professional publishing appearance.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA) +
-  stat_dots(side = "left", 
-            justification = 1.2, 
-            binwidth = .5,
-            dotsize = 1.5) +
-  coord_flip() +
-  theme_economist()
-```
-
-## Code
-
-```{r}
-#| eval: false 
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA) +
-  stat_dots(side = "left", 
-            justification = 1.2, 
-            binwidth = .5,
-            dotsize = 1.5) +
-  coord_flip() +
-  theme_economist()
-```
-:::

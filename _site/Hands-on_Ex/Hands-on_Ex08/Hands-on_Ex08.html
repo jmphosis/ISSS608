@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2024-03-03">
+
+<title>ISSS608 - Hands-on Exercise 8</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">ISSS608</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-hands-on-exercises" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+ <span class="menu-text">Hands-on Exercises</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-hands-on-exercises">    
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex03A/Hands-on_Ex03A.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 3A</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex03B/Hands-on_Ex03B.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 3B</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04A/Hands-on_Ex04A.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 4A</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04B/Hands-on_Ex04B.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 4B</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04C/Hands-on_Ex04C.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 4C</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04D/Hands-on_Ex04D.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 4D</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-in-class-exercise" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+ <span class="menu-text">In-class Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex01/In-class_Ex01.html" rel="" target="">
+ <span class="dropdown-text">In-class Exercise 1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex04/In-class_Ex04.html" rel="" target="">
+ <span class="dropdown-text">In-class Exercise 4</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-take-home-exercise" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+ <span class="menu-text">Take-home Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-take-home-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html" rel="" target="">
+ <span class="dropdown-text">Take-home Exercise 1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html" rel="" target="">
+ <span class="dropdown-text">Take-home Exercise 2</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html" rel="" target="">
+ <span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#modelling-visualising-and-analysing-network-data" id="toc-modelling-visualising-and-analysing-network-data" class="nav-link active" data-scroll-target="#modelling-visualising-and-analysing-network-data">27 Modelling, Visualising and Analysing Network Data</a>
+  <ul class="collapse">
+  <li><a href="#overview-and-learning-outcomes" id="toc-overview-and-learning-outcomes" class="nav-link" data-scroll-target="#overview-and-learning-outcomes">27.1 Overview and Learning Outcomes</a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">27.2 Getting Started</a>
+  <ul class="collapse">
+  <li><a href="#installing-and-loading-required-libraries" id="toc-installing-and-loading-required-libraries" class="nav-link" data-scroll-target="#installing-and-loading-required-libraries">27.2.1 Installing and Loading Required Libraries</a></li>
+  <li><a href="#importing-data" id="toc-importing-data" class="nav-link" data-scroll-target="#importing-data">27.2.2 Importing Data</a></li>
+  <li><a href="#preparing-data" id="toc-preparing-data" class="nav-link" data-scroll-target="#preparing-data">27.2.3 Preparing Data</a></li>
+  </ul></li>
+  <li><a href="#creating-network-objects-using-tidygraph" id="toc-creating-network-objects-using-tidygraph" class="nav-link" data-scroll-target="#creating-network-objects-using-tidygraph">27.3 Creating Network Objects Using tidygraph</a>
+  <ul class="collapse">
+  <li><a href="#creating-tbl_graph-object" id="toc-creating-tbl_graph-object" class="nav-link" data-scroll-target="#creating-tbl_graph-object">27.3.1 Creating tbl_graph Object</a></li>
+  <li><a href="#dplyr-verbs-in-tidygraph" id="toc-dplyr-verbs-in-tidygraph" class="nav-link" data-scroll-target="#dplyr-verbs-in-tidygraph">27.3.2 dplyr Verbs in tidygraph</a></li>
+  <li><a href="#using-tbl_graph-to-build-tidygraph-data-model" id="toc-using-tbl_graph-to-build-tidygraph-data-model" class="nav-link" data-scroll-target="#using-tbl_graph-to-build-tidygraph-data-model">27.3.3 Using tbl_graph() to Build tidygraph Data Model</a></li>
+  <li><a href="#reviewing-output-graph-object" id="toc-reviewing-output-graph-object" class="nav-link" data-scroll-target="#reviewing-output-graph-object">27.3.4 Reviewing Output Graph Object</a></li>
+  <li><a href="#changing-active-object" id="toc-changing-active-object" class="nav-link" data-scroll-target="#changing-active-object">27.3.5 Changing Active Object</a></li>
+  </ul></li>
+  <li><a href="#plotting-static-network-graphs-ggraph-package" id="toc-plotting-static-network-graphs-ggraph-package" class="nav-link" data-scroll-target="#plotting-static-network-graphs-ggraph-package">27.4 Plotting Static Network Graphs: ggraph Package</a>
+  <ul class="collapse">
+  <li><a href="#plotting-basic-network-graph" id="toc-plotting-basic-network-graph" class="nav-link" data-scroll-target="#plotting-basic-network-graph">27.4.1 Plotting Basic Network Graph</a></li>
+  <li><a href="#changing-default-network-graph-theme" id="toc-changing-default-network-graph-theme" class="nav-link" data-scroll-target="#changing-default-network-graph-theme">27.4.2 Changing Default Network Graph Theme</a></li>
+  <li><a href="#changing-plot-colour" id="toc-changing-plot-colour" class="nav-link" data-scroll-target="#changing-plot-colour">27.4.3 Changing Plot Colour</a></li>
+  <li><a href="#working-with-ggraph-layouts" id="toc-working-with-ggraph-layouts" class="nav-link" data-scroll-target="#working-with-ggraph-layouts">27.4.4 Working with ggraph Layouts</a></li>
+  <li><a href="#modifying-network-nodes" id="toc-modifying-network-nodes" class="nav-link" data-scroll-target="#modifying-network-nodes">27.4.5 Modifying Network Nodes</a></li>
+  <li><a href="#modifying-edges" id="toc-modifying-edges" class="nav-link" data-scroll-target="#modifying-edges">27.4.6 Modifying Edges</a></li>
+  </ul></li>
+  <li><a href="#creating-facet-graphs" id="toc-creating-facet-graphs" class="nav-link" data-scroll-target="#creating-facet-graphs">27.5 Creating Facet Graphs</a>
+  <ul class="collapse">
+  <li><a href="#working-with-facet_edges" id="toc-working-with-facet_edges" class="nav-link" data-scroll-target="#working-with-facet_edges">27.5.1 Working with facet_edges()</a></li>
+  <li><a href="#framed-facet-graph" id="toc-framed-facet-graph" class="nav-link" data-scroll-target="#framed-facet-graph">27.5.2 Framed Facet Graph</a></li>
+  <li><a href="#working-with-facet_nodes" id="toc-working-with-facet_nodes" class="nav-link" data-scroll-target="#working-with-facet_nodes">27.5.3 Working with facet_nodes()</a></li>
+  </ul></li>
+  <li><a href="#network-metrics-analysis" id="toc-network-metrics-analysis" class="nav-link" data-scroll-target="#network-metrics-analysis">27.6 Network Metrics Analysis</a>
+  <ul class="collapse">
+  <li><a href="#computing-centrality-indices" id="toc-computing-centrality-indices" class="nav-link" data-scroll-target="#computing-centrality-indices">27.6.1 Computing Centrality Indices</a></li>
+  <li><a href="#visualising-network-metrics" id="toc-visualising-network-metrics" class="nav-link" data-scroll-target="#visualising-network-metrics">27.6.2 Visualising Network Metrics</a></li>
+  <li><a href="#visualising-community" id="toc-visualising-community" class="nav-link" data-scroll-target="#visualising-community">27.6.3 Visualising Community</a></li>
+  </ul></li>
+  <li><a href="#building-interactive-network-graph-visnetwork-package" id="toc-building-interactive-network-graph-visnetwork-package" class="nav-link" data-scroll-target="#building-interactive-network-graph-visnetwork-package">27.7 Building Interactive Network Graph: visNetwork Package</a>
+  <ul class="collapse">
+  <li><a href="#creating-basic-plot" id="toc-creating-basic-plot" class="nav-link" data-scroll-target="#creating-basic-plot">27.7.1 Creating Basic Plot</a></li>
+  <li><a href="#working-with-layout" id="toc-working-with-layout" class="nav-link" data-scroll-target="#working-with-layout">27.7.2 Working with Layout</a></li>
+  <li><a href="#working-with-visual-attributes---nodes" id="toc-working-with-visual-attributes---nodes" class="nav-link" data-scroll-target="#working-with-visual-attributes---nodes">27.7.3 Working with Visual Attributes - Nodes</a></li>
+  <li><a href="#working-with-visual-attributes---edges" id="toc-working-with-visual-attributes---edges" class="nav-link" data-scroll-target="#working-with-visual-attributes---edges">27.7.4 Working with Visual Attributes - Edges</a></li>
+  <li><a href="#adding-interactivity" id="toc-adding-interactivity" class="nav-link" data-scroll-target="#adding-interactivity">27.7.5 Adding Interactivity</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Hands-on Exercise 8</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 3, 2024</p>
+    </div>
+  </div>
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">February 1, 2024</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+</header>
+
+<section id="modelling-visualising-and-analysing-network-data" class="level1">
+<h1>27 Modelling, Visualising and Analysing Network Data</h1>
+<section id="overview-and-learning-outcomes" class="level2">
+<h2 class="anchored" data-anchor-id="overview-and-learning-outcomes">27.1 Overview and Learning Outcomes</h2>
+<p>This hands-on exercise is based on <a href="https://r4va.netlify.app/chap09">Chapter 9</a> of the <strong>R for Visual Analytics</strong> book.</p>
+<p>Visualising distribution is not new in statistical analysis. <a href="https://r4va.netlify.app/chap01">Chapter 1</a> covered some of the popular statistical graphic methods for visualising distribution. They are histogram, probability density curve (pdf), boxplot, notch plot, and violin plot, using the <a href="https://ggplot2.tidyverse.org/"><strong>ggplot2</strong></a> package. Chapter 9 will cover two relatively new statistical graphic methods for visualising distribution. They are ridgeline plot and raincloud plot using the <strong>ggplot2</strong> package and its extensions.</p>
+</section>
+<section id="getting-started" class="level2">
+<h2 class="anchored" data-anchor-id="getting-started">27.2 Getting Started</h2>
+<section id="installing-and-loading-required-libraries" class="level3">
+<h3 class="anchored" data-anchor-id="installing-and-loading-required-libraries">27.2.1 Installing and Loading Required Libraries</h3>
+<p>In this hands-on exercise, the following R packages are used:</p>
+<ul>
+<li><p><a href="https://www.tidyverse.org/"><strong>tidyverse</strong></a> (i.e.&nbsp;readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data;</p></li>
+<li><p><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html"><strong>ggthemes</strong></a> for extra themes, geoms, and scales for ggplot2;</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html"><strong>ggridges</strong></a> for creating ridgeline plots; and</p></li>
+<li><p><a href="https://mjskay.github.io/ggdist/"><strong>ggdist</strong></a> for visualising distributions and uncertainty.</p></li>
+</ul>
+<p>The code chunk below uses the <code>p_load()</code> function in the <strong>pacman</strong> package to check if the packages are installed. If yes, they are then loaded into the R environment. If no, they are installed, then loaded into the R environment.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, ggthemes,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               ggridges, ggdist)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="importing-data" class="level3">
+<h3 class="anchored" data-anchor-id="importing-data">27.2.2 Importing Data</h3>
+<p>The dataset for this hands-on exercise is imported into the R environment using the <code>read_csv()</code> function in the <strong>readr</strong> package and stored as the R object, <code>exam</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>exam <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="st">"data/Exam_data.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The tibble data frame, <code>exam_data</code>, has 7 columns and 322 rows.</p>
+<ul>
+<li><p>It consists of the year-end examination grades of a cohort of 322 Primary 3 students from a local school.</p></li>
+<li><p>The 7 variables/attributes are:</p>
+<ul>
+<li><p>Categorical: ID, CLASS, GENDER, and RACE.</p></li>
+<li><p>Continuous: MATHS, ENGLISH, and SCIENCE.</p></li>
+</ul></li>
+</ul>
+</section>
+<section id="preparing-data" class="level3">
+<h3 class="anchored" data-anchor-id="preparing-data">27.2.3 Preparing Data</h3>
+<p>The dataset for this hands-on</p>
+</section>
+</section>
+<section id="creating-network-objects-using-tidygraph" class="level2">
+<h2 class="anchored" data-anchor-id="creating-network-objects-using-tidygraph">27.3 Creating Network Objects Using tidygraph</h2>
+<p>xxx</p>
+<section id="creating-tbl_graph-object" class="level3">
+<h3 class="anchored" data-anchor-id="creating-tbl_graph-object">27.3.1 Creating tbl_graph Object</h3>
+<p>xxx</p>
+</section>
+<section id="dplyr-verbs-in-tidygraph" class="level3">
+<h3 class="anchored" data-anchor-id="dplyr-verbs-in-tidygraph">27.3.2 dplyr Verbs in tidygraph</h3>
+<p>xxx</p>
+</section>
+<section id="using-tbl_graph-to-build-tidygraph-data-model" class="level3">
+<h3 class="anchored" data-anchor-id="using-tbl_graph-to-build-tidygraph-data-model">27.3.3 Using tbl_graph() to Build tidygraph Data Model</h3>
+<p>xxx</p>
+</section>
+<section id="reviewing-output-graph-object" class="level3">
+<h3 class="anchored" data-anchor-id="reviewing-output-graph-object">27.3.4 Reviewing Output Graph Object</h3>
+<p>xxx</p>
+</section>
+<section id="changing-active-object" class="level3">
+<h3 class="anchored" data-anchor-id="changing-active-object">27.3.5 Changing Active Object</h3>
+<p>xxx</p>
+</section>
+</section>
+<section id="plotting-static-network-graphs-ggraph-package" class="level2">
+<h2 class="anchored" data-anchor-id="plotting-static-network-graphs-ggraph-package">27.4 Plotting Static Network Graphs: ggraph Package</h2>
+<p>xxx</p>
+<section id="plotting-basic-network-graph" class="level3">
+<h3 class="anchored" data-anchor-id="plotting-basic-network-graph">27.4.1 Plotting Basic Network Graph</h3>
+<p>xxx</p>
+</section>
+<section id="changing-default-network-graph-theme" class="level3">
+<h3 class="anchored" data-anchor-id="changing-default-network-graph-theme">27.4.2 Changing Default Network Graph Theme</h3>
+<p>xxx</p>
+</section>
+<section id="changing-plot-colour" class="level3">
+<h3 class="anchored" data-anchor-id="changing-plot-colour">27.4.3 Changing Plot Colour</h3>
+<p>xxx</p>
+</section>
+<section id="working-with-ggraph-layouts" class="level3">
+<h3 class="anchored" data-anchor-id="working-with-ggraph-layouts">27.4.4 Working with ggraph Layouts</h3>
+<p>xxx</p>
+</section>
+<section id="modifying-network-nodes" class="level3">
+<h3 class="anchored" data-anchor-id="modifying-network-nodes">27.4.5 Modifying Network Nodes</h3>
+<p>xxx</p>
+</section>
+<section id="modifying-edges" class="level3">
+<h3 class="anchored" data-anchor-id="modifying-edges">27.4.6 Modifying Edges</h3>
+<p>xxx</p>
+</section>
+</section>
+<section id="creating-facet-graphs" class="level2">
+<h2 class="anchored" data-anchor-id="creating-facet-graphs">27.5 Creating Facet Graphs</h2>
+<p>xxx</p>
+<section id="working-with-facet_edges" class="level3">
+<h3 class="anchored" data-anchor-id="working-with-facet_edges">27.5.1 Working with facet_edges()</h3>
+<p>xxx</p>
+</section>
+<section id="framed-facet-graph" class="level3">
+<h3 class="anchored" data-anchor-id="framed-facet-graph">27.5.2 Framed Facet Graph</h3>
+<p>xxx</p>
+</section>
+<section id="working-with-facet_nodes" class="level3">
+<h3 class="anchored" data-anchor-id="working-with-facet_nodes">27.5.3 Working with facet_nodes()</h3>
+<p>xxx</p>
+</section>
+</section>
+<section id="network-metrics-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="network-metrics-analysis">27.6 Network Metrics Analysis</h2>
+<p>xxx</p>
+<section id="computing-centrality-indices" class="level3">
+<h3 class="anchored" data-anchor-id="computing-centrality-indices">27.6.1 Computing Centrality Indices</h3>
+<p>xxx</p>
+</section>
+<section id="visualising-network-metrics" class="level3">
+<h3 class="anchored" data-anchor-id="visualising-network-metrics">27.6.2 Visualising Network Metrics</h3>
+<p>xxx</p>
+</section>
+<section id="visualising-community" class="level3">
+<h3 class="anchored" data-anchor-id="visualising-community">27.6.3 Visualising Community</h3>
+<p>xxx</p>
+</section>
+</section>
+<section id="building-interactive-network-graph-visnetwork-package" class="level2">
+<h2 class="anchored" data-anchor-id="building-interactive-network-graph-visnetwork-package">27.7 Building Interactive Network Graph: visNetwork Package</h2>
+<p>xxx</p>
+<section id="creating-basic-plot" class="level3">
+<h3 class="anchored" data-anchor-id="creating-basic-plot">27.7.1 Creating Basic Plot</h3>
+<p>xxx</p>
+</section>
+<section id="working-with-layout" class="level3">
+<h3 class="anchored" data-anchor-id="working-with-layout">27.7.2 Working with Layout</h3>
+<p>xxx</p>
+</section>
+<section id="working-with-visual-attributes---nodes" class="level3">
+<h3 class="anchored" data-anchor-id="working-with-visual-attributes---nodes">27.7.3 Working with Visual Attributes - Nodes</h3>
+<p>xxx</p>
+</section>
+<section id="working-with-visual-attributes---edges" class="level3">
+<h3 class="anchored" data-anchor-id="working-with-visual-attributes---edges">27.7.4 Working with Visual Attributes - Edges</h3>
+<p>xxx</p>
+</section>
+<section id="adding-interactivity" class="level3">
+<h3 class="anchored" data-anchor-id="adding-interactivity">27.7.5 Adding Interactivity</h3>
+<p>xxx</p>
+<p><span class="smallcaps"><strong>~~~ End of Hands-on Exercise 8 ~~~</strong></span></p>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

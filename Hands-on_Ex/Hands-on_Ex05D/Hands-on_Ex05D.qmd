@@ -16,9 +16,19 @@ font-family:  Palatino Linotype;
 
 ## 15.1 Overview and Learning Outcomes
 
-This hands-on exercise is based on [Chapter 9](https://r4va.netlify.app/chap09) of the **R for Visual Analytics** book.
+This hands-on exercise is based on [Chapter 15](https://r4va.netlify.app/chap15) of the **R for Visual Analytics** book.
 
-Visualising distribution is not new in statistical analysis. [Chapter 1](https://r4va.netlify.app/chap01) covered some of the popular statistical graphic methods for visualising distribution. They are histogram, probability density curve (pdf), boxplot, notch plot, and violin plot, using the [**ggplot2**](https://ggplot2.tidyverse.org/) package. Chapter 9 will cover two relatively new statistical graphic methods for visualising distribution. They are ridgeline plot and raincloud plot using the **ggplot2** package and its extensions.
+A parallel coordinates plot is a data visualisation specially designed for visualising and analysing multivariate, numerical data. It is ideal for comparing multiple variables and seeing the relationships between them. For example, the variables contributing to a happiness index.
+
+Parallel coordinates was invented by [Alfred Inselberg](http://www.math.tau.ac.il/~aiisreal/) in the 1970s as a way to visualize high-dimensional data. This data visualisation technique is more often found in academic and scientific communities than in business and consumer data visualisations. As pointed out by [Stephen Few](https://www.perceptualedge.com/articles/b-eye/parallel_coordinates.pdf) (2006), “*This certainly isn’t a chart that you would present to the board of directors or place on your web site for the general public. In fact, the strength of parallel coordinates isn’t in their ability to communicate some truth in the data to others, but rather in their ability to bring meaningful multivariate patterns and comparisons to light when used interactively for analysis.*” For example, parallel coordinates plot can be used to characterise clusters detected during customer segmentation.
+
+The learning outcomes are:
+
+-   Plot a static parallel coordinates plots using the `ggparcoord()` function in the **GGally** package;
+
+-   Plot an interactive parallel coordinates plots using the **parcoords** package; and
+
+-   Plot an interactive parallel coordinates plots using the **parallelPlot** package.
 
 ## 15.2 Getting Started
 
@@ -28,493 +38,163 @@ In this hands-on exercise, the following R packages are used:
 
 -   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data;
 
--   [**ggthemes**](https://ggplot2.tidyverse.org/reference/ggtheme.html) for extra themes, geoms, and scales for ggplot2;
+-   [**GGally**](https://www.rdocumentation.org/packages/GGally/versions/1.5.0) (ggplot2 extension) for plotting pairwise plot matrix, scatterplot plot matrix, parallel coordinates plot, survival plot, and several functions to plot networks.
 
--   [**ggridges**](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html) for creating ridgeline plots; and
-
--   [**ggdist**](https://mjskay.github.io/ggdist/) for visualising distributions and uncertainty.
+-   [**parallelPlot**](https://www.rdocumentation.org/packages/parallelPlot/versions/0.3.1) for plotting interactive parallel coordinates plot.
 
 The code chunk below uses the `p_load()` function in the **pacman** package to check if the packages are installed. If yes, they are then loaded into the R environment. If no, they are installed, then loaded into the R environment.
 
 ```{r}
-pacman::p_load(tidyverse, ggthemes,
-               ggridges, ggdist)
+pacman::p_load(tidyverse, GGally,
+               parallelPlot)
 ```
 
 ### 15.2.2 Importing Data
 
-The dataset for this hands-on exercise is imported into the R environment using the `read_csv()` function in the **readr** package and stored as the R object, `exam`.
+The dataset for this hands-on exercise is imported into the R environment using the `read_csv()` function in the **readr** package and stored as the R object, `wh`. The data is from the [World Happiness 2018 report](https://worldhappiness.report/ed/2018/).
 
 ```{r}
-exam = read_csv("data/Exam_data.csv")
+wh = read_csv("data/WHData-2018.csv")
 ```
 
-The tibble data frame, `exam_data`, has 7 columns and 322 rows.
-
--   It consists of the year-end examination grades of a cohort of 322 Primary 3 students from a local school.
-
--   The 7 variables/attributes are:
-
-    -   Categorical: ID, CLASS, GENDER, and RACE.
-
-    -   Continuous: MATHS, ENGLISH, and SCIENCE.
+The tibble data frame, `wh`, has 12 columns and 156 rows. Other than the "Country" and "Region" variables, the remaining variables are continuous numerical data.
 
 ## 15.3 Plotting Static Parallel Coordinates Plot
 
-xxx
+In this sub-section, the [ggparcoord()](https://ggobi.github.io/ggally/reference/ggparcoord.html) function in the **GGally** package is used to plot static parallel coordinates plots.
 
 ### 15.3.1 Basic Plot
 
-xxx
+A basic static plot is plotted below.
+
+```{r}
+ggparcoord(data = wh, 
+           columns = c(7:12))
+```
+
+> ***Note***: Only two arguments, "data" and "columns" are used. The "data" argument is used to map the data object (i.e. `wh`) and the "columns" argument is used to select the columns for preparing the parallel coordinates plot.
 
 ### 15.3.2 Adding Boxplot
 
-xxx
+The basic parallel coordinates failed to reveal any meaningful understanding of the World Happiness measures. Hence, further arguments would be added to the `ggparcoord()` function to reveal more insights.
+
+```{r}
+ggparcoord(data = wh, 
+           columns = c(7:12), 
+           groupColumn = 2,
+           scale = "uniminmax",
+           alphaLines = 0.2,
+           boxplot = TRUE, 
+           title = "Parallel Coordinates Plot of World Happines Variables")
+```
+
+> Note:
+>
+> -   The "groupColumn" argument is used to group the observations (i.e. parallel lines) using a single variable (i.e. "Region") and colour the parallel coordinates lines by "Region".
+>
+> -   The "scale" argument is used to scale the variables in the parallel coordinates plot using the "uniminmax" method. The method univariately scale each variable so the minimum of the variable is zero and the maximum is one.
+>
+> -   The "alphaLines" argument is used to reduce the intensity of the line colour to 0.2. The permissible value range is between 0 to 1.
+>
+> -   The "boxplot" argument is set to "TRUE" to add the boxplot. The default is FALSE.
+>
+> -   The "title" argument is used to provide a title for the parallel coordinates plot.
 
 ### 15.3.3 Adding Facet
 
-xxx
+Since the `ggparcoord()` function is developed by extending the **ggplot2** package, some ggplot2 functions can be added when plotting a parallel coordinates plot.
+
+The `facet_wrap()` function in the **ggplot2** package is used below to plot 10 small multiple parallel coordinates plots, for each geographical region. However, one of the aesthetic defects of the plot is that some of the variable names overlap on the x-axis.
+
+```{r}
+ggparcoord(data = wh, 
+           columns = c(7:12), 
+           groupColumn = 2,
+           scale = "uniminmax",
+           alphaLines = 0.2,
+           boxplot = TRUE, 
+           title = "Multiple Parallel Coordinates Plots of World Happines Variables by Region") +
+  facet_wrap(~ Region)
+```
 
 ### 15.3.4 Rotating x-axis Text Label
 
-xxx
+To make the x-axis text labels readable, they are rotated by 30 degrees using the `theme()` function in the **ggplot2** package. The "axis.text.x" argument is set with the value of "element_text(angle = 30)".
+
+```{r}
+ggparcoord(data = wh, 
+           columns = c(7:12), 
+           groupColumn = 2,
+           scale = "uniminmax",
+           alphaLines = 0.2,
+           boxplot = TRUE, 
+           title = "Multiple Parallel Coordinates Plots of World Happines Variables by Region") +
+  facet_wrap(~ Region) + 
+  theme(axis.text.x = element_text(angle = 30))
+```
 
 ### 15.3.5 Adjusting Rotated x-axis Text Label
 
-xxx
+Rotating the x-axis text labels to 30 degrees causes them to overlap with the plot. This can be avoided by adjusting the text location using the "hjust" argument in the theme() function by setting the value of "element_text(angle = 30, hjust = 1)".
+
+```{r}
+ggparcoord(data = wh, 
+           columns = c(7:12), 
+           groupColumn = 2,
+           scale = "uniminmax",
+           alphaLines = 0.2,
+           boxplot = TRUE, 
+           title = "Multiple Parallel Coordinates Plots of World Happines Variables by Region") +
+  facet_wrap(~ Region) + 
+  theme(axis.text.x = element_text(angle = 30, hjust=1))
+```
 
 ## 15.4 Plotting Interactive Parallel Coordinates Plot: parallelPlot Package
 
-xxx
+The **parallelPlot** package is specially designed to plot parallel coordinates plots using the **htmlwidgets** package and [d3.js](https://d3js.org/) (JavaScript library). In this sub-section, the **parallelPlot** package is used to build interactive parallel coordinates plots.
 
 ### 15.4.1 Basic Plot
 
-xxx
+The parallelPlot() function in the parallelPlot package is used to make the basic plot below. Some of the axis labels are too long.
+
+```{r}
+wh = wh %>%
+  select("Happiness score", c(7:12))
+parallelPlot(wh,
+             width = 320,
+             height = 250)
+```
 
 ### 15.4.2 Rotating Axis Label
 
-xxx
+The "rotateTitle" argument is added to avoid overlapping axis labels.
+
+One of the useful interactive feature of a plot made with the `parallelPlot()` function is the ability to click on a variable of interest which would then show the different colour intensities across the plot.
+
+```{r}
+parallelPlot(wh,
+             rotateTitle = TRUE)
+```
 
 ### 15.4.3 Changing Colour Scheme
 
-xxx
+The default blue colour scheme can be changed using the "continousCS" argument.
+
+```{r}
+parallelPlot(wh,
+             continuousCS = "YlOrRd",
+             rotateTitle = TRUE)
+```
 
 ### 15.4.4 Adding Histogram
 
-xxx
+The histogram along the axis of each variable can be plotted using the "histoVisibility".
 
-## 15.5 References
-
-xxx
+```{r}
+histoVisibility = rep(TRUE, ncol(wh))
+parallelPlot(wh,
+             rotateTitle = TRUE,
+             histoVisibility = histoVisibility)
+```
 
 [**\~\~\~ End of Hands-on Exercise 5D \~\~\~**]{.smallcaps}
-
-A ridgeline plot (also called joyplot) is a data visualisation technique for revealing the distribution of a numeric value for several groups. Distribution can be represented using histograms or density plots, all aligned to the same horizontal scale and presented with a slight overlap.
-
-Such as plot makes sense when the number of groups to represent is medium to high, and thus, a classic window separation would take up too much space. The overlap of the groups allows for a more efficient use of space.
-
-Also, it works well when there is a clear pattern in the result, like if there is an obvious ranking in groups. Otherwise, the groups will tend to overlap each other, leading to a messy plot that does not provide any insight.
-
-### 9.3.1 Plotting Ridgeline Graph: ggridggs Method
-
-There are several ways to plot a ridgeline plot with R. The **ggridges** package has two main geom functions to plot a ridgeline plot: [`geom_ridgeline()`](https://wilkelab.org/ggridges/reference/geom_ridgeline.html) and [`geom_density_ridges()`](https://wilkelab.org/ggridges/reference/geom_density_ridges.html). The former takes height values directly to draw the ridgelines, and the latter first estimates data densities and then draws those using ridgelines.
-
-In the plot below, a ridgeline plot below is plotted using the `geom_density_ridges()` function.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false
-ggplot(exam, 
-       aes(x = ENGLISH, 
-           y = CLASS)) +
-  geom_density_ridges(
-    scale = 3,
-    rel_min_height = 0.01,
-    bandwidth = 3.4,
-    fill = "#7097BB",
-    alpha = 0.8,
-    color = "white"
-  ) +
-  scale_x_continuous(
-    name = "English grades",
-    expand = c(0, 0)
-    ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam, 
-       aes(x = ENGLISH, 
-           y = CLASS)) +
-  geom_density_ridges(
-    scale = 3,
-    rel_min_height = 0.01,
-    bandwidth = 3.4,
-    fill = "#7097BB",
-    alpha = 0.8,
-    color = "white"
-  ) +
-  scale_x_continuous(
-    name = "English grades",
-    expand = c(0, 0)
-    ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-:::
-
-### 9.3.2 Varying Fill Colours Along the x-axis
-
-The area under a ridgeline plot can be filled with colours that vary along the x axis. This effect can be achieved by using either the [`geom_ridgeline_gradient()`](https://wilkelab.org/ggridges/reference/geom_ridgeline_gradient.html) or [`geom_density_ridges_gradient()`](https://wilkelab.org/ggridges/reference/geom_ridgeline_gradient.html) functions. Both geom functions work just like `geom_ridgeline()` and `geom_density_ridges()`, except that they allow for varying fill colors. However, they do not allow for the alpha argument for transparency in the fill.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-ggplot(exam, 
-       aes(x = ENGLISH, 
-           y = CLASS,
-           fill = stat(x))) +
-  geom_density_ridges_gradient(
-    scale = 3,
-    rel_min_height = 0.01) +
-  scale_fill_viridis_c(name = "Temp. [F]",
-                       option = "C") +
-  scale_x_continuous(
-    name = "English grades",
-    expand = c(0, 0)
-  ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false 
-ggplot(exam, 
-       aes(x = ENGLISH, 
-           y = CLASS,
-           fill = stat(x))) +
-  geom_density_ridges_gradient(
-    scale = 3,
-    rel_min_height = 0.01) +
-  scale_fill_viridis_c(name = "Temp. [F]",
-                       option = "C") +
-  scale_x_continuous(
-    name = "English grades",
-    expand = c(0, 0)
-  ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-:::
-
-### 9.3.3 Mapping Probabilities Directly Onto Colour
-
-Beside providing additional geom objects to support the need to plot a ridgeline plot, the **ggridges** package also provides a statistic function, [`stat_density_ridges()`](https://wilkelab.org/ggridges/reference/stat_density_ridges.html), that replaces the [`stat_density()`](https://ggplot2.tidyverse.org/reference/geom_density.html) function in the **ggplot2** package.
-
-The plot below uses the `stat(ecdf)` function to calculate the probabilities representing the empirical cumulative function for the distribution of scores.
-
-> ***Note***: It is important to set the argument "calc_ecdf" as TRUE in the `stat_density_ridges()` function.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = 0.5 - abs(0.5-stat(ecdf)))) +
-  stat_density_ridges(geom = "density_ridges_gradient", 
-                      calc_ecdf = TRUE) +
-  scale_fill_viridis_c(name = "Tail probability",
-                       direction = -1) +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false 
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = 0.5 - abs(0.5-stat(ecdf)))) +
-  stat_density_ridges(geom = "density_ridges_gradient", 
-                      calc_ecdf = TRUE) +
-  scale_fill_viridis_c(name = "Tail probability",
-                       direction = -1) +
-  theme_ridges()
-```
-:::
-
-### 9.3.4 Ridgeline Plots with Quantile Lines
-
-A ridgeline plot that assigns different colours to different quantiles can be plotted using the [`geom_density_ridges_gradient()`](https://wilkelab.org/ggridges/reference/geom_ridgeline_gradient.html) function, and stating the the stat(quantile) as an aesthetic argument.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false  
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = factor(stat(quantile))
-           )) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE, 
-    quantiles = 4,
-    quantile_lines = TRUE) +
-  scale_fill_viridis_d(name = "Quartiles") +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = factor(stat(quantile))
-           )) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE, 
-    quantiles = 4,
-    quantile_lines = TRUE) +
-  scale_fill_viridis_d(name = "Quartiles") +
-  theme_ridges()
-```
-:::
-
-Instead of using a number to define the number of quantiles, cut-off points (e.g., 2.5% and 97.5% tails) can also be used to colour a ridgeline plot.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = factor(stat(quantile))
-           )) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE, 
-    quantiles = c(0.025, 0.975)
-    ) +
-  scale_fill_manual(
-    name = "Probability",
-    values = c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
-    labels = c("(0, 0.025]", "(0.025, 0.975]", "(0.975, 1]")
-  ) +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = factor(stat(quantile))
-           )) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE, 
-    quantiles = c(0.025, 0.975)
-    ) +
-  scale_fill_manual(
-    name = "Probability",
-    values = c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
-    labels = c("(0, 0.025]", "(0.025, 0.975]", "(0.975, 1]")
-  ) +
-  theme_ridges()
-```
-:::
-
-## 9.4 Visualising Distribution with Raincloud Plot
-
-A raincloud plot is a data visualisation technique that produces a half-density of a distribution plot. It gets the name because the density plot is in the shape of a “raincloud”. The raincloud (half-density) plot enhances the traditional box-plot by highlighting the presence of multiple modalities (an indicator that different groups may exist). A boxplot does not show where densities are clustered, but a raincloud plot does.
-
-The functions from **ggdist** and **ggplot2** packages are used to create a raincloud plot.
-
-### 9.4.1 Plotting a Half Eye Graph
-
-First, a half-eye plot is plotted using the [`stat_halfeye()`](https://mjskay.github.io/ggdist/reference/stat_halfeye.html) function of the **ggdist** package.
-
-> ***Note***: The slab interval can be removed by setting the ".width" argument to 0 and "point_colour" argument to NA.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false  
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA)
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA)
-```
-:::
-
-### 9.4.2 Adding Boxplot with geom_boxplot()
-
-Second, the [`geom_boxplot()`](https://ggplot2.tidyverse.org/reference/geom_boxplot.html) function in the **ggplot2** package is used to add a narrow boxplot. The width and opacity are adjusted accordingly.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA)
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA)
-```
-:::
-
-### 9.4.3 Adding Dot Plot with stat_dots()
-
-Third, the [`stat_dots()`](https://mjskay.github.io/ggdist/reference/stat_dots.html) function in the **ggdist** package is used to produce a half-dotplot, which is similar to a histogram that indicates the number of samples (number of dots) in each bin.
-
-The "side" argument is set to "left" to place it on the left-hand side.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA) +
-  stat_dots(side = "left", 
-            justification = 1.2, 
-            binwidth = .5,
-            dotsize = 2)
-```
-
-## Code
-
-```{r}
-#| eval: false 
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA) +
-  stat_dots(side = "left", 
-            justification = 1.2, 
-            binwidth = .5,
-            dotsize = 2)
-```
-:::
-
-### 9.4.4 Finishing Touch
-
-Last, the [`coord_flip()`](https://ggplot2.tidyverse.org/reference/coord_flip.html) function in the **ggplot2** package is used to flip the raincloud plot horizontally to give it the raincloud appearance.
-
-The `theme_economist()` function in the **ggthemes** package is added to give the raincloud chart a standard professional publishing appearance.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA) +
-  stat_dots(side = "left", 
-            justification = 1.2, 
-            binwidth = .5,
-            dotsize = 1.5) +
-  coord_flip() +
-  theme_economist()
-```
-
-## Code
-
-```{r}
-#| eval: false 
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA) +
-  stat_dots(side = "left", 
-            justification = 1.2, 
-            binwidth = .5,
-            dotsize = 1.5) +
-  coord_flip() +
-  theme_economist()
-```
-:::

@@ -16,9 +16,13 @@ font-family:  Palatino Linotype;
 
 ## 14.1 Overview and Learning Outcomes
 
-This hands-on exercise is based on [Chapter 9](https://r4va.netlify.app/chap09) of the **R for Visual Analytics** book.
+This hands-on exercise is based on [Chapter 14](https://r4va.netlify.app/chap14) of the **R for Visual Analytics** book.
 
-Visualising distribution is not new in statistical analysis. [Chapter 1](https://r4va.netlify.app/chap01) covered some of the popular statistical graphic methods for visualising distribution. They are histogram, probability density curve (pdf), boxplot, notch plot, and violin plot, using the [**ggplot2**](https://ggplot2.tidyverse.org/) package. Chapter 9 will cover two relatively new statistical graphic methods for visualising distribution. They are ridgeline plot and raincloud plot using the **ggplot2** package and its extensions.
+Heatmaps visualise data through variations in colouring. When applied to a tabular format, heatmaps are useful for cross-examining multivariate data, through placing variables in the columns and observations in the rows and colouring the cells within the table.
+
+Heatmaps are good for showing variance across multiple variables, revealing any patterns, displaying whether any variables are similar to each other, and for detecting any correlations that exist between them.
+
+The learning outcome is to plot static and interactive heatmaps for visualising and analysing multivariate data.
 
 ## 14.2 Getting Started
 
@@ -28,509 +32,284 @@ In this hands-on exercise, the following R packages are used:
 
 -   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data;
 
--   [**ggthemes**](https://ggplot2.tidyverse.org/reference/ggtheme.html) for extra themes, geoms, and scales for ggplot2;
+-   [**seriation**](https://www.rdocumentation.org/packages/seriation/versions/1.4.1) for ordering objects;
 
--   [**ggridges**](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html) for creating ridgeline plots; and
+-   [**dendextend**](https://www.rdocumentation.org/packages/dendextend/versions/1.17.1) for extending dendrogram objects to visualise and compare trees of hierarchical clusterings; and
 
--   [**ggdist**](https://mjskay.github.io/ggdist/) for visualising distributions and uncertainty.
+-   [**heatmaply**](https://www.rdocumentation.org/packages/heatmaply/versions/1.4.2/topics/heatmaply) for plotting interactive heatmaps.
 
 The code chunk below uses the `p_load()` function in the **pacman** package to check if the packages are installed. If yes, they are then loaded into the R environment. If no, they are installed, then loaded into the R environment.
 
 ```{r}
-pacman::p_load(tidyverse, ggthemes,
-               ggridges, ggdist)
+pacman::p_load(tidyverse, seriation,
+               dendextend, heatmaply)
 ```
 
 ### 14.2.2 Importing Data
 
-The dataset for this hands-on exercise is imported into the R environment using the `read_csv()` function in the **readr** package and stored as the R object, `exam`.
+The dataset for this hands-on exercise is imported into the R environment using the `read_csv()` function in the **readr** package and stored as the R object, `wh`. The data is from the [World Happiness 2018 report](https://worldhappiness.report/ed/2018/).
 
 ```{r}
-exam = read_csv("data/Exam_data.csv")
+wh = read_csv("data/WHData-2018.csv")
 ```
 
-The tibble data frame, `exam_data`, has 7 columns and 322 rows.
+The tibble data frame, `wh`, has 12 columns and 156 rows. Other than the "Country" and "Region" variables, the remaining variables are continuous numerical data.
 
--   It consists of the year-end examination grades of a cohort of 322 Primary 3 students from a local school.
+### 14.2.3 Preparing Data and Transforming Data Frame into Matrix
 
--   The 7 variables/attributes are:
+The row names are changed to the country names instead of numbers.
 
-    -   Categorical: ID, CLASS, GENDER, and RACE.
+```{r}
+row.names(wh) = wh$Country
+```
 
-    -   Continuous: MATHS, ENGLISH, and SCIENCE.
+The relevant variables are selected - "Happiness score", "GDP per capita", "social support", "Health life expectancy", "Freedom to make life choices", "Generosity", and "Perceptions of corruption".
 
-### 14.2.3 Preparing Data
+```{r}
+wh1 = select(wh, c(3, 7:12))
+```
 
-xxx
+The data frame is then converted to the data matrix.
 
-### 14.2.4 Transforming Data into Matrix
-
-xxx
+```{r}
+wh_matrix = data.matrix(wh)
+```
 
 ## 14.3 Creating Static Heatmap
 
-xxx
+There are many R packages and functions that can be used to drawing static heatmaps, they are:
+
+-   [`heatmap()`](https://www.rdocumentation.org/packages/stats/versions/3.6.0/topics/heatmap) function in the **stats** package. It draws a simple heatmap.
+
+-   [`heatmap.2()`](https://www.rdocumentation.org/packages/gplots/versions/3.0.1.1/topics/heatmap.2) function in the **gplots** package. It draws an enhanced heatmap.
+
+-   [`pheatmap()`](https://www.rdocumentation.org/packages/pheatmap/versions/1.0.12/topics/pheatmap) function in the [**pheatmap**](https://www.rdocumentation.org/packages/pheatmap/versions/1.0.12) package. The package (also known as Pretty Heatmap) provides functions to draws pretty heatmaps and allows more control to change the appearance of heatmaps.
+
+-   [**ComplexHeatmap**](https://bioconductor.org/packages/release/bioc/html/ComplexHeatmap.html) package of R/Bioconductor package. The package draws, annotates and arranges complex heatmaps (very useful for genomic data analysis). The full reference guide of the package is available [here](https://jokergoo.github.io/ComplexHeatmap-reference/book/).
+
+-   [**superheat**](https://cran.r-project.org/web/packages/superheat/) package: A Graphical Tool for Exploring Complex Datasets Using Heatmaps. A system for generating extendable and customizable heatmaps for exploring complex datasets, including big data and data with multiple data types. The full reference guide of the package is available [here](https://rlbarter.github.io/superheat/).
+
+In this sub-section, the most basic, `heatmap()` function is used.
 
 ### 14.3.1 Working with R Stats heatmap()
 
-xxx
+A heatmap is plotted using the `heatmap()` function in the **stats** package.
+
+```{r}
+wh_heatmap = heatmap(wh_matrix,
+                      Rowv=NA, Colv=NA)
+```
+
+> ***Note***: By default, the `heatmap()` function plots a cluster heatmap. The arguments "Rowv=NA" and "Colv=NA" are used to switch off the option of plotting the row and column dendrograms.
+
+If the "Rowv" and "Colv" arguments are excluded, the plotted cluster heatmap would show the row and column dendrograms.
+
+```{r}
+wh_heatmap = heatmap(wh_matrix)
+```
+
+> ***Note***: The order of both rows and columns is different compare to the native wh_matrix. This is because the heatmap would do a reordering using clusterisation, i.e., it calculates the distance between each pair of rows and columns and try to order them by similarity. Moreover, the corresponding dendrogram are provided beside the heatmap.
+
+Based on the plot above, the red cells denote small values, and yellow cells denote large ones. This heatmap is not really informative. Indeed, the "Happiness score" variable has relatively higher values, what means that the other variables with small values all look the same. Thus, we need to normalise this matrix. This is done using the *"*scale*"* argument. It can be applied to rows or to columns depending on needs.
+
+A heatmap with normalisation column-wise is plotted below.
+
+```{r}
+wh_heatmap = heatmap(wh_matrix,
+                      scale="column",
+                      cexRow = 0.6, 
+                      cexCol = 0.8,
+                      margins = c(10, 4))
+```
+
+> ***Note***: The values are now scaled. Also, the "margins" argument is used to ensure that the entire x-axis labels are displayed completely, and the "cexRow" and "cexCol" arguments are used to define the font size used for the y-axis and x-axis labels respectively.
 
 ## 14.4 Creating Interactive Heatmap
 
-xxx
+The [**heatmaply**](http://talgalili.github.io/heatmaply/) package is for building interactive cluster heatmaps that can be shared online as a stand-alone HTML file. It is designed and maintained by Tal Galili. The [Introduction to Heatmaply](https://cran.r-project.org/web/packages/heatmaply/vignettes/heatmaply.html) provides more information on the features and functions of the package.
+
+In this sub-section, the **heatmaply** package is used to design an interactive cluster heatmap.
 
 ### 14.4.1 Working with heatmaply()
 
-xxx
+The `heatmaply()` function is used to plot the interactive heatmap for the `wh_matrix`.
+
+```{r}
+heatmaply(wh_matrix[, -c(1, 2, 4, 5)])
+```
+
+> ***Note***:
+>
+> -   Different from the `heatmap()` function, the `heatmaply()` function places the default horizontal dendrogram on the right side. On the other hand, the text label of each row is placed on the left side.
+>
+> -   When the x-axis marker labels are too long, they will be rotated by 135 degree from the north.
 
 ### 14.4.2 Data Transformation
 
-xxx
+When analysing a multivariate dataset, it is very common that the variables include values that reflect different types of measurement. In general, these variables’ values have their own range. In order to ensure that all the variables have comparable values, data transformation is commonly used before clustering. The three main data transformation methods are supported by the `heatmaply()` function are: scale, normalise, and percentilse.
 
 #### 14.4.2.1 Scaling Method
 
-xxx
+When all variables are (or assumed to be) from some normal distribution, then scaling (i.e., subtract the mean and divide by the standard deviation) would bring them all close to the standard normal distribution. In such a case, each value would reflect the distance from the mean in units of standard deviation. The "scale" argument in the `heatmaply()` function supports column and row scaling.
+
+The plot below uses the "scale" argument to scale column-wise.
+
+```{r}
+heatmaply(wh_matrix[, -c(1, 2, 4, 5)],
+          scale = "column")
+```
+
+The plot below uses the "scale" argument to scale row-wise.
+
+```{r}
+heatmaply(wh_matrix[, -c(1, 2, 4, 5)],
+          scale = "row")
+```
 
 #### 14.4.2.2 Normalising Method
 
-xxx
+When variables in the dataset comes from possibly different (and non-normal) distributions, the normalise function can be used to bring the values to the 0 to 1 scale by subtracting the minimum and dividing by the maximum of all observations. This preserves the shape of each variable’s distribution while making them easily comparable on the same “scale”. Different from scaling, the normalise method is performed on the input dataset, i.e., `wh_matrix`.
+
+```{r}
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]))
+```
 
 #### 14.4.2.3 Percentising Method
 
-xxx
+This is similar to ranking the variables, but instead of keeping the rank values, they are divided by the maximal rank. This is done by using the ecdf of the variables on their own values, bringing each value to its empirical percentile. The benefit of the percentise method is that each value has a relatively clear interpretation, it is the percent of observations that got that value or below it. Similar to the normalise method, the percentise method is also performed on the input dataset, i.e., `wh_matrix`.
+
+```{r}
+heatmaply(percentize(wh_matrix[, -c(1, 2, 4, 5)]))
+```
 
 ### 14.4.3 Clustering Algorithm
 
-xxx
+The **heatmaply** package supports a variety of hierarchical clustering algorithm. The main arguments provided are:
+
+-   "distfun" is used to compute the distance (dissimilarity) between both rows and columns. Defaults to "dist". The options “pearson”, “spearman” and “kendall” can be used to use correlation-based clustering, which uses "as.dist(1 - cor(t(x)))" as the distance metric (using the specified correlation method).
+
+-   "hclustfun" is used to compute the hierarchical clustering when "Rowv" or "Colv" are not dendrograms. Defaults to "hclust".
+
+-   *"*dist_method*"* default is NULL, which results in “euclidean” being used. It can accept alternative character strings indicating the method to be passed to distfun. By default, "distfun" is “dist””, and hence this can be one of “euclidean”, “maximum”, “manhattan”, “canberra”, “binary” or “minkowski”.
+
+-   "hclust_method" default is NULL, which results in “complete” method being used. It can accept alternative character strings indicating the method to be passed to "hclustfun". By default hclustfun is hclust, and hence this can be one of “ward.D”, “ward.D2”, “single”, “complete”, “average” (= UPGMA), “mcquitty” (= WPGMA), “median” (= WPGMC) or “centroid” (= UPGMC).
+
+In general, a clustering model can be calibrated either manually or statistically.
 
 ### 14.4.4 Manual Approach
 
-xxx
+A heatmap is plotted using a hierarchical clustering algorithm with "dist_method = "euclidean" and "hclust_method = "ward.D".
+
+```{r}
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
+          dist_method = "euclidean",
+          hclust_method = "ward.D")
+```
 
 ### 14.4.5 Statistical Approach
 
-xxx
+In order to determine the best clustering method and number of clusters, the `dend_expend()` and `find_k()` functions in the **dendextend** package is used.
+
+First, the `dend_expend()` function is used to determine the recommended clustering method to be used. The output table shows that the “average” method should be used because it gave the highest optimum value.
+
+```{r}
+wh_d = dist(normalize(wh_matrix[, -c(1, 2, 4, 5)]), 
+            method = "euclidean")
+dend_expend(wh_d)[[3]]
+```
+
+Next, the `find_k()` function is used to determine the optimal number of clusters. The plot shows that k=3 would be good.
+
+```{r}
+wh_clust = hclust(wh_d, method = "average")
+num_k = find_k(wh_clust)
+plot(num_k)
+```
+
+After obtaining the statistical analysis results, the heatmap is plotted.
+
+```{r}
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
+          dist_method = "euclidean",
+          hclust_method = "average",
+          k_row = 3)
+```
 
 ### 14.4.6 Seriation
 
-xxx
+One of the problems with hierarchical clustering is that it does not actually place the rows in a definite order; it merely constrains the space of possible orderings. For example, take three items A, B and C. If you ignore reflections, there are three possible orderings: ABC, ACB, BAC. If clustering them gives you ((A+B)+C) as a tree, you know that C can’t end up between A and B, but it does not tell you which way to flip the A+B cluster. It doesn’t tell you if the ABC ordering will lead to a clearer-looking heatmap than the BAC ordering.
+
+The `heatmaply()` function uses the **seriation** package to find an optimal ordering of rows and columns. Optimal means to optimise the Hamiltonian path length that is restricted by the dendrogram structure. This, in other words, means to rotate the branches so that the sum of distances between each adjacent leaf (label) will be minimized. This is related to a restricted version of the travelling salesman problem.
+
+In the plot below, the seriation algorithm of Optimal Leaf Ordering (OLO) is used. This algorithm starts with the output of an agglomerative clustering algorithm and produces a unique ordering, one that flips the various branches of the dendrogram around so as to minimise the sum of dissimilarities between adjacent leaves.
+
+```{r}
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
+          seriate = "OLO")
+```
+
+The default option is “OLO” (Optimal leaf ordering) which optimises the above criterion (in O(n\^4)). Another option is “GW” (Gruvaeus and Wainer) which aims for the same goal but uses a potentially faster heuristic.
+
+```{r}
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
+          seriate = "GW")
+```
+
+The option “mean” gives the output we would get by default from heatmap functions in other packages such as **gplots::heatmap.2**.
+
+```{r}
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
+          seriate = "mean")
+```
+
+The option “none” gives us dendrograms without any rotation that is based on the data matrix.
+
+```{r}
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
+          seriate = "none")
+```
 
 ### 14.4.7 Working with Colour Palettes
 
-xxx
+The default colour palette uses by the **heatmaply** package is "viridis*"*. However, users can use other colour palettes to improve the aesthetics and visual friendliness of the heatmap.
+
+In the plot below, the "Blues" colour palette of **rColorBrewer** is used.
+
+```{r}
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
+          seriate = "none",
+          colors = Blues)
+```
 
 ### 14.4.8 Finishing Touch
 
-xxx
+Besides providing a wide collection of arguments for meeting the statistical analysis needs, the **heatmaply** package also provides many plotting features to ensure cartographic quality heatmap can be produced.
+
+In the plot below, the following arguments are used:
+
+-   "k_row" is used to produce 5 groups.
+
+-   "margins" is used to change the top margin to 60 and row margin to 200.
+
+-   "fontsizw_row" and "fontsize_col" are used to change the font size for row and column labels to 4.
+
+-   *"main" argument* is used to write the main title of the plot.
+
+-   *"xlab"* and "*ylab"* are used to given the x-axis and y-axis labels respectively.
+
+```{r}
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
+          Colv=NA,
+          seriate = "none",
+          colors = Blues,
+          k_row = 5,
+          margins = c(NA,200,60,NA),
+          fontsize_row = 4,
+          fontsize_col = 5,
+          main="World Happiness Score and Variables by Country, 2018 \nDataTransformation using Normalise Method",
+          xlab = "World Happiness Indicators",
+          ylab = "World Countries"
+          )
+```
 
 [**\~\~\~ End of Hands-on Exercise 5C \~\~\~**]{.smallcaps}
-
-A ridgeline plot (also called joyplot) is a data visualisation technique for revealing the distribution of a numeric value for several groups. Distribution can be represented using histograms or density plots, all aligned to the same horizontal scale and presented with a slight overlap.
-
-Such as plot makes sense when the number of groups to represent is medium to high, and thus, a classic window separation would take up too much space. The overlap of the groups allows for a more efficient use of space.
-
-Also, it works well when there is a clear pattern in the result, like if there is an obvious ranking in groups. Otherwise, the groups will tend to overlap each other, leading to a messy plot that does not provide any insight.
-
-### 9.3.1 Plotting Ridgeline Graph: ggridggs Method
-
-There are several ways to plot a ridgeline plot with R. The **ggridges** package has two main geom functions to plot a ridgeline plot: [`geom_ridgeline()`](https://wilkelab.org/ggridges/reference/geom_ridgeline.html) and [`geom_density_ridges()`](https://wilkelab.org/ggridges/reference/geom_density_ridges.html). The former takes height values directly to draw the ridgelines, and the latter first estimates data densities and then draws those using ridgelines.
-
-In the plot below, a ridgeline plot below is plotted using the `geom_density_ridges()` function.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false
-ggplot(exam, 
-       aes(x = ENGLISH, 
-           y = CLASS)) +
-  geom_density_ridges(
-    scale = 3,
-    rel_min_height = 0.01,
-    bandwidth = 3.4,
-    fill = "#7097BB",
-    alpha = 0.8,
-    color = "white"
-  ) +
-  scale_x_continuous(
-    name = "English grades",
-    expand = c(0, 0)
-    ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam, 
-       aes(x = ENGLISH, 
-           y = CLASS)) +
-  geom_density_ridges(
-    scale = 3,
-    rel_min_height = 0.01,
-    bandwidth = 3.4,
-    fill = "#7097BB",
-    alpha = 0.8,
-    color = "white"
-  ) +
-  scale_x_continuous(
-    name = "English grades",
-    expand = c(0, 0)
-    ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-:::
-
-### 9.3.2 Varying Fill Colours Along the x-axis
-
-The area under a ridgeline plot can be filled with colours that vary along the x axis. This effect can be achieved by using either the [`geom_ridgeline_gradient()`](https://wilkelab.org/ggridges/reference/geom_ridgeline_gradient.html) or [`geom_density_ridges_gradient()`](https://wilkelab.org/ggridges/reference/geom_ridgeline_gradient.html) functions. Both geom functions work just like `geom_ridgeline()` and `geom_density_ridges()`, except that they allow for varying fill colors. However, they do not allow for the alpha argument for transparency in the fill.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-ggplot(exam, 
-       aes(x = ENGLISH, 
-           y = CLASS,
-           fill = stat(x))) +
-  geom_density_ridges_gradient(
-    scale = 3,
-    rel_min_height = 0.01) +
-  scale_fill_viridis_c(name = "Temp. [F]",
-                       option = "C") +
-  scale_x_continuous(
-    name = "English grades",
-    expand = c(0, 0)
-  ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false 
-ggplot(exam, 
-       aes(x = ENGLISH, 
-           y = CLASS,
-           fill = stat(x))) +
-  geom_density_ridges_gradient(
-    scale = 3,
-    rel_min_height = 0.01) +
-  scale_fill_viridis_c(name = "Temp. [F]",
-                       option = "C") +
-  scale_x_continuous(
-    name = "English grades",
-    expand = c(0, 0)
-  ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-:::
-
-### 9.3.3 Mapping Probabilities Directly Onto Colour
-
-Beside providing additional geom objects to support the need to plot a ridgeline plot, the **ggridges** package also provides a statistic function, [`stat_density_ridges()`](https://wilkelab.org/ggridges/reference/stat_density_ridges.html), that replaces the [`stat_density()`](https://ggplot2.tidyverse.org/reference/geom_density.html) function in the **ggplot2** package.
-
-The plot below uses the `stat(ecdf)` function to calculate the probabilities representing the empirical cumulative function for the distribution of scores.
-
-> ***Note***: It is important to set the argument "calc_ecdf" as TRUE in the `stat_density_ridges()` function.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = 0.5 - abs(0.5-stat(ecdf)))) +
-  stat_density_ridges(geom = "density_ridges_gradient", 
-                      calc_ecdf = TRUE) +
-  scale_fill_viridis_c(name = "Tail probability",
-                       direction = -1) +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false 
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = 0.5 - abs(0.5-stat(ecdf)))) +
-  stat_density_ridges(geom = "density_ridges_gradient", 
-                      calc_ecdf = TRUE) +
-  scale_fill_viridis_c(name = "Tail probability",
-                       direction = -1) +
-  theme_ridges()
-```
-:::
-
-### 9.3.4 Ridgeline Plots with Quantile Lines
-
-A ridgeline plot that assigns different colours to different quantiles can be plotted using the [`geom_density_ridges_gradient()`](https://wilkelab.org/ggridges/reference/geom_ridgeline_gradient.html) function, and stating the the stat(quantile) as an aesthetic argument.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false  
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = factor(stat(quantile))
-           )) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE, 
-    quantiles = 4,
-    quantile_lines = TRUE) +
-  scale_fill_viridis_d(name = "Quartiles") +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = factor(stat(quantile))
-           )) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE, 
-    quantiles = 4,
-    quantile_lines = TRUE) +
-  scale_fill_viridis_d(name = "Quartiles") +
-  theme_ridges()
-```
-:::
-
-Instead of using a number to define the number of quantiles, cut-off points (e.g., 2.5% and 97.5% tails) can also be used to colour a ridgeline plot.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = factor(stat(quantile))
-           )) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE, 
-    quantiles = c(0.025, 0.975)
-    ) +
-  scale_fill_manual(
-    name = "Probability",
-    values = c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
-    labels = c("(0, 0.025]", "(0.025, 0.975]", "(0.975, 1]")
-  ) +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = factor(stat(quantile))
-           )) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE, 
-    quantiles = c(0.025, 0.975)
-    ) +
-  scale_fill_manual(
-    name = "Probability",
-    values = c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
-    labels = c("(0, 0.025]", "(0.025, 0.975]", "(0.975, 1]")
-  ) +
-  theme_ridges()
-```
-:::
-
-## 9.4 Visualising Distribution with Raincloud Plot
-
-A raincloud plot is a data visualisation technique that produces a half-density of a distribution plot. It gets the name because the density plot is in the shape of a “raincloud”. The raincloud (half-density) plot enhances the traditional box-plot by highlighting the presence of multiple modalities (an indicator that different groups may exist). A boxplot does not show where densities are clustered, but a raincloud plot does.
-
-The functions from **ggdist** and **ggplot2** packages are used to create a raincloud plot.
-
-### 9.4.1 Plotting a Half Eye Graph
-
-First, a half-eye plot is plotted using the [`stat_halfeye()`](https://mjskay.github.io/ggdist/reference/stat_halfeye.html) function of the **ggdist** package.
-
-> ***Note***: The slab interval can be removed by setting the ".width" argument to 0 and "point_colour" argument to NA.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false  
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA)
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA)
-```
-:::
-
-### 9.4.2 Adding Boxplot with geom_boxplot()
-
-Second, the [`geom_boxplot()`](https://ggplot2.tidyverse.org/reference/geom_boxplot.html) function in the **ggplot2** package is used to add a narrow boxplot. The width and opacity are adjusted accordingly.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA)
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA)
-```
-:::
-
-### 9.4.3 Adding Dot Plot with stat_dots()
-
-Third, the [`stat_dots()`](https://mjskay.github.io/ggdist/reference/stat_dots.html) function in the **ggdist** package is used to produce a half-dotplot, which is similar to a histogram that indicates the number of samples (number of dots) in each bin.
-
-The "side" argument is set to "left" to place it on the left-hand side.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA) +
-  stat_dots(side = "left", 
-            justification = 1.2, 
-            binwidth = .5,
-            dotsize = 2)
-```
-
-## Code
-
-```{r}
-#| eval: false 
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA) +
-  stat_dots(side = "left", 
-            justification = 1.2, 
-            binwidth = .5,
-            dotsize = 2)
-```
-:::
-
-### 9.4.4 Finishing Touch
-
-Last, the [`coord_flip()`](https://ggplot2.tidyverse.org/reference/coord_flip.html) function in the **ggplot2** package is used to flip the raincloud plot horizontally to give it the raincloud appearance.
-
-The `theme_economist()` function in the **ggthemes** package is added to give the raincloud chart a standard professional publishing appearance.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA) +
-  stat_dots(side = "left", 
-            justification = 1.2, 
-            binwidth = .5,
-            dotsize = 1.5) +
-  coord_flip() +
-  theme_economist()
-```
-
-## Code
-
-```{r}
-#| eval: false 
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA) +
-  stat_dots(side = "left", 
-            justification = 1.2, 
-            binwidth = .5,
-            dotsize = 1.5) +
-  coord_flip() +
-  theme_economist()
-```
-:::

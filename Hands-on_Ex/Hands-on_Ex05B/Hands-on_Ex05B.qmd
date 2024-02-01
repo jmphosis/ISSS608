@@ -16,9 +16,39 @@ font-family:  Palatino Linotype;
 
 ## 6.1 Overview and Learning Outcomes
 
-This hands-on exercise is based on [Chapter 9](https://r4va.netlify.app/chap09) of the **R for Visual Analytics** book.
+This hands-on exercise is based on [Chapter 6](https://r4va.netlify.app/chap06) of the **R for Visual Analytics** book.
 
-Visualising distribution is not new in statistical analysis. [Chapter 1](https://r4va.netlify.app/chap01) covered some of the popular statistical graphic methods for visualising distribution. They are histogram, probability density curve (pdf), boxplot, notch plot, and violin plot, using the [**ggplot2**](https://ggplot2.tidyverse.org/) package. Chapter 9 will cover two relatively new statistical graphic methods for visualising distribution. They are ridgeline plot and raincloud plot using the **ggplot2** package and its extensions.
+Correlation coefficient is a popular statistic used to measure the type and strength of the relationship between two variables. The values of a correlation coefficient ranges between -1.0 and 1.0.
+
+-   A value of 1 shows a perfect linear relationship between the two variables.
+
+-   A value of -1.0 shows a perfect inverse relationship between the two variables.
+
+-   A value of 0.0 shows no linear relationship between the two variables.
+
+When multivariate data are used, the correlation coefficeints of the pair comparisons are displayed in a table form known as a correlation matrix or a scatterplot matrix.
+
+There are three broad reasons for computing a correlation matrix:
+
+1.  Reveal the relationship between high-dimensional variables pair-wisely.
+
+2.  Input into other analyses - e.g., correlation matrices commonly used as inputs for exploratory factor analysis, confirmatory factor analysis, structural equation models, and linear regression when excluding missing values pairwise.
+
+3.  Check other analyses - e.g., a high amount of correlations in a linear regression suggests that its estimates will be unreliable.
+
+When the dataset is large, both in terms of the number of observations and the number of variables, a [corrgram](http://www.datavis.ca/papers/corrgram.pdf) tend to be used to visually explore and analyse the structure and the patterns of relations among variables. It is designed based on two main schemes:
+
+1.  Rendering the value of a correlation to depict its sign and magnitude; and
+
+2.  Reordering the variables in a correlation matrix so that “similar” variables are positioned adjacently, facilitating perception.
+
+The learning outcomes are:
+
+-   Create correlation matrix using the `pairs()` function in the **graphics** package.
+
+-   Plot corrgram using **corrplot** package.
+
+-   Create an interactive correlation matrix using the **plotly** package.
 
 ## 6.2 Getting Started
 
@@ -28,509 +58,327 @@ In this hands-on exercise, the following R packages are used:
 
 -   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data;
 
--   [**ggthemes**](https://ggplot2.tidyverse.org/reference/ggtheme.html) for extra themes, geoms, and scales for ggplot2;
+-   [**ggstatsplot**](https://indrajeetpatil.github.io/ggstatsplot/) for plotting statistics; and
 
--   [**ggridges**](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html) for creating ridgeline plots; and
-
--   [**ggdist**](https://mjskay.github.io/ggdist/) for visualising distributions and uncertainty.
+-   [**corrplot**](http://www.sthda.com/english/wiki/visualize-correlation-matrix-using-correlogram) for plotting correlogram.
 
 The code chunk below uses the `p_load()` function in the **pacman** package to check if the packages are installed. If yes, they are then loaded into the R environment. If no, they are installed, then loaded into the R environment.
 
 ```{r}
-pacman::p_load(tidyverse, ggthemes,
-               ggridges, ggdist)
+pacman::p_load(tidyverse, ggstatsplot,
+               corrplot)
 ```
 
 ### 6.2.2 Importing Data
 
-The dataset for this hands-on exercise is imported into the R environment using the `read_csv()` function in the **readr** package and stored as the R object, `exam`.
+The dataset for this hands-on exercise is imported into the R environment using the `read_csv()` function in the **readr** package and stored as the R object, `wine`. It contains data regarding the [Wine Quality Data Set](#0) of the UCI Machine Learning Repository.
 
 ```{r}
-exam = read_csv("data/Exam_data.csv")
+wine = read_csv("data/wine_quality.csv")
 ```
 
-The tibble data frame, `exam_data`, has 7 columns and 322 rows.
-
--   It consists of the year-end examination grades of a cohort of 322 Primary 3 students from a local school.
-
--   The 7 variables/attributes are:
-
-    -   Categorical: ID, CLASS, GENDER, and RACE.
-
-    -   Continuous: MATHS, ENGLISH, and SCIENCE.
+The tibble data frame, `wine`, has 13 columns and 6,497 rows. Besides quality and type, the rest of the variables are numerical and continuous data type.
 
 ## 6.3 Building Correlation Matrix: pairs()
 
 ### 6.3.1 Building Basic Correlation Matrix
 
-xxx
+The pairs() function in the graphics package is used to plot a scatter plot matrix (11 by 11).
+
+```{r}
+pairs(wine[,1:11])
+```
+
+The required input of the `pairs()` function can be a matrix or data frame. In the plot below, columns 2 to 12 of `wine` is used to build the scatterplot matrix. The variables are: fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, free sulfur dioxide, total sulfur dioxide, density, pH, sulphates, and alcohol.
+
+```{r}
+pairs(wine[,2:12])
+```
 
 ### 6.3.2 Drawing Lower Corner
 
-xxx
+The plot may be customised via the arguments in the `pairs()` function. For example, it is a common practice to show either the upper half or lower half of the correlation matrix instead of both given that it is symmetric.
+
+::: panel-tabset
+## Lower Panel
+
+```{r}
+pairs(wine[,2:12], upper.panel = NULL)
+```
+
+## Upper Panel
+
+```{r}
+pairs(wine[,2:12], lower.panel = NULL)
+```
+:::
 
 ### 6.3.3 Adding Correlation Coefficients
 
-xxx
+To show the correlation coefficient of each pair of variables instead of a scatter plot, the `panel.cor()` function will be used. This will also show higher correlations in a larger font.
+
+```{r}
+panel.cor = function(x, y, digits=2, prefix="", cex.cor, ...) {
+usr = par("usr")
+on.exit(par(usr))
+par(usr = c(0, 1, 0, 1))
+r = abs(cor(x, y, use="complete.obs"))
+txt = format(c(r, 0.123456789), digits=digits)[1]
+txt = paste(prefix, txt, sep="")
+if(missing(cex.cor)) cex.cor = 0.8/strwidth(txt)
+text(0.5, 0.5, txt, cex = cex.cor * (1 + r) / 2)
+}
+
+pairs(wine[,2:12], 
+      upper.panel = panel.cor)
+```
 
 ## 6.4 Visualising Correlation Matrix: ggcormat()
 
-xxx
+A major limitation of the correlation matrix is that the scatter plots appear very cluttered when the number of observations is relatively large (i.e. more than 500 observations). To over come this problem, a **corrgram** data visualisation technique suggested by D. J. Murdoch and E. D. Chow (1996) and Friendly, M (2002) and will be used.
+
+The are at least three R packages provide functions to plot corrgram:
+
+-   [**corrgram**](https://cran.r-project.org/web/packages/corrgram/)
+
+-   [**ellipse**](https://cran.r-project.org/web/packages/ellipse/); and
+
+-   [**corrplot**](https://cran.r-project.org/web/packages/corrplot/).
+
+Also, some R packages like **ggstatsplot** package also provides functions for building corrgram.
 
 ### 6.4.1 Basic Plot
 
-xxx
+On of the advantage of using the [`ggcorrmat()`](https://indrajeetpatil.github.io/ggstatsplot/reference/ggcorrmat.html) function in the ggstatsplot package over other methods to visualise a correlation matrix is its ability to provide a comprehensive and yet professional statistical report.
+
+```{r}
+#| eval: false
+ggcorrmat(
+  data = wine)
+```
 
 ### 6.4.2 Improved Plot
 
-xxx
+A title and a subtitle are added to enhance the plot. Also, the matrix is rearranged in order.
+
+```{r}
+#| eval: false
+ggcorrmat(
+  data = wine, 
+  cor.vars = 1:11,
+  ggcorrplot.args = list(outline.color = "black", 
+                         hc.order = TRUE,
+                         tl.cex = 10),
+  title    = "Correlogram for wine dataset",
+  subtitle = "Four pairs are no significant at p < 0.05"
+)
+```
+
+> ***Note***:
+>
+> -   "cor.vars" argument is used to compute the correlation matrix needed to build the corrgram.
+>
+> -   "ggcorrplot.args" argument provides additional (mostly aesthetic) arguments that will be passed to the function. The list should avoid any of the following arguments since they are already internally being used: `corr`, `method`, `p.mat`, `sig.level`, `ggtheme`, `colors`, `lab`, `pch`, `legend.title`, `digits`.
+
+Also, specific components of the plot such as the font size of the x-axis, y-axis, and the statistical report can be controlled as follows.
+
+```{r}
+#| eval: false
+ggcorrmat(
+  data = wine, 
+  cor.vars = 1:11,
+  ggcorrplot.args = list(outline.color = "black", 
+                         hc.order = TRUE,
+                         tl.cex = 10),
+  title    = "Correlogram for wine dataset",
+  subtitle = "Four pairs are no significant at p < 0.05") +
+  ggplot.component = list(
+    theme(text=element_text(size=5),
+      axis.text.x = element_text(size = 8),
+      axis.text.y = element_text(size = 8)))
+```
 
 ### 6.4.3 Building Multiple Plots
 
-xxx
+Since the ggstasplot package is an extension of ggplot2, it also supports faceting. This feature is available via the [`grouped_ggcorrmat()`](https://indrajeetpatil.github.io/ggstatsplot/reference/grouped_ggcorrmat.html) function.
+
+```{r}
+grouped_ggcorrmat(
+  data = wine,
+  cor.vars = 1:11,
+  grouping.var = type,
+  type = "robust",
+  p.adjust.method = "holm",
+  plotgrid.args = list(ncol = 2),
+  ggcorrplot.args = list(outline.color = "black", 
+                         hc.order = TRUE,
+                         tl.cex = 10),
+  annotation.args = list(
+    tag_levels = "a",
+    title = "Correlogram for wine dataset",
+    subtitle = "The measures are: alcohol, sulphates, fixed acidity, citric acid, chlorides, residual sugar, density, free sulfur dioxide and volatile acidity",
+    caption = "Dataset: UCI Machine Learning Repository"))
+```
+
+> ***Note***:
+>
+> -   "grouping.var" argument is for building a facet plot.
+>
+> -   Behind the function*,* the **patchwork** package is used to create the multiplot. The "plotgrid.args" argument provides a list of additional arguments passed to [`patchwork::wrap_plots`](https://patchwork.data-imaginist.com/reference/wrap_plots.html), except for guides argument which is already separately specified earlier.
+>
+> -   Likewise, the "annotation.args" argument is calling the [plot annotation arguments](https://patchwork.data-imaginist.com/reference/plot_annotation.html) of **patchwork** package.
 
 ## 6.5 Visualising Correlation Matrix: corrplot Package
 
-xxx
+[An Introduction to corrplot Package](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html) provides a basic understanding of the **corrplot** package.
 
 ### 6.5.1 Basic Plot
 
-xxx
+The `cor()` function in the **stats** package is used to compute the correlation matrix of `wine`.
+
+```{r}
+wine.cor = cor(wine[, 1:11])
+```
+
+Then, the `corrplot()` function in the **corrplot** package is used to plot the corrgram using the default settings.
+
+```{r}
+corrplot(wine.cor)
+```
+
+> ***Note***:
+>
+> -   Default visual object used to plot the corrgram is circle.
+>
+> -   Default layout is a symmetric matrix.
+>
+> -   Default colour scheme is diverging blue-red. Blue colours are used to represent pair variables with positive correlation coefficients and red colours are used to represent pair variables with negative correlation coefficients.
+>
+> -   Intensity of the colour (i.e., saturation) is used to represent the strength of the correlation coefficient. Darker colours indicate relatively stronger linear relationship between the paired variables. Lighter colours indicates relatively weaker linear relationship.
 
 ### 6.5.2 Working with Visual Geometrics
 
-xxx
+In the **corrplot** package, there are seven visual geometrics (parameter method) that can be used to encode the attribute values. They are: circle, square, ellipse, number, shade, color and pie. The default is circle, which can be changed via the "method" argument.
+
+```{r}
+corrplot(wine.cor, 
+         method = "ellipse") 
+```
 
 ### 6.5.3 Working with Layout
 
-xxx
+The `corrplor()` function supports three layout types, namely: “full”, “upper” or “lower”. The default is “full” which display the full matrix. The default setting can be changed via the "type" argument.
+
+```{r}
+corrplot(wine.cor, 
+         method = "ellipse", 
+         type="lower")
+```
+
+The default layout of the corrgram can be further customised. For example, the "diag" and "tl.col" arguments are used to turn off the diagonal cells and change the axis text label colour to black colour respectively.
+
+```{r}
+corrplot(wine.cor, 
+         method = "ellipse", 
+         type="lower",
+         diag = FALSE,
+         tl.col = "black")
+```
 
 ### 6.5.4 Working with Mixed Layout
 
-xxx
+With the **corrplot** package, it is possible to design corrgram with mixed visual matrix in one half and numerical matrix in the other half. In order to create a coorgram with mixed layout, the `corrplot.mixed()` function, a wrapped function for mixed visualisation style, will be used.
+
+```{r}
+corrplot.mixed(wine.cor, 
+               lower = "ellipse", 
+               upper = "number",
+               tl.pos = "lt",
+               diag = "l",
+               tl.col = "black")
+```
+
+> ***Note***:
+>
+> -   The "lower" and "upper" arguments are used to define the visualisation method used. In this case ellipse is used to map the lower half of the corrgram and numerical matrix (i.e. number) is used to map the upper half of the corrgram.
+>
+> -   The "tl.pos" argument is used to specify the placement of the axis label.
+>
+> -   The "diag" argument is used to specify the glyph on the principal diagonal of the corrgram.
 
 ### 6.5.5 Combining Corrgram with Significant Test
 
-xxx
+In statistical analysis, we are also interested to know which pair of variables with statistically significant correlation coefficients.
+
+A corrgram is combined with the significant test. The `cor.mtest()` function is used to compute the p-values and confidence interval for each pair of variables. Then, it is added to the "p.mat" argument.
+
+```{r}
+wine.sig = cor.mtest(wine.cor, conf.level= .95)
+
+corrplot(wine.cor,
+         method = "number",
+         type = "lower",
+         diag = FALSE,
+         tl.col = "black",
+         tl.srt = 45,
+         p.mat = wine.sig$p,
+         sig.level = .05)
+```
+
+The corrgram reveals that not all correlation pairs are statistically significant. For example the correlation between total sulfur dioxide and free surfur dioxide is statistically significant at significant level of 0.1 but not the pair between total sulfur dioxide and citric acid.
 
 ### 6.5.6 Reordering Corrgram
 
-xxx
+Matrix reorder is very important for mining the hidden structure and patterns in a corrgram.
+
+By default, the order of attributes of a corrgram is sorted according to the correlation matrix (i.e. “original”). The default setting can be overwritten using the "order*"* argument.
+
+Currently, the **corrplot** package support four sorting methods, they are:
+
+-   “AOE” is for the angular order of the eigenvectors. See Michael Friendly (2002) for details.
+
+-   “FPC” for the first principal component order.
+
+-   “hclust” for hierarchical clustering order, and “hclust.method” for the agglomeration method to be used.
+
+    -   “hclust.method” should be one of “ward”, “single”, “complete”, “average”, “mcquitty”, “median” or “centroid”.
+
+-   “alphabet” for alphabetical order.
+
+More algorithms can be found in the **seriation** package.
+
+```{r}
+corrplot.mixed(wine.cor, 
+               lower = "ellipse", 
+               upper = "number",
+               tl.pos = "lt",
+               diag = "l",
+               order="AOE",
+               tl.col = "black")
+```
 
 ### 6.5.7 Reordering Correlation Matrix with hclust Method
 
-xxx
+If setting "order" argument as "hclust", the plot can draw rectangles around the corrgram based on the results of hierarchical clustering.
+
+```{r}
+corrplot(wine.cor, 
+         method = "ellipse", 
+         tl.pos = "lt",
+         tl.col = "black",
+         order="hclust",
+         hclust.method = "ward.D",
+         addrect = 3)
+```
 
 ## 6.6 References
 
+-   Michael Friendly (2002). “Corrgrams: Exploratory displays for correlation matrices”. *The American Statistician*, 56, 316–324.
+
+-   D.J. Murdoch, E.D. Chow (1996). “A graphical display of large correlation matrices”. *The American Statistician*, 50, 178–180.
+
+-   [`ggscatmat`](https://ggobi.github.io/ggally/reference/ggscatmat.html)`()` and [``` ggpair``s ```](https://ggobi.github.io/ggally/reference/ggpairs.html)`()` functions of [**GGally**](https://ggobi.github.io/ggally/).
+
+-   [**corrgram**](https://cran.r-project.org/web/packages/corrgram/) calculates correlation of variables and displays the results graphically. Included panel functions can display points, shading, ellipses, and correlation values with confidence intervals.
+
 [**\~\~\~ End of Hands-on Exercise 5B \~\~\~**]{.smallcaps}
-
-A ridgeline plot (also called joyplot) is a data visualisation technique for revealing the distribution of a numeric value for several groups. Distribution can be represented using histograms or density plots, all aligned to the same horizontal scale and presented with a slight overlap.
-
-Such as plot makes sense when the number of groups to represent is medium to high, and thus, a classic window separation would take up too much space. The overlap of the groups allows for a more efficient use of space.
-
-Also, it works well when there is a clear pattern in the result, like if there is an obvious ranking in groups. Otherwise, the groups will tend to overlap each other, leading to a messy plot that does not provide any insight.
-
-### 9.3.1 Plotting Ridgeline Graph: ggridggs Method
-
-There are several ways to plot a ridgeline plot with R. The **ggridges** package has two main geom functions to plot a ridgeline plot: [`geom_ridgeline()`](https://wilkelab.org/ggridges/reference/geom_ridgeline.html) and [`geom_density_ridges()`](https://wilkelab.org/ggridges/reference/geom_density_ridges.html). The former takes height values directly to draw the ridgelines, and the latter first estimates data densities and then draws those using ridgelines.
-
-In the plot below, a ridgeline plot below is plotted using the `geom_density_ridges()` function.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false
-ggplot(exam, 
-       aes(x = ENGLISH, 
-           y = CLASS)) +
-  geom_density_ridges(
-    scale = 3,
-    rel_min_height = 0.01,
-    bandwidth = 3.4,
-    fill = "#7097BB",
-    alpha = 0.8,
-    color = "white"
-  ) +
-  scale_x_continuous(
-    name = "English grades",
-    expand = c(0, 0)
-    ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam, 
-       aes(x = ENGLISH, 
-           y = CLASS)) +
-  geom_density_ridges(
-    scale = 3,
-    rel_min_height = 0.01,
-    bandwidth = 3.4,
-    fill = "#7097BB",
-    alpha = 0.8,
-    color = "white"
-  ) +
-  scale_x_continuous(
-    name = "English grades",
-    expand = c(0, 0)
-    ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-:::
-
-### 9.3.2 Varying Fill Colours Along the x-axis
-
-The area under a ridgeline plot can be filled with colours that vary along the x axis. This effect can be achieved by using either the [`geom_ridgeline_gradient()`](https://wilkelab.org/ggridges/reference/geom_ridgeline_gradient.html) or [`geom_density_ridges_gradient()`](https://wilkelab.org/ggridges/reference/geom_ridgeline_gradient.html) functions. Both geom functions work just like `geom_ridgeline()` and `geom_density_ridges()`, except that they allow for varying fill colors. However, they do not allow for the alpha argument for transparency in the fill.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-ggplot(exam, 
-       aes(x = ENGLISH, 
-           y = CLASS,
-           fill = stat(x))) +
-  geom_density_ridges_gradient(
-    scale = 3,
-    rel_min_height = 0.01) +
-  scale_fill_viridis_c(name = "Temp. [F]",
-                       option = "C") +
-  scale_x_continuous(
-    name = "English grades",
-    expand = c(0, 0)
-  ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false 
-ggplot(exam, 
-       aes(x = ENGLISH, 
-           y = CLASS,
-           fill = stat(x))) +
-  geom_density_ridges_gradient(
-    scale = 3,
-    rel_min_height = 0.01) +
-  scale_fill_viridis_c(name = "Temp. [F]",
-                       option = "C") +
-  scale_x_continuous(
-    name = "English grades",
-    expand = c(0, 0)
-  ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-:::
-
-### 9.3.3 Mapping Probabilities Directly Onto Colour
-
-Beside providing additional geom objects to support the need to plot a ridgeline plot, the **ggridges** package also provides a statistic function, [`stat_density_ridges()`](https://wilkelab.org/ggridges/reference/stat_density_ridges.html), that replaces the [`stat_density()`](https://ggplot2.tidyverse.org/reference/geom_density.html) function in the **ggplot2** package.
-
-The plot below uses the `stat(ecdf)` function to calculate the probabilities representing the empirical cumulative function for the distribution of scores.
-
-> ***Note***: It is important to set the argument "calc_ecdf" as TRUE in the `stat_density_ridges()` function.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = 0.5 - abs(0.5-stat(ecdf)))) +
-  stat_density_ridges(geom = "density_ridges_gradient", 
-                      calc_ecdf = TRUE) +
-  scale_fill_viridis_c(name = "Tail probability",
-                       direction = -1) +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false 
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = 0.5 - abs(0.5-stat(ecdf)))) +
-  stat_density_ridges(geom = "density_ridges_gradient", 
-                      calc_ecdf = TRUE) +
-  scale_fill_viridis_c(name = "Tail probability",
-                       direction = -1) +
-  theme_ridges()
-```
-:::
-
-### 9.3.4 Ridgeline Plots with Quantile Lines
-
-A ridgeline plot that assigns different colours to different quantiles can be plotted using the [`geom_density_ridges_gradient()`](https://wilkelab.org/ggridges/reference/geom_ridgeline_gradient.html) function, and stating the the stat(quantile) as an aesthetic argument.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false  
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = factor(stat(quantile))
-           )) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE, 
-    quantiles = 4,
-    quantile_lines = TRUE) +
-  scale_fill_viridis_d(name = "Quartiles") +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = factor(stat(quantile))
-           )) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE, 
-    quantiles = 4,
-    quantile_lines = TRUE) +
-  scale_fill_viridis_d(name = "Quartiles") +
-  theme_ridges()
-```
-:::
-
-Instead of using a number to define the number of quantiles, cut-off points (e.g., 2.5% and 97.5% tails) can also be used to colour a ridgeline plot.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = factor(stat(quantile))
-           )) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE, 
-    quantiles = c(0.025, 0.975)
-    ) +
-  scale_fill_manual(
-    name = "Probability",
-    values = c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
-    labels = c("(0, 0.025]", "(0.025, 0.975]", "(0.975, 1]")
-  ) +
-  theme_ridges()
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam,
-       aes(x = ENGLISH, 
-           y = CLASS, 
-           fill = factor(stat(quantile))
-           )) +
-  stat_density_ridges(
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE, 
-    quantiles = c(0.025, 0.975)
-    ) +
-  scale_fill_manual(
-    name = "Probability",
-    values = c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
-    labels = c("(0, 0.025]", "(0.025, 0.975]", "(0.975, 1]")
-  ) +
-  theme_ridges()
-```
-:::
-
-## 9.4 Visualising Distribution with Raincloud Plot
-
-A raincloud plot is a data visualisation technique that produces a half-density of a distribution plot. It gets the name because the density plot is in the shape of a “raincloud”. The raincloud (half-density) plot enhances the traditional box-plot by highlighting the presence of multiple modalities (an indicator that different groups may exist). A boxplot does not show where densities are clustered, but a raincloud plot does.
-
-The functions from **ggdist** and **ggplot2** packages are used to create a raincloud plot.
-
-### 9.4.1 Plotting a Half Eye Graph
-
-First, a half-eye plot is plotted using the [`stat_halfeye()`](https://mjskay.github.io/ggdist/reference/stat_halfeye.html) function of the **ggdist** package.
-
-> ***Note***: The slab interval can be removed by setting the ".width" argument to 0 and "point_colour" argument to NA.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false  
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA)
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA)
-```
-:::
-
-### 9.4.2 Adding Boxplot with geom_boxplot()
-
-Second, the [`geom_boxplot()`](https://ggplot2.tidyverse.org/reference/geom_boxplot.html) function in the **ggplot2** package is used to add a narrow boxplot. The width and opacity are adjusted accordingly.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA)
-```
-
-## Code
-
-```{r}
-#| eval: false
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA)
-```
-:::
-
-### 9.4.3 Adding Dot Plot with stat_dots()
-
-Third, the [`stat_dots()`](https://mjskay.github.io/ggdist/reference/stat_dots.html) function in the **ggdist** package is used to produce a half-dotplot, which is similar to a histogram that indicates the number of samples (number of dots) in each bin.
-
-The "side" argument is set to "left" to place it on the left-hand side.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA) +
-  stat_dots(side = "left", 
-            justification = 1.2, 
-            binwidth = .5,
-            dotsize = 2)
-```
-
-## Code
-
-```{r}
-#| eval: false 
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA) +
-  stat_dots(side = "left", 
-            justification = 1.2, 
-            binwidth = .5,
-            dotsize = 2)
-```
-:::
-
-### 9.4.4 Finishing Touch
-
-Last, the [`coord_flip()`](https://ggplot2.tidyverse.org/reference/coord_flip.html) function in the **ggplot2** package is used to flip the raincloud plot horizontally to give it the raincloud appearance.
-
-The `theme_economist()` function in the **ggthemes** package is added to give the raincloud chart a standard professional publishing appearance.
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA) +
-  stat_dots(side = "left", 
-            justification = 1.2, 
-            binwidth = .5,
-            dotsize = 1.5) +
-  coord_flip() +
-  theme_economist()
-```
-
-## Code
-
-```{r}
-#| eval: false 
-ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA) +
-  stat_dots(side = "left", 
-            justification = 1.2, 
-            binwidth = .5,
-            dotsize = 1.5) +
-  coord_flip() +
-  theme_economist()
-```
-:::
