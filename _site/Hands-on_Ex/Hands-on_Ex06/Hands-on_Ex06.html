@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-02-18">
+<meta name="dcterms.date" content="2024-02-19">
 
 <title>ISSS608 - Hands-on Exercise 6</title>
 <style>
@@ -245,7 +245,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 18, 2024</p>
+      <p class="date">February 19, 2024</p>
     </div>
   </div>
   
@@ -617,6 +617,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="plotting-slopegraph">17.5 Plotting Slopegraph</h2>
 <p>A <a href="https://www.storytellingwithdata.com/blog/2020/7/27/what-is-a-slopegraph">slopegraph</a> is plotted to show the changes in the rice yield of the top 11 Asian countries from 1961 to 1980.</p>
 <p>For effective data visualisation design, the <code>factor()</code> function is used convert the value type ofthe “Year” field from numeric to factor.</p>
+<blockquote class="blockquote">
+<p><strong><em>Note</em></strong>: Reference for <a href="https://cran.r-project.org/web/packages/CGPfunctions/vignettes/Using-newggslopegraph.html">using newggslopegraph</a>.</p>
+</blockquote>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>rice <span class="sc">%&gt;%</span> </span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Year =</span> <span class="fu">factor</span>(Year)) <span class="sc">%&gt;%</span></span>

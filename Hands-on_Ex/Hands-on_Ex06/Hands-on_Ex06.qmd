@@ -1,6 +1,6 @@
 ---
 title: "Hands-on Exercise 6"
-date: "18 February 2024"
+date: "19 February 2024"
 date-modified: "last-modified" #allows for updating to the latest date
 format: html
 execute: 
@@ -313,7 +313,7 @@ A [slopegraph](https://www.storytellingwithdata.com/blog/2020/7/27/what-is-a-slo
 
 For effective data visualisation design, the `factor()` function is used convert the value type ofthe "Year" field from numeric to factor.
 
-> ***Note***: Reference for [u](https://cran.r-project.org/web/packages/CGPfunctions/vignettes/Using-newggslopegraph.html)[sing newggslopegraph](https://cran.r-project.org/web/packages/CGPfunctions/vignettes/Using-newggslopegraph.html).
+> ***Note***: Reference for [using newggslopegraph](https://cran.r-project.org/web/packages/CGPfunctions/vignettes/Using-newggslopegraph.html).
 
 ```{r}
 rice %>% 

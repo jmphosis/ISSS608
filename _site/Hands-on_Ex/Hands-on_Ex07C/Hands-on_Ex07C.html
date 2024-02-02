@@ -227,7 +227,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#extreme-value-maps" id="toc-extreme-value-maps" class="nav-link" data-scroll-target="#extreme-value-maps">23.5 Extreme Value Maps</a>
   <ul class="collapse">
   <li><a href="#percentile-map" id="toc-percentile-map" class="nav-link" data-scroll-target="#percentile-map">23.5.1 Percentile Map</a></li>
-  <li><a href="#percentile-map-1" id="toc-percentile-map-1" class="nav-link" data-scroll-target="#percentile-map-1">23.5.1 Percentile Map</a></li>
+  <li><a href="#why-write-functions" id="toc-why-write-functions" class="nav-link" data-scroll-target="#why-write-functions">23.5.2 Why Write Functions?</a></li>
+  <li><a href="#box-map" id="toc-box-map" class="nav-link" data-scroll-target="#box-map">23.5.2 Box Map</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -256,7 +257,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">February 1, 2024</p>
+      <p class="date-modified">February 2, 2024</p>
     </div>
   </div>
     
@@ -269,8 +270,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>23 Analytical Mapping</h1>
 <section id="overview-and-learning-outcomes" class="level2">
 <h2 class="anchored" data-anchor-id="overview-and-learning-outcomes">23.1 Overview and Learning Outcomes</h2>
-<p>This hands-on exercise is based on <a href="https://r4va.netlify.app/chap09">Chapter 9</a> of the <strong>R for Visual Analytics</strong> book.</p>
-<p>Visualising distribution is not new in statistical analysis. <a href="https://r4va.netlify.app/chap01">Chapter 1</a> covered some of the popular statistical graphic methods for visualising distribution. They are histogram, probability density curve (pdf), boxplot, notch plot, and violin plot, using the <a href="https://ggplot2.tidyverse.org/"><strong>ggplot2</strong></a> package. Chapter 9 will cover two relatively new statistical graphic methods for visualising distribution. They are ridgeline plot and raincloud plot using the <strong>ggplot2</strong> package and its extensions.</p>
+<p>This hands-on exercise is based on <a href="https://r4va.netlify.app/chap23">Chapter 23</a> of the <strong>R for Visual Analytics</strong> book.</p>
+<p>The learning outcomes are to use the appropriate functions of the <strong>tmap</strong> and <strong>tidyverse</strong> packages to plot analytical maps through the following steps:</p>
+<ul>
+<li><p>Import geospatial data in rds format into the R environment.</p></li>
+<li><p>Create cartographic quality choropleth maps using functions from the <strong>tmap</strong> package.</p></li>
+<li><p>Create a rate map.</p></li>
+<li><p>Create a percentile map.</p></li>
+<li><p>Create a boxmap.</p></li>
+</ul>
 </section>
 <section id="getting-started" class="level2">
 <h2 class="anchored" data-anchor-id="getting-started">23.2 Getting Started</h2>
@@ -279,65 +287,300 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>In this hands-on exercise, the following R packages are used:</p>
 <ul>
 <li><p><a href="https://www.tidyverse.org/"><strong>tidyverse</strong></a> (i.e.&nbsp;readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data;</p></li>
-<li><p><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html"><strong>ggthemes</strong></a> for extra themes, geoms, and scales for ggplot2;</p></li>
-<li><p><a href="https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html"><strong>ggridges</strong></a> for creating ridgeline plots; and</p></li>
-<li><p><a href="https://mjskay.github.io/ggdist/"><strong>ggdist</strong></a> for visualising distributions and uncertainty.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/sf/"><strong>sf</strong></a> for handling geospatial data; and</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html"><strong>tmap</strong></a> for thematic mapping.</p></li>
 </ul>
 <p>The code chunk below uses the <code>p_load()</code> function in the <strong>pacman</strong> package to check if the packages are installed. If yes, they are then loaded into the R environment. If no, they are installed, then loaded into the R environment.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, ggthemes,</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               ggridges, ggdist)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, sf, tmap)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="importing-data" class="level3">
 <h3 class="anchored" data-anchor-id="importing-data">23.2.2 Importing Data</h3>
-<p>The dataset for this hands-on exercise is imported into the R environment using the <code>read_csv()</code> function in the <strong>readr</strong> package and stored as the R object, <code>exam</code>.</p>
+<p>The dataset for this hands-on exercise is imported into the R environment using the <code>read_rds()</code> function in the <strong>readr</strong> package and stored as the R object, <code>NGA_wp</code>. The data is from a prepared dataset, <code>NGA_wp.rds</code><em>,</em> which is a polygon feature data frame providing information on water points in Nigeria at the LGA level.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>exam <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="st">"data/Exam_data.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>NGA_wp <span class="ot">=</span> <span class="fu">read_rds</span>(<span class="st">"data/rds/NGA_wp.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The tibble data frame, <code>exam_data</code>, has 7 columns and 322 rows.</p>
-<ul>
-<li><p>It consists of the year-end examination grades of a cohort of 322 Primary 3 students from a local school.</p></li>
-<li><p>The 7 variables/attributes are:</p>
-<ul>
-<li><p>Categorical: ID, CLASS, GENDER, and RACE.</p></li>
-<li><p>Continuous: MATHS, ENGLISH, and SCIENCE.</p></li>
-</ul></li>
-</ul>
 </section>
 </section>
 <section id="basic-choropleth-mapping" class="level2">
 <h2 class="anchored" data-anchor-id="basic-choropleth-mapping">23.3 Basic Choropleth Mapping</h2>
 <section id="visualising-distribution-of-non-functional-water-point" class="level3">
 <h3 class="anchored" data-anchor-id="visualising-distribution-of-non-functional-water-point">23.3.1 Visualising Distribution of Non-functional Water Point</h3>
-<p>xxx</p>
+<p>The non-functional water points, and total functional water points are plotted side by side.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">=</span> <span class="fu">tm_shape</span>(NGA_wp) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"wp_functional"</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">n =</span> <span class="dv">10</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">style =</span> <span class="st">"equal"</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">palette =</span> <span class="st">"Blues"</span>) <span class="sc">+</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">lwd =</span> <span class="fl">0.1</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Distribution of functional</span><span class="sc">\n</span><span class="st">water point by LGAs"</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.outside =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">=</span> <span class="fu">tm_shape</span>(NGA_wp) <span class="sc">+</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"total_wp"</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>          <span class="at">n =</span> <span class="dv">10</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>          <span class="at">style =</span> <span class="st">"equal"</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>          <span class="at">palette =</span> <span class="st">"Blues"</span>) <span class="sc">+</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">lwd =</span> <span class="fl">0.1</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Distribution of total</span><span class="sc">\n</span><span class="st">water point by LGAs"</span>,</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.outside =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(p2, p1, <span class="at">nrow =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex07C_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 </section>
 </section>
 <section id="choropleth-map-for-rates" class="level2">
 <h2 class="anchored" data-anchor-id="choropleth-map-for-rates">23.4 Choropleth Map for Rates</h2>
-<p>xxx</p>
+<p>It is important to consider rates on top of simply counts of things, given that water points are not equally distributed in space.</p>
 <section id="deriving-proportion-of-functional-water-points-and-non-functional-water-points" class="level3">
 <h3 class="anchored" data-anchor-id="deriving-proportion-of-functional-water-points-and-non-functional-water-points">23.4.1 Deriving Proportion of Functional Water Points and Non-functional Water Points</h3>
-<p>xxx</p>
+<p>The proportion of functional water points and the proportion of non-functional water points in each LGA are derived. The <code>mutate()</code> function in the <strong>dplyr</strong> package is used to derive two fields, “pct_functional”, and “pct_nonfunctional”.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>NGA_wp <span class="ot">=</span> NGA_wp <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pct_functional =</span> wp_functional<span class="sc">/</span>total_wp) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pct_nonfunctional =</span> wp_nonfunctional<span class="sc">/</span>total_wp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="plotting-map-of-rate" class="level3">
 <h3 class="anchored" data-anchor-id="plotting-map-of-rate">23.4.2 Plotting Map of Rate</h3>
-<p>xxx</p>
+<p>The map of rates (for functional water points) is then plotted below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(NGA_wp) <span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"pct_functional"</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">n =</span> <span class="dv">10</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">style =</span> <span class="st">"equal"</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">palette =</span> <span class="st">"Blues"</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">legend.hist =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">lwd =</span> <span class="fl">0.1</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Rate map of functional water point by LGAs"</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.outside =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex07C_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 </section>
 </section>
 <section id="extreme-value-maps" class="level2">
 <h2 class="anchored" data-anchor-id="extreme-value-maps">23.5 Extreme Value Maps</h2>
-<p>xxx</p>
+<p>Extreme value maps are variations of common choropleth maps where the classification is designed to highlight extreme values at the lower and upper end of the scale, with the goal of identifying outliers. These maps were developed in the spirit of spatializing EDA, i.e., adding spatial features to commonly used approaches in non-spatial EDA (Anselin, 1994).</p>
 <section id="percentile-map" class="level3">
 <h3 class="anchored" data-anchor-id="percentile-map">23.5.1 Percentile Map</h3>
-<p>xxx</p>
+<p>The percentile map is a special type of a quantile map with six specific categories: 0-1%,1-10%, 10-50%,50-90%,90-99%, and 99-100%. The corresponding breakpoints can be derived by means of the base R quantile command, passing an explicit vector of cumulative probabilities as c(0,.01,.1,.5,.9,.99,1). Note that the begin and endpoint need to be included.</p>
+<p>First, NA records are removed. Then, the customised classification method is created and the relevant values are extracted.</p>
+<p>When variables are extracted from an sf data frame, the geometry is extracted as well. For mapping and spatial manipulation, this is the expected behavior, but many base R functions cannot deal with the geometry. Specifically, the <code>quantile()</code> function gives an error. As a result <code>st_set_geomtry(NULL)</code> function is used to drop geometry field.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>NGA_wp <span class="ot">=</span> NGA_wp <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>()</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>percent <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>,.<span class="dv">01</span>,.<span class="dv">1</span>,.<span class="dv">5</span>,.<span class="dv">9</span>,.<span class="dv">99</span>,<span class="dv">1</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>var <span class="ot">=</span> NGA_wp[<span class="st">"pct_functional"</span>] <span class="sc">%&gt;%</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_set_geometry</span>(<span class="cn">NULL</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(var[,<span class="dv">1</span>], percent)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       0%        1%       10%       50%       90%       99%      100% 
+0.0000000 0.0000000 0.2169811 0.4791667 0.8611111 1.0000000 1.0000000 </code></pre>
+</div>
+</div>
 </section>
-<section id="percentile-map-1" class="level3">
-<h3 class="anchored" data-anchor-id="percentile-map-1">23.5.1 Percentile Map</h3>
-<p>xxx</p>
+<section id="why-write-functions" class="level3">
+<h3 class="anchored" data-anchor-id="why-write-functions">23.5.2 Why Write Functions?</h3>
+<p>Writing a function has three big advantages over using copy-and-paste:</p>
+<ul>
+<li><p>Can give a function an evocative name that makes your code easier to understand.</p></li>
+<li><p>As requirements change, you only need to update code in one place, instead of many.</p></li>
+<li><p>Eliminate the chance of making incidental mistakes when copying and pasting (i.e.&nbsp;updating a variable name in one place, but not in another).</p></li>
+</ul>
+<p><em>Source: <a href="https://r4ds.had.co.nz/functions.html#functions">Chapter 19: Functions</a> of <strong>R for Data Science</strong>.</em></p>
+<section id="creating-the-get.var-function" class="level4">
+<h4 class="anchored" data-anchor-id="creating-the-get.var-function">23.5.2.1 Creating the get.var Function</h4>
+<p>First, an R function is written to extract a variable (i.e.&nbsp;“wp_nonfunctional”) as a vector out of an sf data frame.</p>
+<blockquote class="blockquote">
+<p><strong><em>Note</em></strong>:</p>
+<ul>
+<li><p>Arguments:</p>
+<ul>
+<li><p>“vname”: variable name (as character, in quotes).</p></li>
+<li><p>“df”: name of sf data frame.</p></li>
+</ul></li>
+<li><p>Return:</p>
+<ul>
+<li>v: vector with values (without a column name).</li>
+</ul></li>
+</ul>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>get.var <span class="ot">=</span> <span class="cf">function</span>(vname,df) {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  v <span class="ot">=</span> df[vname] <span class="sc">%&gt;%</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">st_set_geometry</span>(<span class="cn">NULL</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  v <span class="ot">=</span> <span class="fu">unname</span>(v[,<span class="dv">1</span>])</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(v)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="a-percentile-mapping-function" class="level4">
+<h4 class="anchored" data-anchor-id="a-percentile-mapping-function">23.5.2.2 A Percentile Mapping Function</h4>
+<p>Then, a percentile mapping function is written.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>percentmap <span class="ot">=</span> <span class="cf">function</span>(vnam, df, <span class="at">legtitle=</span><span class="cn">NA</span>, <span class="at">mtitle=</span><span class="st">"Percentile Map"</span>){</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  percent <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>,.<span class="dv">01</span>,.<span class="dv">1</span>,.<span class="dv">5</span>,.<span class="dv">9</span>,.<span class="dv">99</span>,<span class="dv">1</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  var <span class="ot">=</span> <span class="fu">get.var</span>(vnam, df)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  bperc <span class="ot">=</span> <span class="fu">quantile</span>(var, percent)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(df) <span class="sc">+</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>() <span class="sc">+</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(df) <span class="sc">+</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>     <span class="fu">tm_fill</span>(vnam,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">title=</span>legtitle,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">breaks=</span>bperc,</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">palette=</span><span class="st">"Blues"</span>,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>          <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"&lt; 1%"</span>, <span class="st">"1% - 10%"</span>, <span class="st">"10% - 50%"</span>, <span class="st">"50% - 90%"</span>, <span class="st">"90% - 99%"</span>, <span class="st">"&gt; 99%"</span>))  <span class="sc">+</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>() <span class="sc">+</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> mtitle, </span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">title.position =</span> <span class="fu">c</span>(<span class="st">"right"</span>,<span class="st">"bottom"</span>))</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="testing-the-percentile-mapping-function" class="level4">
+<h4 class="anchored" data-anchor-id="testing-the-percentile-mapping-function">23.5.2.3 Testing the Percentile Mapping Function</h4>
+<p>A bare bones implementation is done below. Additional arguments involving the title, legend positioning, etc. could be passed to the function to customise various features of the map.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">percentmap</span>(<span class="st">"total_wp"</span>, NGA_wp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex07C_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="box-map" class="level3">
+<h3 class="anchored" data-anchor-id="box-map">23.5.2 Box Map</h3>
+<p>In essence, a box map is an augmented quartile map, with an additional lower and upper category.</p>
+<ul>
+<li><p>When there are lower outliers, then the starting point for the breaks is the minimum value, and the second break is the lower fence.</p></li>
+<li><p>In contrast, when there are no lower outliers, then the starting point for the breaks will be the lower fence, and the second break is the minimum value (there will be no observations that fall in the interval between the lower fence and the minimum value).</p></li>
+</ul>
+<blockquote class="blockquote">
+<p><strong><em>Note</em></strong>: To create a box map, a custom breaks specification will be used. However, there is a complication. The break points for the box map vary depending on whether lower or upper outliers are present.</p>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> NGA_wp,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">""</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> wp_nonfunctional)) <span class="sc">+</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex07C_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<section id="creating-the-boxbreaks-function" class="level4">
+<h4 class="anchored" data-anchor-id="creating-the-boxbreaks-function">23.5.2.1 Creating the boxbreaks function</h4>
+<p>An R function that creates break points for a box map is written.</p>
+<ul>
+<li><p>Arguments:</p>
+<ul>
+<li><p>“v”: vector with observations.</p></li>
+<li><p>“mult”: multiplier for IQR (default 1.5).</p></li>
+</ul></li>
+<li><p>Return:</p>
+<ul>
+<li>“bb”: vector with 7 break points compute quartile and fences.</li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>boxbreaks <span class="ot">=</span> <span class="cf">function</span>(v,<span class="at">mult=</span><span class="fl">1.5</span>) {</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  qv <span class="ot">=</span> <span class="fu">unname</span>(<span class="fu">quantile</span>(v))</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  iqr <span class="ot">=</span> qv[<span class="dv">4</span>] <span class="sc">-</span> qv[<span class="dv">2</span>]</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  upfence <span class="ot">=</span> qv[<span class="dv">4</span>] <span class="sc">+</span> mult <span class="sc">*</span> iqr</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  lofence <span class="ot">=</span> qv[<span class="dv">2</span>] <span class="sc">-</span> mult <span class="sc">*</span> iqr</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># initialize break points vector</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  bb <span class="ot">=</span> <span class="fu">vector</span>(<span class="at">mode=</span><span class="st">"numeric"</span>,<span class="at">length=</span><span class="dv">7</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># logic for lower and upper fences</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (lofence <span class="sc">&lt;</span> qv[<span class="dv">1</span>]) {  <span class="co"># no lower outliers</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    bb[<span class="dv">1</span>] <span class="ot">=</span> lofence</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    bb[<span class="dv">2</span>] <span class="ot">=</span> <span class="fu">floor</span>(qv[<span class="dv">1</span>])</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    bb[<span class="dv">2</span>] <span class="ot">=</span> lofence</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    bb[<span class="dv">1</span>] <span class="ot">=</span> qv[<span class="dv">1</span>]</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (upfence <span class="sc">&gt;</span> qv[<span class="dv">5</span>]) { <span class="co"># no upper outliers</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    bb[<span class="dv">7</span>] <span class="ot">=</span> upfence</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    bb[<span class="dv">6</span>] <span class="ot">=</span> <span class="fu">ceiling</span>(qv[<span class="dv">5</span>])</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    bb[<span class="dv">6</span>] <span class="ot">=</span> upfence</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    bb[<span class="dv">7</span>] <span class="ot">=</span> qv[<span class="dv">5</span>]</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>  bb[<span class="dv">3</span><span class="sc">:</span><span class="dv">5</span>] <span class="ot">=</span> qv[<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>]</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(bb)</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="testing-the-boxbreaks-function" class="level4">
+<h4 class="anchored" data-anchor-id="testing-the-boxbreaks-function">23.5.2.2 Testing the Boxbreaks Function</h4>
+<p>The same get.var function written at sub-section 23.5.2.1 is reused. The boxbreaks function is tested.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>var <span class="ot">=</span> <span class="fu">get.var</span>(<span class="st">"wp_nonfunctional"</span>, NGA_wp) </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">boxbreaks</span>(var)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -56.5   0.0  14.0  34.0  61.0 131.5 278.0</code></pre>
+</div>
+</div>
+</section>
+<section id="boxmap-function" class="level4">
+<h4 class="anchored" data-anchor-id="boxmap-function">23.5.2.2 Boxmap function</h4>
+<p>An R function to create a box map.</p>
+<ul>
+<li><p>Arguments:</p>
+<ul>
+<li><p>“vnam”: variable name (as character, in quotes).</p></li>
+<li><p>“df”: simple features polygon layer.</p></li>
+<li><p>“legtitle”: legend title.</p></li>
+<li><p>“mtitle”: map title.</p></li>
+<li><p>“multi”: mutliplier for IQR.</p></li>
+</ul></li>
+<li><p>Return: a tmap elements (i.e., plots a map).</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>boxmap <span class="ot">=</span> <span class="cf">function</span>(vnam, df, </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">legtitle=</span><span class="cn">NA</span>,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">mtitle=</span><span class="st">"Box Map"</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">mult=</span><span class="fl">1.5</span>){</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  var <span class="ot">=</span> <span class="fu">get.var</span>(vnam,df)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  bb <span class="ot">=</span> <span class="fu">boxbreaks</span>(var)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(df) <span class="sc">+</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_polygons</span>() <span class="sc">+</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(df) <span class="sc">+</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>     <span class="fu">tm_fill</span>(vnam,<span class="at">title=</span>legtitle,</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">breaks=</span>bb,</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">palette=</span><span class="st">"Blues"</span>,</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>          <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"lower outlier"</span>, </span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"&lt; 25%"</span>, </span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"25% - 50%"</span>, </span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"50% - 75%"</span>,</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"&gt; 75%"</span>, </span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"upper outlier"</span>))  <span class="sc">+</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>() <span class="sc">+</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> mtitle, </span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>            <span class="at">title.position =</span> <span class="fu">c</span>(<span class="st">"left"</span>,</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>                               <span class="st">"top"</span>))</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="fu">boxmap</span>(<span class="st">"wp_nonfunctional"</span>, NGA_wp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex07C_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 <p><span class="smallcaps"><strong>~~~ End of Hands-on Exercise 7C ~~~</strong></span></p>
 
 
+</section>
 </section>
 </section>
 </section>
