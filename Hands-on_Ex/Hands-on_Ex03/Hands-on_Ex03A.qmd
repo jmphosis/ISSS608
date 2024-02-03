@@ -288,6 +288,8 @@ The "data_id" aesthetic argument of the `geom_dotplot_interactive()` function is
 
 In the plot below, elements of the same CLASS are highlighted when the mouse hovers over any one of them.
 
+> ***Note***: \[In-class Exercise (Week 4)\] The inclusion of "tooltip = CLASS" in the "aes" argument of the `geom_dotplot_interactive()` function allows the student's class to be displayed at the tooltip when the mouse hovers over it.
+
 ::: panel-tabset
 ## Plot
 
@@ -296,7 +298,8 @@ In the plot below, elements of the same CLASS are highlighted when the mouse hov
 p3 = ggplot(data = exam_data, 
        aes(x = MATHS)) +
   geom_dotplot_interactive(           
-    aes(data_id = CLASS),             
+    aes(tooltip = CLASS, 
+        data_id = CLASS),             
     stackgroups = TRUE,               
     binwidth = 1,                        
     method = "histodot") +               
@@ -314,7 +317,8 @@ girafe(ggobj = p3,
 p3 = ggplot(data = exam_data, 
        aes(x = MATHS)) +
   geom_dotplot_interactive(           
-    aes(data_id = CLASS),             
+    aes(tooltip = CLASS, 
+        data_id = CLASS),             
     stackgroups = TRUE,               
     binwidth = 1,                        
     method = "histodot") +               
@@ -472,17 +476,26 @@ The coordinated multiple views methods can be used to show corresponding data po
 
 2.  The **patchwork** package is used inside the `girafe()` function to create the interactive coordinated multiple views.
 
-> Note: The "data_id*"* aesthetic argument is critical to link observations between plots and the "tooltip" aesthetic argument is optional but nice to have when the mouse hovers over a point.
+> ***Note***: The "data_id*"* aesthetic argument is critical to link observations between plots and the "tooltip" aesthetic argument is optional but nice to have when the mouse hovers over a point.
+
+> ***Note***: \[In-class Exercise (Week 4)\] The same approach used at sub-section 3.3.2 for displaying multiple information on the tooltip is applied here. The inclusion of "tooltip = exam_data\$tooltip2" in the "aes" argument of the `geom_dotplot_interactive()` function allows the student's ID, class, Maths and English scores to be displayed at the tooltip when the mouse hovers over it.
 
 ::: panel-tabset
 ## Plot
 
 ```{r}
 #| echo: false
+exam_data$tooltip2 = c(paste0(     
+  "Name = ", exam_data$ID,         
+  "\n Class = ", exam_data$CLASS,
+  "\n Maths Score = ", exam_data$MATHS,
+  "\n English Score = ", exam_data$ENGLISH)) 
+
 p6 = ggplot(data = exam_data, 
        aes(x = MATHS)) +
   geom_dotplot_interactive(              
-    aes(data_id = ID),              
+    aes(data_id = ID,
+        tooltip = exam_data$tooltip2),              
     stackgroups = TRUE,                  
     binwidth = 1,                        
     method = "histodot") +  
@@ -493,7 +506,8 @@ p6 = ggplot(data = exam_data,
 p7 = ggplot(data = exam_data, 
        aes(x = ENGLISH)) +
   geom_dotplot_interactive(              
-    aes(data_id = ID),              
+    aes(data_id = ID,
+        tooltip = exam_data$tooltip2),              
     stackgroups = TRUE,                  
     binwidth = 1,                        
     method = "histodot") + 
@@ -513,10 +527,17 @@ girafe(code = print(p6 + p7),
 
 ```{r}
 #| eval: false  
+exam_data$tooltip2 = c(paste0(     
+  "Name = ", exam_data$ID,         
+  "\n Class = ", exam_data$CLASS,
+  "\n Maths Score = ", exam_data$MATHS,
+  "\n English Score = ", exam_data$ENGLISH)) 
+
 p6 = ggplot(data = exam_data, 
        aes(x = MATHS)) +
   geom_dotplot_interactive(              
-    aes(data_id = ID),              
+    aes(data_id = ID,
+        tooltip = exam_data$tooltip2),              
     stackgroups = TRUE,                  
     binwidth = 1,                        
     method = "histodot") +  
@@ -527,7 +548,8 @@ p6 = ggplot(data = exam_data,
 p7 = ggplot(data = exam_data, 
        aes(x = ENGLISH)) +
   geom_dotplot_interactive(              
-    aes(data_id = ID),              
+    aes(data_id = ID,
+        tooltip = exam_data$tooltip2),              
     stackgroups = TRUE,                  
     binwidth = 1,                        
     method = "histodot") + 
