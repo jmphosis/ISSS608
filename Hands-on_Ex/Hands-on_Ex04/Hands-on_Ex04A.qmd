@@ -471,39 +471,4 @@ ggplot(exam,
 ```
 :::
 
-### 9.4.5 Interactivity?
-
-xxx
-
-::: panel-tabset
-## Plot
-
-```{r}
-#| echo: false 
-p = ggplot(exam, 
-       aes(x = RACE, 
-           y = ENGLISH)) +
-  stat_halfeye(adjust = 0.5,
-               justification = -0.2,
-               .width = 0,
-               point_colour = NA) +
-  geom_boxplot(width = .20,
-               outlier.shape = NA) +
-  stat_dots(side = "left", 
-            justification = 1.2, 
-            binwidth = .5,
-            dotsize = 1.5) +
-  coord_flip() +
-  theme_economist()
-
-ggplotly(p)    
-```
-
-## Code
-
-```{r}
-#| eval: false
-```
-:::
-
 [**\~\~\~ End of Hands-on Exercise 4A \~\~\~**]{.smallcaps}
