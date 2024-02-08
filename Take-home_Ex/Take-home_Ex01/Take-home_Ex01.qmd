@@ -70,7 +70,7 @@ ggthemr("solarized")
 
 ### 2.2 Data Sources
 
-The OECD Programme for International Student Assessment (PISA) measures how well 15-year-old students in different countries are "prepared to meet the challenges of today's knowledge societies" by looking at "their ability to use their knowledge and skills to meet real-life challenges". The PISA surveys take place very three years, the latest being conducted in 2022.
+The OECD Programme for International Student Assessment (PISA) measures how well 15-year-old students in different countries are "prepared to meet the challenges of today's knowledge societies" by looking at "their ability to use their knowledge and skills to meet real-life challenges". The PISA surveys take place every three years, the latest being conducted in 2022.
 
 The [PISA 2022 database](https://www.oecd.org/pisa/data/2022database/) contains the full set of responses from individual students, school principals, and parents. There are a total of five data files and their contents are as follows:
 

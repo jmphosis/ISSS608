@@ -152,9 +152,9 @@ Also, some R packages like **ggstatsplot** package also provides functions for b
 On of the advantage of using the [`ggcorrmat()`](https://indrajeetpatil.github.io/ggstatsplot/reference/ggcorrmat.html) function in the ggstatsplot package over other methods to visualise a correlation matrix is its ability to provide a comprehensive and yet professional statistical report.
 
 ```{r}
-#| eval: false
 ggcorrmat(
-  data = wine)
+  data = wine, 
+  cor.vars = 1:11)
 ```
 
 ### 6.4.2 Improved Plot
@@ -162,7 +162,6 @@ ggcorrmat(
 A title and a subtitle are added to enhance the plot. Also, the matrix is rearranged in order.
 
 ```{r}
-#| eval: false
 ggcorrmat(
   data = wine, 
   cor.vars = 1:11,
@@ -183,16 +182,7 @@ ggcorrmat(
 Also, specific components of the plot such as the font size of the x-axis, y-axis, and the statistical report can be controlled as follows.
 
 ```{r}
-#| eval: false
-ggcorrmat(
-  data = wine, 
-  cor.vars = 1:11,
-  ggcorrplot.args = list(outline.color = "black", 
-                         hc.order = TRUE,
-                         tl.cex = 10),
-  title    = "Correlogram for wine dataset",
-  subtitle = "Four pairs are no significant at p < 0.05") +
-  ggplot.component = list(
+ggplot.component = list(
     theme(text=element_text(size=5),
       axis.text.x = element_text(size = 8),
       axis.text.y = element_text(size = 8)))
