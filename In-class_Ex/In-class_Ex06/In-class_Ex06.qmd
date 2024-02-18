@@ -1,6 +1,6 @@
 ---
 title: "In-class Exercise 6"
-date: "17 February 2024"
+date: "24 February 2024"
 date-modified: "last-modified" #allows for updating to the latest date
 format: html
 execute: 
