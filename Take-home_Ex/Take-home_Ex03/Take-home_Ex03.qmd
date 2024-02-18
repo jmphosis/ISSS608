@@ -1253,13 +1253,19 @@ id = ggplot(temp,
               size = 3, 
               alpha = 0.5,               
               position = position_jitter(width = 0.2)) +   
-  labs(title = "Overall, Between 1983 and 2023,\nDaily Temperatures Appears To Be Increasing",           
-       subtitle = "<span style='color:#1E90FF'>Mean</span>, 
-       <span style='color:#B22222'>Max</span>, and 
-       <span style='color:#2E8B57'>Min</span> Daily Temps in Dec",           
+  labs(title = "Overall, Between 1983 and 2023,\nDaily Temperatures Appears To Be Increasing", 
        x = "Year",           
        y = "Temp\n(°C)",        
-       colour = "Temp")
+       colour = "Temp") +
+  theme(plot.title = element_text(hjust = 0.5, size = 8),         
+        plot.subtitle = element_text(size = 7),
+        axis.title.y = element_text(angle=360,
+                                    vjust=.5, 
+                                    hjust=1),
+        axis.text = element_text(size = 5),     
+        axis.title = element_text(size = 5),          
+        legend.title = element_text(size = 5),       
+        legend.text = element_text(size = 5))
 
 ggplotly(id)
 ```
@@ -1268,80 +1274,26 @@ ggplotly(id)
 
 ```{r}
 #| echo: false
-
-c2 = ggplot(weather,         
-       aes(Day,             
-           Year,             
-           fill = Max_Temp)) +  
-  geom_tile(color = "white",            
-            size = 0.1) +  
-  coord_equal() + 
-  scale_fill_gradient(name = "Max Temp\n(°C)",
-                      low = "#FFCCCC",
-                      high = "#FF0000") + 
-  labs(x = NULL,       
-       y = NULL,       
-       title = "More Days in Dec with Higher Max Daily Temp in 2023 than 1983",      
-       subtitle = "Max Temp by Year and Day in Dec") + 
-  theme(axis.ticks = element_blank(),       
-        plot.title = element_text(hjust = 0.5, size = 8), 
-        plot.subtitle = element_text(size = 7),
-        axis.text = element_text(size = 5),          
-        legend.title = element_text(size = 5),       
-        legend.text = element_text(size = 5)) +   
-  scale_x_discrete(limits = c(n))
-
-c3 = ggplot(weather,
+cal = ggplot(temp, 
        aes(Day, 
-           Year,             
-           fill = Min_Temp)) +  
-  geom_tile(color = "white",            
-            size = 0.1) +  
-  coord_equal() + 
-  scale_fill_gradient(name = "Min Temp\n(°C)",                     
-                      low = "light blue",                      
-                      high = "dark blue") + 
-  labs(x = NULL,       
-       y = NULL,       
-       title = "Less Days in Dec with Lower Min Daily Temp in 2023 than 1983",      
-       subtitle = "Min Temp by Year and Day in Dec") + 
-  theme(axis.ticks = element_blank(),       
-        plot.title = element_text(hjust = 0.5, size = 8), 
-        plot.subtitle = element_text(size = 7),
-        axis.text = element_text(size = 5),          
-        legend.title = element_text(size = 5),       
-        legend.text = element_text(size = 5)) +   
-  scale_x_discrete(limits = c(n))
+           Year, 
+           fill = value)) + 
+  geom_tile(color = "white", 
+          size = 0.1) + 
+  coord_equal() +
+  scale_fill_gradient(name = "Temp\n(°C)",
+                    low = "sky blue", 
+                    high = "dark blue") +
+  facet_wrap(~Temp, ncol = 1) +
+  labs(x = NULL, y = NULL, 
+     title = "Daily Temperatures in Dec") +
+  theme(axis.ticks = element_blank(),
+        axis.text.x = element_text(size = 7),
+        plot.title = element_text(hjust = 0.5),
+        legend.title = element_text(size = 8),
+        legend.text = element_text(size = 6) )
 
-c4 = ggplot(weather,         
-       aes(Day,             
-           Year,             
-           fill = Mean_Temp)) +  
-  geom_tile(color = "white",            
-            size = 0.1) +  
-  coord_equal() + 
-  scale_fill_gradient(name = "Mean Temp\n(°C)",                     
-                      low = "#CC99CC",                      
-                      high = "#660066") + 
-  labs(x = NULL,       
-       y = NULL,       
-       title = "Mean Daily Temp in Dec Increased between 1983 and 2023",      
-       subtitle = "Mean Temp by Year and Day in Dec") + 
-  theme(axis.ticks = element_blank(),       
-        plot.title = element_text(hjust = 0.5, size = 8), 
-        plot.subtitle = element_text(size = 7),
-        axis.text = element_text(size = 5),          
-        legend.title = element_text(size = 5),       
-        legend.text = element_text(size = 5)) +   
-  scale_x_discrete(limits = c(n))
-
-i1 = ggplotly(c)
-i2 = ggplotly(c2)
-i3 = ggplotly(c3)
-i4 = ggplotly(c4)
-
-subplot(i1, i2, i3, i4,
-        nrows = 4)
+ggplotly(cal)
 ```
 
 ## Code
@@ -1360,91 +1312,43 @@ id = ggplot(temp,
               size = 3, 
               alpha = 0.5,               
               position = position_jitter(width = 0.2)) +   
-  labs(title = "Overall, Between 1983 and 2023,\nDaily Temperatures Appears To Be Increasing",           
-       subtitle = "<span style='color:#1E90FF'>Mean</span>, 
-       <span style='color:#B22222'>Max</span>, and 
-       <span style='color:#2E8B57'>Min</span> Daily Temps in Dec",           
+  labs(title = "Overall, Between 1983 and 2023,\nDaily Temperatures Appears To Be Increasing", 
        x = "Year",           
        y = "Temp\n(°C)",        
-       colour = "Temp")
+       colour = "Temp") +
+  theme(plot.title = element_text(hjust = 0.5, size = 8),         
+        plot.subtitle = element_text(size = 7),
+        axis.title.y = element_text(angle=360,
+                                    vjust=.5, 
+                                    hjust=1),
+        axis.text = element_text(size = 5),     
+        axis.title = element_text(size = 5),          
+        legend.title = element_text(size = 5),       
+        legend.text = element_text(size = 5))
 
 ggplotly(id)
 
 #Calendar Heatmaps
-
-c2 = ggplot(weather,         
-       aes(Day,             
-           Year,             
-           fill = Max_Temp)) +  
-  geom_tile(color = "white",            
-            size = 0.1) +  
-  coord_equal() + 
-  scale_fill_gradient(name = "Max Temp\n(°C)",
-                      low = "#FFCCCC",
-                      high = "#FF0000") + 
-  labs(x = NULL,       
-       y = NULL,       
-       title = "More Days in Dec with Higher Max Daily Temp in 2023 than 1983",      
-       subtitle = "Max Temp by Year and Day in Dec") + 
-  theme(axis.ticks = element_blank(),       
-        plot.title = element_text(hjust = 0.5, size = 8), 
-        plot.subtitle = element_text(size = 7),
-        axis.text = element_text(size = 5),          
-        legend.title = element_text(size = 5),       
-        legend.text = element_text(size = 5)) +   
-  scale_x_discrete(limits = c(n))
-
-c3 = ggplot(weather,
+cal = ggplot(temp, 
        aes(Day, 
-           Year,             
-           fill = Min_Temp)) +  
-  geom_tile(color = "white",            
-            size = 0.1) +  
-  coord_equal() + 
-  scale_fill_gradient(name = "Min Temp\n(°C)",                     
-                      low = "light blue",                      
-                      high = "dark blue") + 
-  labs(x = NULL,       
-       y = NULL,       
-       title = "Less Days in Dec with Lower Min Daily Temp in 2023 than 1983",      
-       subtitle = "Min Temp by Year and Day in Dec") + 
-  theme(axis.ticks = element_blank(),       
-        plot.title = element_text(hjust = 0.5, size = 8), 
-        plot.subtitle = element_text(size = 7),
-        axis.text = element_text(size = 5),          
-        legend.title = element_text(size = 5),       
-        legend.text = element_text(size = 5)) +   
-  scale_x_discrete(limits = c(n))
+           Year, 
+           fill = value)) + 
+  geom_tile(color = "white", 
+          size = 0.1) + 
+  coord_equal() +
+  scale_fill_gradient(name = "Temp\n(°C)",
+                    low = "sky blue", 
+                    high = "dark blue") +
+  facet_wrap(~Temp, ncol = 1) +
+  labs(x = NULL, y = NULL, 
+     title = "Daily Temperatures in Dec") +
+  theme(axis.ticks = element_blank(),
+        axis.text.x = element_text(size = 7),
+        plot.title = element_text(hjust = 0.5),
+        legend.title = element_text(size = 8),
+        legend.text = element_text(size = 6) )
 
-c4 = ggplot(weather,         
-       aes(Day,             
-           Year,             
-           fill = Mean_Temp)) +  
-  geom_tile(color = "white",            
-            size = 0.1) +  
-  coord_equal() + 
-  scale_fill_gradient(name = "Mean Temp\n(°C)",                     
-                      low = "#CC99CC",                      
-                      high = "#660066") + 
-  labs(x = NULL,       
-       y = NULL,       
-       title = "Mean Daily Temp in Dec Increased between 1983 and 2023",      
-       subtitle = "Mean Temp by Year and Day in Dec") + 
-  theme(axis.ticks = element_blank(),       
-        plot.title = element_text(hjust = 0.5, size = 8), 
-        plot.subtitle = element_text(size = 7),
-        axis.text = element_text(size = 5),          
-        legend.title = element_text(size = 5),       
-        legend.text = element_text(size = 5)) +   
-  scale_x_discrete(limits = c(n))
-
-i1 = ggplotly(c)
-i2 = ggplotly(c2)
-i3 = ggplotly(c3)
-i4 = ggplotly(c4)
-
-subplot(i1, i2, i3, i4,
-        nrows = 4)
+ggplotly(cal)
 ```
 :::
 
