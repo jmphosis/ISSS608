@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Janet Toa">
 <meta name="dcterms.date" content="2024-02-24">
 
 <title>ISSS608 - In-class Exercise 6</title>
@@ -20,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -197,7 +232,21 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#time-on-the-horizon-gghoriplot-methods" id="toc-time-on-the-horizon-gghoriplot-methods" class="nav-link active" data-scroll-target="#time-on-the-horizon-gghoriplot-methods">20 Time on the Horizon: ggHoriPlot Methods</a>
+  <ul class="collapse">
+  <li><a href="#overview-and-learning-outcomes" id="toc-overview-and-learning-outcomes" class="nav-link" data-scroll-target="#overview-and-learning-outcomes">20.1 Overview and Learning Outcomes</a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">20.2 Getting Started</a>
+  <ul class="collapse">
+  <li><a href="#installing-and-loading-required-libraries" id="toc-installing-and-loading-required-libraries" class="nav-link" data-scroll-target="#installing-and-loading-required-libraries">20.2.1 Installing and Loading Required Libraries</a></li>
+  <li><a href="#importing-data" id="toc-importing-data" class="nav-link" data-scroll-target="#importing-data">20.2.2 Importing Data</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -211,6 +260,12 @@ ul.task-list li input[type="checkbox"] {
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Janet Toa </p>
+          </div>
+  </div>
     
     <div>
     <div class="quarto-title-meta-heading">Published</div>
@@ -222,7 +277,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">February 18, 2024</p>
+      <p class="date-modified">February 24, 2024</p>
     </div>
   </div>
     
@@ -231,10 +286,48 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>&lt;<em>placeholder</em>&gt;</p>
+<section id="time-on-the-horizon-gghoriplot-methods" class="level1">
+<h1>20 Time on the Horizon: ggHoriPlot Methods</h1>
+<section id="overview-and-learning-outcomes" class="level2">
+<h2 class="anchored" data-anchor-id="overview-and-learning-outcomes">20.1 Overview and Learning Outcomes</h2>
+<p>This hands-on exercise is based on <a href="https://r4va.netlify.app/chap20">Chapter 20</a> of the <strong>R for Visual Analytics</strong> book.</p>
+<p>A horizon graph is an analytical graphical method specially designed for visualising large numbers of time-series. It aims to overcome the issue of visualising highly overlapping time-series.</p>
+<p>A horizon graph essentially an area chart that has been split into slices and the slices then layered on top of one another with the areas representing the highest (absolute) values on top. Each slice has a greater intensity of colour based on the absolute value it represents.</p>
+<p>The learning outcome is to plot a horizon graph using the <a href="https://rivasiker.github.io/ggHoriPlot/"><strong>ggHoriPlot</strong></a> package.</p>
+</section>
+<section id="getting-started" class="level2">
+<h2 class="anchored" data-anchor-id="getting-started">20.2 Getting Started</h2>
+<section id="installing-and-loading-required-libraries" class="level3">
+<h3 class="anchored" data-anchor-id="installing-and-loading-required-libraries">20.2.1 Installing and Loading Required Libraries</h3>
+<p>In this hands-on exercise, the following R packages are used:</p>
+<ul>
+<li><a href="https://www.tidyverse.org/"><strong>tidyverse</strong></a> (i.e.&nbsp;readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data;</li>
+</ul>
+<!-- -->
+<ul>
+<li><p><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html"><strong>ggthemes</strong></a> for extra themes, geoms, and scales for ggplot2; and</p></li>
+<li><p><a href="https://rivasiker.github.io/ggHoriPlot/"><strong>ggHoriPlot</strong></a> for plotting horizon plots for ggplot2.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggHoriPlot, ggthemes, tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="importing-data" class="level3">
+<h3 class="anchored" data-anchor-id="importing-data">20.2.2 Importing Data</h3>
+<p>In this in-class exercise, the <a href="https://tablebuilder.singstat.gov.sg/table/TS/M212891">Average Retail Prices Of Selected Consumer Items</a> dataset will be used. The csv file, AVERP, is imported into the R environment using the read_csv() function in the <strong>readr</strong> package.</p>
+<blockquote class="blockquote">
+<p>Note: By default, the read_csv() function will import data in the “Date” field as a character data type. The <a href="https://lubridate.tidyverse.org/reference/ymd.html"><code>dmy()</code></a> function in the <a href="https://lubridate.tidyverse.org/"><strong>lubridate</strong></a> package is used to change the “Date” field into the appropriate date data type.</p>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>averp <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="st">"data/AVERP.csv"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">Date</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">dmy</span>(<span class="st">`</span><span class="at">Date</span><span class="st">`</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p><span class="smallcaps"><strong>~~~ End of In-class Exercise 6 ~~~</strong></span></p>
 
 
+</section>
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
