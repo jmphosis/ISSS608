@@ -60,14 +60,21 @@ averp = read_csv("data/AVERP.csv") %>%
 The horizon graph is then plotted below.
 
 ```{r}
+#| fig-width: 12
+#| fig-height: 10
+
 averp %>% 
+  # from 2018 onwards
   filter(Date >= "2018-01-01") %>%
   ggplot() +
   geom_horizon(aes(x = Date, y=Values), 
                origin = "midpoint", 
                horizonscale = 6)+
+  # to create one row for one item
   facet_grid(`Consumer Items`~.) +
+  # theme that use minimal no. of fields posible
     theme_few() +
+  # diverging colours used to get good separation of values above and below reference point
   scale_fill_hcl(palette = 'RdBu') +
   theme(panel.spacing.y=unit(0, "lines"), strip.text.y = element_text(
     size = 5, angle = 0, hjust = 0),
