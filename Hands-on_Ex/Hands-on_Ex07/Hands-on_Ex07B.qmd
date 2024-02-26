@@ -1,5 +1,6 @@
 ---
 title: "Hands-on Exercise 7B"
+author: "Janet Toa"
 date: "26 February 2024"
 date-modified: "last-modified" #allows for updating to the latest date
 format: html

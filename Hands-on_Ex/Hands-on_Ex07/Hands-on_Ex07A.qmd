@@ -1,5 +1,6 @@
 ---
 title: "Hands-on Exercise 7A"
+author: "Janet Toa"
 date: "26 February 2024"
 date-modified: "last-modified" #allows for updating to the latest date
 format: html
@@ -239,7 +240,7 @@ A "jenks" data classification that used 5 classes is plotted.
 tm_shape(mpsz_pop2020)+
   tm_fill("DEPENDENCY",
           n = 5,
-          style = "quantile") +
+          style = "jenks") +
   tm_borders(alpha = 0.5)
 ```
 
@@ -415,32 +416,15 @@ tm_shape(mpsz_pop2020)+
 ```
 :::
 
-Using **custom breaks**:
+#### 21.3.3.3 Custom Break
+
+For all the built-in styles, the category breaks are computed internally. In order to override these defaults, the breakpoints can be set explicitly by means of the "breaks*"* argument in the `tm_fill()`function. It is important to note that, in **tmap**, the breaks include a minimum and maximum. As a result, in order to end up with n categories, n+1 elements must be specified in the breaks option (the values must be in increasing order).
 
 ```{r}
 summary(mpsz_pop2020$DEPENDENCY)
 ```
 
-```{r}
-tm_shape(mpsz_pop2020)+   
-  tm_fill("DEPENDENCY",           
-          breaks = c(0, 0.60, 0.70, 0.80, 0.90, 1.00)) +   
-  tm_borders(alpha = 0.5)
-```
-
-#### 21.3.3.2 Custom Break
-
-For all the built-in styles, the category breaks are computed internally. In order to override these defaults, the breakpoints can be set explicitly by means of the *breaks* argument to the *tm_fill()*. It is important to note that, in **tmap** the breaks include a minimum and maximum. As a result, in order to end up with n categories, n+1 elements must be specified in the *breaks* option (the values must be in increasing order).
-
-Before we get started, it is always a good practice to get some descriptive statistics on the variable before setting the break points. Code chunk below will be used to compute and display the descriptive statistics of **DEPENDENCY** field.
-
-```{r}
-summary(mpsz_pop2020$DEPENDENCY)
-```
-
-With reference to the results above, we set break point at 0.60, 0.70, 0.80, and 0.90. In addition, we also need to include a minimum and maximum, which we set at 0 and 100. Our *breaks* vector is thus c(0, 0.60, 0.70, 0.80, 0.90, 1.00)
-
-Now, we will plot the choropleth map by using the code chunk below.
+With reference to the summary results above, the break points are set at 0.60, 0.70, 0.80, and 0.90, with 0 set as minimum, and 1.00 set as maximum. The choropleth map is then plotted using the custom breaks.
 
 ```{r}
 tm_shape(mpsz_pop2020)+
