@@ -1,0 +1,1172 @@
+---
+title: "Take-home Exercise 4"
+author: "Janet Toa"
+date: "4 March 2024"
+date-modified: "last-modified" #allows for updating to the latest date
+format: html
+execute: 
+  echo: true #shows the code
+  eval: true #shows the outcomes of the code
+  warning: false #does not show the warnings
+editor: visual
+background-color: lightgrey;
+font-family:  Palatino Linotype;
+---
+
+# **Prototyping Module for Visual Analytics Shiny Application**
+
+## 1 Introduction
+
+### 1.1 Background
+
+Singapore has come a long way since gaining independence in 1965. Without natural resources, human capital development through a well-planned, world-class education system was a critical part of Singapore's transformation from third world to first. Despite the internationally lauded success, Singapore's education system is far from perfect -- there still exists gaps in education achievement among students. According to the latest OECD's Programme for International Student Assessment (PISA) 2022, which measures 15-year-olds' ability to use their reading, mathematics, and science knowledge and skills to meet real-life challenges, socioeconomic status accounted for 17% of the variation in mathematics performance in Singapore (compared to 15% on average across OECD countries). Clearly, Singapore's success does not translate to success for every student. Why then do some students outperform others? And is socioeconomic status the only factor for success?
+
+Our team believes that knowledge is power. While causality cannot and should not be easily drawn between the various forces of influence and academic performance, a more detailed and nuanced understanding of these factors would highlight potential areas to focus on when engaging parents and students as well as when developing education and socioeconomic policies for a more inclusive and equitable society.
+
+### 1.2 Problem Statement
+
+The PISA is treated as a platform for geopolitical competition, as shown by an overemphasis on the comparison of PISA scores between different countries. Scant attention is paid to the extensive data collected through the student, parent, and school questionnaires that are administered alongside the tests, which may reveal more a nuanced understanding of the individual lived experiences of students.
+
+Research studies on the gaps in education attainment in Singapore tends to focus on traditional factors such as gender, race, and socioeconomic status. While these are important structural factors, they should be complemented by individual-level factors, such as psychological wellness, and social relations. Gen Alpha children are said to have reduced attention span, and less time for socialising. These could pose challenges in their education journeys, and deserve closer attention.
+
+Technical knowledge is required to perform accurate and reliable data wrangling and analysis of the survey outcomes from PISA. Such valuable information should be made available to the public in an accessible and interactive manner for self-discovery.
+
+### 1.3 Methodology
+
+The team will extract, analyse, and visualise the relationships between different factors and the PISA scores of Singapore students. Using various R packages, an interactive R shiny application with visual analytics techniques will be presented to enable users to interact with the data based on their personal interests and circumstances, and draw their own insights and conclusions regarding the state of learning in Singapore.
+
+Users will be able to:
+
+-   Compare the PISA scores between different groups of students based on factors such as gender, socioeconomic status (e.g., employment status of parents, immigrant status), and psychological well-being (e.g., feeling of loneliness, resilience when faced with challenges).
+
+-   Gain an understanding of the varying levels of importance and statistical significance of the various influences on PISA scores for different clusters of students.
+
+Overall, the research hopes to generate new knowledge on disparities in the everyday stress experience and psychological well-being between lower and higher SES students, and their spillover effects on academic performance and persistence. The broader implication of the study is that educational policies must actively address psychological challenges alongside resource challenges to better mitigate socioeconomic gaps in educational attainment.
+
+### 1.4 Objectives
+
+In this [take-home exercise](https://isss608-ay2023-24jan.netlify.app/take-home_ex/th_ex04), the objectives are to:
+
+-   Evaluate and determine if the necessary R packages needed for the team's Shiny application are supported in R CRAN;
+
+-   Prepare and test the specific R codes to return the expected visualisation outputs;
+
+-   Determine the parameters and outputs that will be provided in the Shiny application; and
+
+-   Select the appropriate Shiny user interface (UI) components for displaying the parameters determined.
+
+In this take-home exercise, I focus on prototyping the **Cluster Analysis** portion of the Shiny application, while my teammates would work on the Univariate & Bivariate Analysis, and Multivariate Analysis portions.
+
+## 2 Getting Started
+
+### 2.1 Setting the Analytical Tools for Data Wrangling
+
+The R packages used for data wrangling are:
+
+-   [**haven**](https://haven.tidyverse.org/) for importing SAS files;
+
+-   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr, ggplot2) for performing data science tasks such as importing, tidying, and wrangling data, as well as creating graphics based on The Grammar of Graphics;
+
+-   [**janitor**](https://sfirke.github.io/janitor/reference/index.html) for data exploration and cleaning;
+
+-   [**reshape2**](https://seananderson.ca/2013/10/19/reshape/) for transforming data between wide and long formats; and
+
+-   [**DT**](https://rstudio.github.io/DT/) and [**kableExtra**](https://haozhu233.github.io/kableExtra/) for dynamic report generation.
+
+The code chunk below uses the `p_load()` function in the **pacman** package to check if the packages are installed in the computer. If yes, they are then loaded into the R environment. If no, they are installed, and then loaded into the R environment.
+
+```{r}
+pacman::p_load(haven, tidyverse, 
+               janitor, reshape2,
+               DT, kableExtra)
+```
+
+### 2.2 Data Source
+
+The OECD Programme for International Student Assessment (PISA) measures how well 15-year-old students in different countries are "prepared to meet the challenges of today's knowledge societies" by looking at "their ability to use their knowledge and skills to meet real-life challenges". The PISA surveys take place very three years, the latest being conducted in 2022.
+
+The [PISA 2022 database](https://www.oecd.org/pisa/data/2022database/) contains the full set of responses from individual students, school principals, and parents. There are a total of five data files and their contents are as follows:
+
+-   Student questionnaire data file;
+
+-   School questionnaire data file;
+
+-   Teacher questionnaire data file;
+
+-   Cognitive item data file; and
+
+-   Questionnaire timing data file.
+
+For the purpose of this take-home exercise, the "**Student questionnaire data file**" is used.
+
+## 3 Data Wrangling
+
+### 3.1 Importing Data
+
+The dataset used in this take-home exercise is the 2022 PISA student questionnaire data file, `cy08msp_stu_qqq.sas7bdat`, which is in the SAS file format.
+
+The file is imported into the R environment using the `read_sas()` function in the **haven** package and stored as the R object, `stu_qqq`.
+
+```{r}
+#| eval: false  
+stu_qqq = read_sas("data/cy08msp_stu_qqq.sas7bdat")
+```
+
+The tibble data frame, `stu_qqq`, has 1,279 columns (variables) and 613,744 rows (observations).
+
+### 3.2 Filtering for Singapore Observations
+
+There are 6,606 rows with the country code (i.e., CNT) value of "SGP", which represents Singapore. This count is cross-verified by the information provided in the "CY08MSP_STU_QQQ" sheet in the [codebook](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fwebfs.oecd.org%2Fpisa2022%2FCY08MSP_CODEBOOK_5thDecember23.xlsx&wdOrigin=BROWSELINK). The codebook also stated that Singapore students' made up 1.0763% of the entire global student population who took part in the 2022 PISA.
+
+The `filter()` function in the [**dplyr**](https://dplyr.tidyverse.org/) package is used to obtain these rows, and stored as the R object, `stu_qqq_SG`.
+
+```{r}
+#| eval: false   
+stu_SG = stu_qqq %>% filter(CNT == "SGP")
+```
+
+The tibble data frame, `stu_SG`, is then saved in the rds file format and imported into the R environment.
+
+```{r}
+#| eval: false   
+write_rds(stu_SG, "data/stu_SG.rds")
+```
+
+```{r}
+stu_SG = read_rds("data/stu_SG.rds")
+```
+
+### 3.3 Filtering for Relevant Variables
+
+After perusing the [Codebook](https://webfs.oecd.org/pisa2022/CY08MSP_CODEBOOK_5thDecember23.xlsx) and [Technical Report](https://www.oecd.org/pisa/data/pisa2022technicalreport/), the team narrowed down the questions from the survey that would yield insightful results. The names of the columns are stored in a vector, `colname`. To filter the raw dataset with the columns, the `select()` function in the **readr** package is used to identify all the variables listed out in the `colname` vector.
+
+```{r}
+colname = c("ST034Q06TA", "ST265Q03JA", "ST270Q03JA", "ST004D01T", "ST296Q01JA", "ST296Q02JA", "ST296Q03JA", "STRATUM", "CNTSCHID", "HISCED", "IMMIG", "ST022Q01TA", "ST230Q01JA", "ST250D06JA", "ST250D07JA", "ST251Q01JA", "ST255Q01JA", "EXERPRAC", "ST250Q01JA", "WORKHOME", "ST268Q01JA", "ST268Q02JA", "ST268Q03JA")
+```
+
+The relevant columns are then extracted using the following functions:
+
+-   `select()` function to retain the following columns:
+
+    -   Variables identified in `colname` and
+
+    -   Columns that starts with "PV" and contains either "MATH", "SCIE", or "READ" to extract the plausible values of scores related to the subjects of Mathematics, Science, and Reading. This is performed using a combination of `starts_with()` and `contains()`.
+
+        -   `starts_with()`: Matches the beginning of the column name with "PV", and
+
+        -   `contains()`: Searches for columns containing three alternative subjects to be matched.
+
+-   `mutate()` to create 3 new variables to store the mean plausible values for each subject for each row using `rowMeans()` and `across()`.
+
+```{r}
+stu_SG_filtered = stu_SG %>% 
+
+  # Retains desired variables
+  select(all_of(colname), starts_with("PV") & contains(c("MATH", "READ", "SCIE"))) %>% 
+
+  # Calculates the mean of plausible values for each subject per student
+  mutate(Math = rowMeans(across(starts_with("PV") & contains("MATH")), na.rm = TRUE),
+         Reading = rowMeans(across(starts_with("PV") & contains("READ")), na.rm = TRUE),
+         Science = rowMeans(across(starts_with("PV") & contains("SCIE")), na.rm = TRUE),
+         ) %>% 
+  
+  # Drops Plausible Values columns
+  select(-starts_with("PV"))
+```
+
+The tibble data frame, `stu_SG_filtered`, contains 6,606 observations across 26 variables.
+
+### 3.4 Renaming Columns
+
+The columns are then renamed using the `rename()` function in the **dplyr** package.
+
+```{r}
+stu_SG_filtered =
+  stu_SG_filtered %>% 
+  rename(
+    "Loneliness" = "ST034Q06TA",
+    "ClassroomSafety" = "ST265Q03JA",
+    "TeacherSupport" = "ST270Q03JA",
+    "Gender" = "ST004D01T",
+    "Homework_Math" = "ST296Q01JA",
+    "Homework_Reading" = "ST296Q02JA",
+    "Homework_Science" = "ST296Q03JA",
+    "SchoolType" = "STRATUM",
+    "SchoolID" = "CNTSCHID",
+    "ParentsEducation" = "HISCED",
+    "Immigration" = "IMMIG",
+    "HomeLanguage" = "ST022Q01TA",
+    "Sibling" = "ST230Q01JA",
+    "Aircon" = "ST250D06JA",
+    "Helper" = "ST250D07JA",
+    "Vehicle" = "ST251Q01JA",
+    "Books" = "ST255Q01JA",
+    "Exercise" = "EXERPRAC",
+    "OwnRoom" = "ST250Q01JA",
+    "FamilyCommitment" = "WORKHOME",
+    "Preference_Math" = "ST268Q01JA",
+    "Preference_Reading" = "ST268Q02JA",
+    "Preference_Science" = "ST268Q03JA")
+```
+
+### 3.5 Dropping Invalid Responses
+
+There are some responses which are marked as invalid, or missing, in the "Helper" and "Aircon" variables. These responses are replaced with "NA".
+
+```{r}
+stu_SG_encode = stu_SG_filtered %>% 
+  mutate(Aircon = na_if(Aircon, "9999999"),
+         Helper = na_if(Helper, "9999999"))
+```
+
+### 3.6 Recoding and Ordering Values
+
+There are several types of responses for the Student's Questionnaire. We store all the response levels for each question in separate vectors and subsequently combine to create a global dictionary named *dict*.
+
+```{r}
+Books = c('1' = "0",
+               '2' = "1 - 10",
+               '3' = "11 - 25",
+               '4' = "26 - 100",
+               '5' = "101 - 200",
+               '6' = "201-500",
+               '7' = ">500")
+
+HomeLanguage = c('1' = "English",
+             '2' = "Others")
+
+# Likert Scales: Strong Disagree to Strongly Agree
+Preference_Math = c('1' = "Strongly Disagree",
+           '2' = "Disagree",
+           '3' = "Agree",
+           '4' = "Strongly Agree")
+
+Preference_Reading = c('1' = "Strongly Disagree",
+           '2' = "Disagree",
+           '3' = "Agree",
+           '4' = "Strongly Agree")
+
+Preference_Science = c('1' = "Strongly Disagree",
+           '2' = "Disagree",
+           '3' = "Agree",
+           '4' = "Strongly Agree")
+
+# Likert Scales: Strong Agree to Strongly Disagree
+Loneliness = c('1' = "Strongly Agree",
+           '2' = "Agree",
+           '3' = "Disagree",
+           '4' = "Strongly Disagree")
+
+ClassroomSafety = c('1' = "Strongly Agree",
+           '2' = "Agree",
+           '3' = "Disagree",
+           '4' = "Strongly Disagree")
+
+# Binary
+SchoolType = c('SGP01' = "Public",
+           'SGP03' = "Private")
+
+OwnRoom = c('1' = "Yes", 
+                '2' = "No")
+
+Aircon = c('7020001' = "Yes",
+            '7020002' = "No",
+            .default = NA
+            )
+
+Helper = c('7020001' = "Yes",
+            '7020002' = "No",
+            .default = NA)
+
+# Frequency responses
+Exercise = c('0' = "0",
+          '1' = "1", 
+          '2' = "2",
+          '3' = "3",
+          '4' = "4",
+          '5' = "5",
+          '6' = "6",
+          '7' = "7",
+          '8' = "8",
+          '9' = "9",
+          '10' = "10")
+
+FamilyCommitment = c('0' = "0",
+          '1' = "1", 
+          '2' = "2",
+          '3' = "3",
+          '4' = "4",
+          '5' = "5",
+          '6' = "6",
+          '7' = "7",
+          '8' = "8",
+          '9' = "9",
+          '10' = "10")
+
+# Time Periods
+Homework_Math = c('1' = "≤ 0.5hr",
+                '2' = "0.5hr - 1hr",
+                '3' = "1hr - 2hr",
+                '4' = "2hr - 3hr",
+                '5' = "3 - 4 hr",
+                '6' = "> 4hr")
+
+Homework_Reading = c('1' = "≤ 0.5hr",
+                '2' = "0.5hr - 1hr",
+                '3' = "1hr - 2hr",
+                '4' = "2hr - 3hr",
+                '5' = "3 - 4 hr",
+                '6' = "> 4hr")
+
+Homework_Science = c('1' = "≤ 0.5hr",
+                '2' = "0.5hr - 1hr",
+                '3' = "1hr - 2hr",
+                '4' = "2hr - 3hr",
+                '5' = "3 - 4 hr",
+                '6' = "> 4hr")
+
+# Gender
+Gender = c('1' = "Female",
+            '2' = "Male")
+
+
+# Immigrant Background
+Immigration = c('1' = "Native",
+           '2' = "2nd Generation",
+           '3' = "3rd Generation")
+
+# Education Level
+ParentsEducation = c('1'="Pre-Primary",   
+         '2'="Primary", 
+         '3'="Secondary",
+         '4'='Secondary',
+         '6'="Post-Secondary",
+         '7'="Post-Secondary",
+         '8'="Tertiary",
+         '9'="Tertiary",
+         '10'="Tertiary")
+
+# Posessions
+Vehicle = c('1' = "0",
+            '2' = "1",
+            '3' = "2",
+            '4' = "≥3")
+
+Sibling = c('1' = "0",
+            '2' = "1",
+            '3' = "2",
+            '4' = "≥3")
+
+# Support
+TeacherSupport = c('1' = "Every lesson",
+            '2' = "Most lesson",
+            '3' = "Some lessons",
+            '4' = "Never or almost never")
+
+# Global Dictionary
+dict = list(
+  "Loneliness" = Loneliness,
+  "ClassroomSafety" = ClassroomSafety,
+  "TeacherSupport" = TeacherSupport,
+  "Gender" = Gender,
+  "Homework_Math" = Homework_Math,
+  "Homework_Reading" = Homework_Reading,
+  "Homework_Science" = Homework_Science,
+  "SchoolType" = SchoolType,
+  "ParentsEducation" = ParentsEducation,
+  "Immigration" = Immigration,
+  "HomeLanguage" = HomeLanguage,
+  "Sibling" = Sibling,
+  "Aircon" = Aircon,
+  "Helper" = Helper,
+  "Vehicle" = Vehicle,
+  "Books" = Books,
+  "Exercise" = Exercise,
+  "OwnRoom" = OwnRoom,
+  "FamilyCommitment" = FamilyCommitment,
+  "Preference_Math" = Preference_Math,
+  "Preference_Reading" = Preference_Reading,
+  "Preference_Science" = Preference_Science)
+```
+
+The helper function below attempts to recode all of the columns based on the global recode dictionary, *dict*, using functions from the **base R**, **tidyr**, and **rlang** packages:
+
+-   The `names(x)` function retrieves the column names of the input dataframe
+
+-   The `recode()` function helps to recode values in the columns using *dicts*
+
+-   The `!!sym(x_nm)` function unquotes and evaluates the column name that matches the names of the dictionaries, while the `!!!dicts[[x_nm]]` function unquotes and splices the global recoding dictionary corresponding to the column name.
+
+```{r}
+rcd = function(x) {
+  x_nm = names(x)
+  mutate(x, !! x_nm := recode(!! sym(x_nm), !!! dict[[x_nm]]))
+}
+```
+
+The [`lmap_at()`](https://purrr.tidyverse.org/reference/lmap.html) function in the **purrr** package applies the helper function to the column in the data frame where the column name matches the keys of the dictionaries.
+
+```{r}
+stu_SG_rcd = lmap_at(stu_SG_encode, 
+        names(dict),
+        rcd)
+```
+
+The [`get_dupes()`](https://sfirke.github.io/janitor/reference/get_dupes.html) function in the **janitor** package is used to hunt for duplicate records. The results show that there are no duplicated rows.
+
+```{r}
+get_dupes(stu_SG_rcd)
+```
+
+The `mutate()` function in the **dplyr** package and the `fct_relevel()` function in the **forcats** package are then used to set the order for ordinal variables.
+
+```{r}
+stu_SG_rcd = stu_SG_rcd %>%
+    mutate(Books = fct_relevel(Books,
+                               "0",
+                               "1 - 10",
+                               "11 - 25",
+                               "26 - 100",
+                               "101 - 200",
+                               "201-500",
+                               ">500"),
+           Preference_Math = fct_relevel(Preference_Math,
+                                         "Strongly Disagree",
+                                         "Disagree",
+                                         "Agree",
+                                         "Strongly Agree"),
+           Preference_Reading = fct_relevel(Preference_Math,
+                                         "Strongly Disagree",
+                                         "Disagree",
+                                         "Agree",
+                                         "Strongly Agree"),
+           Preference_Science = fct_relevel(Preference_Math,
+                                         "Strongly Disagree",
+                                         "Disagree",
+                                         "Agree",
+                                         "Strongly Agree"),
+           Loneliness = fct_relevel(Loneliness,
+                                    "Strongly Agree",
+                                    "Agree",
+                                    "Disagree",
+                                    "Strongly Disagree"),
+           ClassroomSafety = fct_relevel(ClassroomSafety,
+                                    "Strongly Disagree",
+                                    "Disagree",
+                                    "Agree",
+                                    "Strongly Agree"),
+           Exercise = fct_relevel(Exercise,
+                                  "0",
+                                  "1", 
+                                  "2",
+                                  "3",
+                                  "4",
+                                  "5",
+                                  "6",
+                                  "7",
+                                  "8",
+                                  "9",
+                                  "10"),
+           FamilyCommitment = fct_relevel(FamilyCommitment,
+                                  "0",
+                                  "1", 
+                                  "2",
+                                  "3",
+                                  "4",
+                                  "5",
+                                  "6",
+                                  "7",
+                                  "8",
+                                  "9",
+                                  "10"),
+           Homework_Math = fct_relevel(Homework_Math, 
+                                       "≤ 0.5hr",
+                                       "0.5hr - 1hr",
+                                       "1hr - 2hr",
+                                       "2hr - 3hr",
+                                       "3 - 4 hr",
+                                       "> 4hr"),
+           Homework_Reading = fct_relevel(Homework_Reading, 
+                                       "≤ 0.5hr",
+                                       "0.5hr - 1hr",
+                                       "1hr - 2hr",
+                                       "2hr - 3hr",
+                                       "3 - 4 hr",
+                                       "> 4hr"),
+           Homework_Science = fct_relevel(Homework_Reading, 
+                                       "≤ 0.5hr",
+                                       "0.5hr - 1hr",
+                                       "1hr - 2hr",
+                                       "2hr - 3hr",
+                                       "3 - 4 hr",
+                                       "> 4hr"),
+           Immigration = fct_relevel(Immigration,
+                                     "Native",
+                                     "2nd Generation",
+                                     "3rd Generation"),
+           ParentsEducation = fct_relevel(ParentsEducation,
+                                          "Pre-Primary",
+                                          "Primary", 
+                                          "Secondary",
+                                          "Post-Secondary",
+                                          "Tertiary"),
+           Vehicle = fct_relevel(Vehicle,
+                                 "0",
+                                 "1",
+                                 "2",
+                                 "≥3"),
+           Sibling = fct_relevel(Sibling,
+                                 "0",
+                                 "1",
+                                 "2",
+                                 "≥3"),
+           TeacherSupport = fct_relevel(TeacherSupport,
+                                        "Never or almost never",
+                                        "Some lessons",
+                                        "Most lesson",
+                                        "Every lesson"))
+
+stu_SG_rcd$SchoolID = as.character(stu_SG_rcd$SchoolID)
+```
+
+The tibble data frame, `stu_SG_rcd`, is then saved in the rds file format and imported into the R environment as `cdata`.
+
+```{r}
+#| eval: false
+write_rds(stu_SG_rcd, "data/stu_SG_rcd.rds")
+```
+
+```{r}
+cluster_data = read_rds("data/stu_SG_rcd.rds")
+```
+
+```{r}
+#| echo: false
+datatable(cluster_data,
+              filter = 'top',
+              class = "compact",
+              options = list(pageLength = 5, dom = 'tip'))
+```
+
+## 4 Cluster Analysis Initial Proposal
+
+Under the Cluster Analysis sub-module, users will be able to conduct cluster analysis using either hierarchical or k-means clustering approaches. Users may build two cluster models and compare them against each other based on a variety of validation criteria (e.g., Hubert's gamme coefficient, Dunn index, corrected rand index).
+
+More specifically, we will utilise the following graphs:
+
+-   **Heatmap:** When the user chooses the hierarchical clustering approach, a heatmap is generated to allow the user to visualise the patterns of similarity or dissimilarity between subject scores and the various variables based on the colours gradients displayed. The user can then pick up underlying patterns and associations.
+
+-   **Scatter Plot:** When the user chooses the k-means (partitioning) clustering approach, a scatter plot is created to show the different clusters based on subject scores and variables (e.g., high-high, high-low, low-high, low-low quadrants), with clear demarcation by colours between each cluster. This provides an intuitive bird’s-eye view of the clustering outcomes. \[***Note: The scatter plot will not be utilised afterall given the large number of categorical variables in the dataset.***\]
+
+![](images/p5.PNG){fig-align="center"}
+
+## 5 Cluster Heatmap
+
+### 5.1 Choice of Cluster Heatmap
+
+Cluster heatmap is a powerful tool for exploring multivariate data. They are valuable when used appropriately in conjunction with domain expertise and an understanding of the underlying data characteristics.
+
+-   Help in identifying patterns and structures within complex datasets.
+
+-   Clusters and dendrograms provide insights into similarities and differences among data points.
+
+-   Enable simultaneous exploration of multiple variables, allowing users to grasp relationships within the data comprehensively.
+
+-   Users can customise clustering parameters, data transformation methods, and other aspects to tailor the visualisation to their needs.
+
+-   Interactive cluster heatmaps allow users to explore the data dynamically, adjusting parameters and observing the immediate impact on the visualisation.
+
+-   Useful for condensing large datasets into a manageable visual representation, highlighting key features.
+
+However, some words of caution would need to be taken into consideration as well:
+
+-   Interpretation can be complex, especially for large datasets, and may require domain knowledge to make sense of the patterns.
+
+-   Choice of clustering algorithms and parameters introduces subjectivity. Different methods may yield different results.
+
+-   Generating cluster heatmaps for large datasets can be computationally intensive, affecting performance and responsiveness.
+
+The R packages used for plotting interactive cluster heatmaps are [**heatmaply**](https://cran.r-project.org/web/packages/heatmaply/vignettes/heatmaply.html) and [**dendextend**](https://cran.r-project.org/web/packages/dendextend/vignettes/dendextend.html).
+
+```{r}
+pacman::p_load(heatmaply, dendextend)
+```
+
+### 5.2 Decision 1: Sampling Data
+
+As interactive cluster heatmaps cannot be easily generated for large datasets, a representative sample is taken for the purpose of data visualisation.
+
+The `na.omit()` function in the **stats** package is used to omit the rows with missing values in any of the variables. Then, the dataset is sampled by "SchoolID" using the `slice_sample()` function in the **dplyr** package, with the proportion of 10%. This would provide a data subset that allows for easier data visualisation.
+
+```{r}
+# User Input: seed value
+set.seed(123)
+
+# User Choice: group_by value
+# User Input: prop value
+heatmap_data = cluster_data %>%
+  na.omit() %>%
+  group_by(SchoolID)  %>%
+  slice_sample(prop = 0.1, replace = FALSE) %>%
+  ungroup()
+```
+
+### 5.3 Converting Data Frame to Matrix
+
+Before plotting the heatmap, the tibble data frame, `heatmap_data`, is converted to a data matrix.
+
+```{r}
+heatmap_data = data.matrix(heatmap_data)
+```
+
+### 5.4 Decision 2: Data Transformation Methods
+
+When analysing a multivariate dataset, it is very common that the variables include values that reflect different types of measurement. In general, these variables’ values have their own range. In order to ensure that all the variables have comparable values, data transformation is commonly used before clustering. The three main data transformation methods are supported by the `heatmaply()` function are: scale, normalise, and percentise.
+
+#### 5.4.1 Scaling Method
+
+When all variables are (or assumed to be) from some normal distribution, then scaling (i.e., subtract the mean and divide by the standard deviation) would bring them all close to the standard normal distribution. In such a case, each value would reflect the distance from the mean in units of standard deviation. The "scale" argument in the `heatmaply()` function supports column and row scaling.
+
+An interactive scaled basic cluster heatmap is then plotted using the `heatmaply()` function in the **heatmaply** package. The plot below uses the "scale" argument to scale column-wise.
+
+```{r}
+# User Choice: scale method
+heatmaply(heatmap_data,
+          scale = "column")
+```
+
+#### 5.4.2 Normalising Method
+
+When variables in the dataset comes from possibly different (and non-normal) distributions, the normalise function can be used to bring the values to the 0 to 1 scale by subtracting the minimum and dividing by the maximum of all observations. This preserves the shape of each variable’s distribution while making them easily comparable on the same “scale”. Different from scaling, the normalise method is performed on the input dataset.
+
+An interactive normalised basic cluster heatmap is then plotted using the `heatmaply()` function in the **heatmaply** package.
+
+```{r}
+heatmaply(normalize(heatmap_data))
+```
+
+#### 5.4.3 Percentising Method
+
+This is similar to ranking the variables, but instead of keeping the rank values, they are divided by the maximal rank. This is done by using the ecdf of the variables on their own values, bringing each value to its empirical percentile. The benefit of the percentise method is that each value has a relatively clear interpretation, it is the percent of observations that got that value or below it. Similar to the normalise method, the percentise method is also performed on the input dataset.
+
+An interactive percentised basic cluster heatmap is then plotted using the `heatmaply()` function in the **heatmaply** package.
+
+```{r}
+heatmaply(percentize(heatmap_data))
+```
+
+### 5.5 Decision 3: Clustering Algorithm
+
+The **heatmaply** package supports a variety of hierarchical clustering algorithm. The main arguments are:
+
+-   "dist_method" whose default is NULL (which results in "euclidean" to be used). Can accept alternative character strings indicating the method to be passed to distfun. By default distfun is dist hence this can be one of "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski".
+
+-   "hclust_method" whose default is NULL (which results in "complete" to be used). Can accept alternative character strings indicating the method to be passed to hclustfun By default hclustfun is hclust hence this can be one of "ward.D", "ward.D2", "single", "complete", "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC) or "centroid" (= UPGMC). Specifying hclust_method=NA causes heatmaply to use `find_dend()` to find the "optimal" dendrogram for the data.
+
+-   "k_row" is an integer scalar with the desired number of groups by which to color the dendrogram's branches in the rows (uses color_branches()) If NA then find_k() is used to deduce the optimal number of clusters.
+
+```{r}
+# User Choice: dist_method
+heatmaply(normalize(heatmap_data),
+          dist_method = "euclidean",
+          hclust_method = NA,
+          k_row = NA)
+```
+
+For ease of use, the cluster heatmap will be designed to allow the user to calibrate the cluster heatmap statistically, with the relevant data table on the best clustering method and line chart on the number of clusters displayed as supplementary visualisations alongside the cluster heatmap to allow the user to experiment. In order to determine the best clustering method and number of clusters, the `dend_expend()` and `find_k()` functions in the **dendextend** package is used.
+
+```{r}
+# Supplementary Visualisation 1 - Best Clustering Method:
+# User Choice: dist()'s method
+dend_expend(dist(normalize(heatmap_data),
+          method = "minkowski"))[[3]] %>% 
+  select(2:3)
+
+# Supplementary Visualisation 2 - Optimal No. of Clusters:
+# User Choice: dist()'s method and hclust()'s method
+plot(find_k(hclust(dist(normalize(heatmap_data),
+          method = "euclidean"), 
+          method = "average")))
+```
+
+### 5.6 Decision 4: Seriation Algorithm
+
+One of the problems with hierarchical clustering is that it does not actually place the rows in a definite order; it merely constrains the space of possible orderings. The `heatmaply()` function uses the "seriate" argument to find an optimal ordering of rows and columns. It is of a character indicating the method of matrix sorting (default: "OLO"). Implemented options include:
+
+-   "OLO": Optimal leaf ordering, optimizes the Hamiltonian path length that is restricted by the dendrogram structure - works in O(n\^4);
+
+-   "mean": sorts the matrix based on the reorderfun using marginal means of the matrix. This is the default used by heatmap.2;
+
+-   "none": the default order produced by the dendrogram; and
+
+-   "GW": Gruvaeus and Wainer heuristic to optimize the Hamiltonian path length that is restricted by the dendrogram structure.
+
+#### 5.6.1 Optimal Leaf Ordering (OLO)
+
+The seriation algorithm of Optimal Leaf Ordering (OLO) is used in the plot. This algorithm starts with the output of an agglomerative clustering algorithm and produces a unique ordering, one that flips the various branches of the dendrogram around so as to minimise the sum of dissimilarities between adjacent leaves.
+
+```{r}
+heatmaply(normalize(heatmap_data),           
+          seriate = "OLO")
+```
+
+#### 5.6.2 Gravaeus and Wainer (GW)
+
+The default option is “OLO” (Optimal leaf ordering) which optimises the above criterion (in O(n\^4)). Another option is “GW” (Gruvaeus and Wainer) which aims for the same goal but uses a potentially faster heuristic.
+
+```{r}
+heatmaply(normalize(heatmap_data),
+          seriate = "GW")
+```
+
+#### 5.6.3 Mean
+
+The option “mean” gives the output we would get by default from heatmap functions in other packages such as **heatmap.2**.
+
+```{r}
+heatmaply(normalize(heatmap_data),
+          seriate = "mean")
+```
+
+#### 5.6.4 None
+
+The option “none” gives us dendrograms without any rotation that is based on the data matrix.
+
+```{r}
+heatmaply(normalize(heatmap_data),
+          seriate = "none")
+```
+
+### 5.7 Combining All Decisions
+
+To summarise, the relevant codes would be used to generate the cluster heatmap based on the user's choices for three main categories of decisions.
+
+```{r}
+#| eval: false  
+# Step 1: Choice of Data Sampling Approach
+# - User Input: seed value
+# set.seed(<value>)
+# 
+# - User Choice: group_by value
+# - User Input: prop value
+# heatmap_data = cluster_data %>%
+#   na.omit() %>%
+#   group_by(<variable name>)  %>%
+#   slice_sample(prop = <value>, replace = <TRUE/FALSE>) %>%
+#   ungroup()
+#   
+# Step 2: Choice of Data Transformation Method
+# - If Choice is Scale method: 
+# heatmaply(heatmap_data,           
+#           scale = "<column/row>")  
+# 
+# - If Choice is Normalise method: 
+# heatmaply(normalize(heatmap_data),           
+#           scale = "none")  
+# 
+# - If Choice is Percentise method: 
+# heatmaply(percentize(heatmap_data),           
+#           scale = "none")
+# 
+# Step 3: Choice of Clustering Algorithm
+# - User Choice: dist_method
+# heatmaply(normalize(heatmap_data),
+#           dist_method = "<euclidean/maximum/manhattan/canberra/binary/minkowski>",
+#           hclust_method = NA,
+#           k_row = NA)
+# 
+# Supplementary Visualisation - Best Clustering Method:
+# - User Choice: dist() method
+# dend_expend(dist(<normalize/percentize>(heatmap_data),
+#           <scale = "<column/row>",>
+#           method = "<euclidean/maximum/manhattan/canberra/binary/minkowski>"))[[3]] %>% 
+#   select(2:3)
+# 
+# Supplementary Visualisation - Optimal No. of Clusters:
+# - User Choice: dist() method and hclust() method
+# plot(find_k(hclust(dist(<normalize/percentize>(heatmap_data),
+#           <scale = "<column/row>",>
+#           method = "<euclidean/maximum/manhattan/canberra/binary/minkowski>"), 
+#           method = "<complete/ward.D/ward.D2/single/average/mcquitty/median/centroid>")))
+# 
+# Step 4: Choice of Seriation Algorithm
+# - User Choice: seriate
+# heatmaply(<normalize/percentize>(heatmap_data),
+#           <scale = "<column/row>",>
+#           seriate = "<OLO/mean/GW/none>")
+```
+
+## 6 Parallel Plot
+
+### 6.1 Choice of Parallel Plot
+
+Parallel plot is an effective tool for exploring relationships among multiple variables simultaneously, providing a holistic view of the data.
+
+-   Facilitate the identification of patterns, trends, and anomalies in the dataset by visually connecting related variables.
+
+-   Suitable for comparing patterns between different groups or categories within the dataset, aiding in group-wise analysis.
+
+-   Complement clustering analyses by visually representing the similarities and differences among clusters.
+
+-   Outliers can be easily identified as deviations from the typical pattern along the parallel axes.
+
+-   The relative importance of variables can be assessed based on their impact on the overall pattern in the parallel plot.
+
+-   Users can customise parallel plots by selecting specific variables, adjusting color schemes, and modifying the appearance for better interpretability.
+
+-   Interactive parallel plots allow users to dynamically explore the data, emphasising certain variables or groups for deeper investigation.
+
+However, some words of caution would need to be taken into consideration as well:
+
+-   Handling high-dimensional data can be challenging as the complexity of the plot increases with the number of variables.
+
+-   With many variables, lines on the plot may overlap, making it difficult to discern individual patterns and affecting interpretability.
+
+-   The way variables are connected can introduce subjectivity, and different connections may lead to different interpretations.
+
+-   Parallel plots are most suitable for numerical data, and their effectiveness may diminish with categorical or ordinal variables. \[***Note: However, parallel plot is still a better choice than Sankey diagram in dealing with a mix of continuous and categorical variables within a dataset.***\]
+
+The R package used for plotting interactive parallel plots is [**parallelPlot**](https://www.rdocumentation.org/packages/parallelPlot/versions/0.3.1).
+
+```{r}
+pacman::p_load(parallelPlot)
+```
+
+### 6.2 Decision 1: Sampling Data
+
+As interactive parallel plots cannot be easily generated for large datasets, a representative sample is taken for the purpose of data visualisation.
+
+The `na.omit()` function in the **stats** package is used to omit the rows with missing values in any of the variables. Then, the dataset is sampled by "SchoolID" using the `slice_sample()` function in the **dplyr** package, with the proportion of 10%. This would provide a data subset that allows for easier data visualisation. The "SchoolID" variable is then dropped since there are too many IDs, which may not yield useful insights in parallel plots.
+
+```{r}
+# User Input: seed value 
+set.seed(123)  
+
+# User Choice: group_by value 
+# User Input: prop value 
+parallelplot_data = cluster_data %>%   
+  na.omit() %>%   
+  group_by(SchoolID)  %>%   
+  slice_sample(prop = 0.1, replace = FALSE) %>%   
+  ungroup() %>%
+  select(-c("SchoolID"))
+```
+
+### 6.3 Decision 2: Filtering for Relevant Variables and Indicating Categorical Variables' Categories
+
+The list of categories for the categorical variables are first prepared.
+
+```{r}
+# Preparing List of Categories for Each Categorical Variable in Specific Order
+Loneliness = list("Strongly Agree",
+                  "Agree",
+                  "Disagree",
+                  "Strongly Disagree")
+
+ClassroomSafety = list("Strongly Disagree",
+                "Disagree",
+                "Agree",
+                "Strongly Agree")
+
+Preference_Math = list("Strongly Disagree",
+                "Disagree",
+                "Agree",
+                "Strongly Agree")
+
+Preference_Reading = list("Strongly Disagree",
+                "Disagree",
+                "Agree",
+                "Strongly Agree")
+
+Preference_Science = list("Strongly Disagree",
+                "Disagree",
+                "Agree",
+                "Strongly Agree")
+
+Books = list("0",
+             "1 - 10",
+             "11 - 25",
+             "26 - 100",
+             "101 - 200",
+             "201-500",
+             ">500")
+
+Exercise = list("0",
+                "1", 
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10")
+
+FamilyCommitment = list("0",
+                "1", 
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10")
+
+Homework_Math = list("≤ 0.5hr",
+             "0.5hr - 1hr",
+             "1hr - 2hr",
+             "2hr - 3hr",
+             "3 - 4 hr",
+             "> 4hr")
+
+Homework_Reading = list("≤ 0.5hr",
+             "0.5hr - 1hr",
+             "1hr - 2hr",
+             "2hr - 3hr",
+             "3 - 4 hr",
+             "> 4hr")
+
+Homework_Science = list("≤ 0.5hr",
+             "0.5hr - 1hr",
+             "1hr - 2hr",
+             "2hr - 3hr",
+             "3 - 4 hr",
+             "> 4hr")
+
+Immigration = list("Native",
+                   "2nd Generation",
+                   "3rd Generation")
+
+ParentsEducation = list("Pre-Primary",
+                        "Primary", 
+                        "Secondary",
+                        "Post-Secondary",
+                        "Tertiary")
+
+Sibling = list("0",
+             "1",
+             "2",
+             "≥3")
+
+Vehicle = list("0",
+             "1",
+             "2",
+             "≥3")
+
+TeacherSupport = list("Never or almost never",
+                      "Some lessons",
+                      "Most lesson",
+                      "Every lesson")
+
+HomeLanguage = list("English",
+                    "Others")
+
+SchoolType = list("Public",
+                  "Private")
+
+Aircon = list("No", "Yes")
+
+Helper = list("No", "Yes")
+
+Gender = list("Female",
+              "Male")
+```
+
+The `parallelPlot()` function is then used to plot an interactive parallel plot.
+
+```{r}
+#| eval: false
+# Full Set of Variables & Lists of Categories
+# parallelPlot(parallelplot_data[,c(1:25)],
+#              categorical = list(
+#                Loneliness,
+#                ClassroomSafety,
+#                TeacherSupport,
+#                Gender,
+#                Homework_Math,
+#                Homework_Reading,
+#                Homework_Science,
+#                SchoolType,
+#                ParentsEducation,
+#                Immigration,
+#                HomeLanguage,
+#                Sibling,
+#                Aircon,
+#                Helper,
+#                Vehicle,
+#                Books,
+#                Exercise,
+#                OwnRoom,
+#                FamilyCommitment,
+#                Preference_Math,
+#                Preference_Reading,
+#                Preference_Science,
+#                NULL,
+#                NULL,
+#                NULL))
+```
+
+```{r}
+# User Input: Chosen Columns (Recommended: Up to 8)
+parallelPlot(parallelplot_data[,c(4, 5, 8, 9, 10, 17, 20, 23)],
+             categorical = list(
+               Gender,
+               Homework_Math,
+               SchoolType,
+               ParentsEducation,
+               Immigration,
+               Exercise,
+               Preference_Math,
+               NULL))
+```
+
+### 6.4 Decision 3: Aesthetics
+
+The aesthetics of the parallel plot is then added. This allows the user to customise the plot's colours.
+
+Also, the "rotateTitle" argument is set to "TRUE" for readability.
+
+```{r}
+# User Input: Chosen Columns (Recommended: Up to 8)
+# User Input: Name of Reference Column (to determine colour to attribute to a row)
+# User Input: Colour Scale for Continuous Data
+# User Choice: Colour Scale for Categorical Data
+parallelPlot(parallelplot_data[,c(4, 5, 8, 9, 10, 17, 20, 23)],
+             categorical = list(
+               Gender,
+               Homework_Math,
+               SchoolType,
+               ParentsEducation,
+               Immigration,
+               Exercise,
+               Preference_Math,
+               NULL),
+             rotateTitle = TRUE,
+             refColumnDim = "Gender",
+             continuousCS = "Blues",
+             categoricalCS = "Accent")
+```
+
+### 6.5 Combining All Decisions
+
+```{r}
+#| eval: false
+# - User Input: Chosen Columns (Recommended: Up to 8)
+# parallelPlot(parallelplot_data[,c(<chosen columns>)],
+#              categorical = list(<of lists of categories for each chosen column>))
+# 
+# - User Input: Name of Reference Column (to determine colour to attribute to a row)
+# - User Input: Colour Scale for Continuous Data
+# - User Choice: Colour Scale for Categorical Data
+# parallelPlot(parallelplot_data[,c(<chosen columns>)],
+#              categorical = list(<of lists of categories for each chosen column>),
+#              rotateTitle = TRUE,
+#              refColumnDim = "<variable name>",
+#              continuousCS = "<Viridis/Inferno/Magma/Plasma/Warm/Cool/Rainbow/CubehelixDefault/Blues/Greens/Greys/Oranges/Purples/Reds/BuGn/BuPu/GnBu/OrRd/PuBuGn/PuBu/PuRd/RdBu/RdPu/YlGnBu/YlGn/YlOrBr/YlOrRd>",
+#              categoricalCS = "<Category10/Accent/Dark2/Paired/Set1>")
+```
+
+## 7 User Interface Design
+
+After working through the details of the two types of plots (cluster heatmap and parallel plot) in the preceeding sections, the storyboard approach is now used to prototype the **Cluster Analysis** portion of the Shiny application. The two storyboards below (one for each type of plot) are used to illustrate the different components of the UI for the proposed design.
+
+```{r}
+#| eval: false  
+# Step 1: Choice of Data Sampling Approach
+# - User Input: seed value
+# set.seed(<value>)
+# 
+# - User Choice: group_by value
+# - User Input: prop value
+# heatmap_data = cluster_data %>%
+#   na.omit() %>%
+#   group_by(<variable name>)  %>%
+#   slice_sample(prop = <value>, replace = <TRUE/FALSE>) %>%
+#   ungroup()
+#   
+# Step 2: Choice of Data Transformation Method
+# - If Choice is Scale method: 
+# heatmaply(heatmap_data,           
+#           scale = "<column/row>")  
+# 
+# - If Choice is Normalise method: 
+# heatmaply(normalize(heatmap_data),           
+#           scale = "none")  
+# 
+# - If Choice is Percentise method: 
+# heatmaply(percentize(heatmap_data),           
+#           scale = "none")
+# 
+# Step 3: Choice of Clustering Algorithm
+# - User Choice: dist_method
+# heatmaply(normalize(heatmap_data),
+#           dist_method = "<euclidean/maximum/manhattan/canberra/binary/minkowski>",
+#           hclust_method = NA,
+#           k_row = NA)
+# 
+# Supplementary Visualisation - Best Clustering Method:
+# - User Choice: dist() method
+# dend_expend(dist(<normalize/percentize>(heatmap_data),
+#           <scale = "<column/row>",>
+#           method = "<euclidean/maximum/manhattan/canberra/binary/minkowski>"))[[3]] %>% 
+#   select(2:3)
+# 
+# Supplementary Visualisation - Optimal No. of Clusters:
+# - User Choice: dist() method and hclust() method
+# plot(find_k(hclust(dist(<normalize/percentize>(heatmap_data),
+#           <scale = "<column/row>",>
+#           method = "<euclidean/maximum/manhattan/canberra/binary/minkowski>"), 
+#           method = "<complete/ward.D/ward.D2/single/average/mcquitty/median/centroid>")))
+# 
+# Step 4: Choice of Seriation Algorithm
+# - User Choice: seriate
+# heatmaply(<normalize/percentize>(heatmap_data),
+#           <scale = "<column/row>",>
+#           seriate = "<OLO/mean/GW/none>")
+
+
+
+#| eval: false
+# - User Input: Chosen Columns (Recommended: Up to 8)
+# parallelPlot(parallelplot_data[,c(<chosen columns>)],
+#              categorical = list(<of lists of categories for each chosen column>))
+# 
+# - User Input: Name of Reference Column (to determine colour to attribute to a row)
+# - User Input: Colour Scale for Continuous Data
+# - User Choice: Colour Scale for Categorical Data
+# parallelPlot(parallelplot_data[,c(<chosen columns>)],
+#              categorical = list(<of lists of categories for each chosen column>),
+#              rotateTitle = TRUE,
+#              refColumnDim = "<variable name>",
+#              continuousCS = "<Viridis/Inferno/Magma/Plasma/Warm/Cool/Rainbow/CubehelixDefault/Blues/Greens/Greys/Oranges/Purples/Reds/BuGn/BuPu/GnBu/OrRd/PuBuGn/PuBu/PuRd/RdBu/RdPu/YlGnBu/YlGn/YlOrBr/YlOrRd>",
+#              categoricalCS = "<Category10/Accent/Dark2/Paired/Set1>")
+```
+
+test
+
+```{r}
+eval(formals(slice_sample)$replace)
+eval(formals(heatmaply)$scale)
+eval(formals(heatmaply)$dist_method)
+eval(formals(heatmaply)$seriate)
+eval(formals(dist)$method)
+eval(formals(hclust)$method)
+
+eval(formals(parallelPlot)$continuousCS)
+eval(formals(parallelPlot)$categoricalCS)
+```
+
+## 8 Key References
+
+-   [R for Visual Analytics](https://r4va.netlify.app/).
+
+-   [R for Data Science](https://r4ds.hadley.nz/).
+
+-   [Fundamentals of Data Visualisation](https://clauswilke.com/dataviz/).
+
+-   [Storyboard for Shiny application](https://giniceseah.netlify.app/posts/2021-07-31-storyboard/).
+
+[**\~\~\~ End of Take-home Exercise 4 \~\~\~**]{.smallcaps}
