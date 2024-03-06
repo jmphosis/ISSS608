@@ -548,7 +548,7 @@ datatable(cluster_data,
               options = list(pageLength = 5, dom = 'tip'))
 ```
 
-## 4 Cluster Analysis Initial Proposal
+## 4 Cluster Analysis *Initial* Proposal
 
 Under the Cluster Analysis sub-module, users will be able to conduct cluster analysis using either hierarchical or k-means clustering approaches. Users may build two cluster models and compare them against each other based on a variety of validation criteria (e.g., Hubert's gamme coefficient, Dunn index, corrected rand index).
 
@@ -1073,6 +1073,28 @@ parallelPlot(parallelplot_data[,c(4, 5, 8, 9, 10, 17, 20, 23)],
 
 After working through the details of the two types of plots (cluster heatmap and parallel plot) in the preceeding sections, the storyboard approach is now used to prototype the **Cluster Analysis** portion of the Shiny application. The two storyboards below (one for each type of plot) are used to illustrate the different components of the UI for the proposed design.
 
+### 7.1 Cluster Heatmap
+
+To summarise, the input/choices that the user is required to make are:
+
+1.  **Data Sampling Approach**: seed value, group_by() value, slice_sample() prop value and replace/do not replace.
+
+2.  **Data Transformation Method**: scale by column/row, normalise, or percentise.
+
+3.  **Clustering Algorithm**:
+
+    -   dist_method in heatmaply: euclidean, maximum, manhattan, canberra, binary, or minkowski.
+
+    -   dist in dend_expend: euclidean, maximum, manhattan, canberra, binary, or minkowski.
+
+    -   hclust in find_k: complete, ward.D, ward.D2, single, average, mcquitty, median, or centroid.
+
+    -   seriation algorithm in heatmaply: OLO, mean, GW, or none.
+
+As mentioned, the supplementary data table and visualisation will help the user who may not be very familiar with cluster heatmap to choose the suitable clustering method and number of clusters.
+
+**\<storyboard - note cannot choose k/clusters\>**
+
 ```{r}
 #| eval: false  
 # Step 1: Choice of Data Sampling Approach
@@ -1126,9 +1148,25 @@ After working through the details of the two types of plots (cluster heatmap and
 # heatmaply(<normalize/percentize>(heatmap_data),
 #           <scale = "<column/row>",>
 #           seriate = "<OLO/mean/GW/none>")
+```
 
+### 7.2 Parallel Plot
 
+To summarise, the input/choices that the user is required to make are:
 
+1.  **Chosen Variables** (columns).
+
+    -   The list of lists of categories in each categorical variable chosen have been pre-ordered for the dataset for ease of use.
+
+2.  **Reference Column**: to determine colour to attribute to a row.
+
+3.  **Colour Scale for Continuous Data**: Viridis, Inferno, Magma, Plasma, Warm, Cool, Rainbow, CubehelixDefault, Blues, Greens, Greys, Oranges, Purples, Reds, BuGn, BuPu, GnBu, OrRd, PuBuGn, PuBu, PuRd, RdBu, RdPu, YlGnBu, YlGn, YlOrBr, or YlOrRd.
+
+4.  **Colour Scale for Categorical Data**: Category10, Accent, Dark2, Paired, or Set1.
+
+**\<storyboard\>**
+
+```{r}
 #| eval: false
 # - User Input: Chosen Columns (Recommended: Up to 8)
 # parallelPlot(parallelplot_data[,c(<chosen columns>)],
