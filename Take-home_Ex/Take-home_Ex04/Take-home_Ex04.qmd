@@ -793,7 +793,8 @@ To summarise, the relevant codes would be used to generate the cluster heatmap b
 # - User Choice: seriate
 # heatmaply(<normalize/percentize>(heatmap_data),
 #           <scale = "<column/row>",>
-#           seriate = "<OLO/mean/GW/none>")
+#           seriate = "<OLO/mean/GW/none>",
+#           k_row = NA)
 ```
 
 ## 6 Parallel Plot
@@ -1093,7 +1094,9 @@ To summarise, the input/choices that the user is required to make are:
 
 As mentioned, the supplementary data table and visualisation will help the user who may not be very familiar with cluster heatmap to choose the suitable clustering method and number of clusters.
 
-**\<storyboard - note cannot choose k/clusters\>**
+![Storyboard 1: Cluster Heatmap](images/ClusterHeatmap.jpg){fig-align="center"}
+
+![Storyboard 2: Annotated Cluster Heatmap](images/ClusterHeatmap_Annotated.jpg){fig-align="center"}
 
 ```{r}
 #| eval: false  
@@ -1164,7 +1167,9 @@ To summarise, the input/choices that the user is required to make are:
 
 4.  **Colour Scale for Categorical Data**: Category10, Accent, Dark2, Paired, or Set1.
 
-**\<storyboard\>**
+![Storyboard 3: Parallel Plot](images/ParallelPlot.jpg){fig-align="center"}
+
+![Storyboard 4: Annotated Parallel Plot](images/ParallelPlot_Annotated.jpg){fig-align="center"}
 
 ```{r}
 #| eval: false
@@ -1183,21 +1188,11 @@ To summarise, the input/choices that the user is required to make are:
 #              categoricalCS = "<Category10/Accent/Dark2/Paired/Set1>")
 ```
 
-test
+## 8 Conclusion
 
-```{r}
-eval(formals(slice_sample)$replace)
-eval(formals(heatmaply)$scale)
-eval(formals(heatmaply)$dist_method)
-eval(formals(heatmaply)$seriate)
-eval(formals(dist)$method)
-eval(formals(hclust)$method)
+In conclusion, the Shiny application powerful tool for exploratory and confirmatory data analysis through visualisation. The PISA performance dataset is interesting and contains useful data for studying Singapore students’ academic performance in the three subjects at age 15. The prototyping of the Shiny application for the cluster analysis of the PISA dataset in this take-home exercise has provided an invaluable opportunity to apply various skills learnt in this module for data wrangling, data visualisation, and design. Our team hopes that the final product would provide a useful interface for users to explore the wonderful wealth of information within the PISA dataset, to better understand how various factors including gender, type of school, and socioeconomic status affect academic performance in Singapore.
 
-eval(formals(parallelPlot)$continuousCS)
-eval(formals(parallelPlot)$categoricalCS)
-```
-
-## 8 Key References
+## 9 Key References
 
 -   [R for Visual Analytics](https://r4va.netlify.app/).
 
