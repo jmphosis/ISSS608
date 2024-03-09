@@ -13,6 +13,93 @@ background-color: lightgrey;
 font-family:  Palatino Linotype;
 ---
 
-\<*placeholder*\>
+# Isopleth Map
+
+### 1 Installing and Loading Required Libraries
+
+In this hands-on exercise, the following R packages are used:
+
+-   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data;
+-   [**sf**](https://r-spatial.github.io/sf/) for importing, managing, and processing geospatial data;
+-   [**terra**](https://rspatial.r-universe.dev/terra) for spatial data analysis;
+-   [**gstat**](https://r-spatial.github.io/gstat/) for spatial and spatio-temporal geostatistical modelling, prediction and simulation.
+-   [**tmap**](https://r-tmap.github.io/tmap/) for thematic maps; and
+-   [**viridis**](https://ggplot2.tidyverse.org/reference/scale_viridis.html?q=viridis#null) for colour-blind friendly colour maps.
+
+```{r}
+pacman::p_load(sf, terra, gstat, tmap,
+               viridis, tidyverse)
+```
+
+The dataset with name, latitude, and longitude of each weather station is imported using the `read_csv()` function in the **readr** package.
+
+```{r}
+rfstations = read_csv("data/aspatial/RainfallStation.csv")
+```
+
+The dataset with the daily rainfall data is imported using the `read_csv()` function in the **readr** package, and processed using the `select()`, `group_by()`, `summarise()` and `ungroup()` functions in the **dplyr** package to obtain the total monthly rainfall by station.
+
+```{r}
+rfdata = read_csv("data/aspatial/DAILYDATA_202402.csv") %>%
+  select(c(1,5)) %>%
+  group_by(Station) %>%
+  summarise(MONTHSUM = sum(`Daily Rainfall Total (mm)`)) %>%
+  ungroup()
+```
+
+The two datasets are then combined using the `left_join()` function in the **dplyr** package by the names of the weather stations.
+
+```{r}
+rfdata = rfdata %>%
+  left_join(rfstations)
+```
+
+The combined dataset is then converted to an simple feature object using the `st_as_sf()` function in the **sf** package. The longitudes and latitudes are inserted as sf geometry points in the dataset. The `st_transform()` function in the **sf** package is used to trnasform the coordinate system (from decimal degrees to metres).
+
+```{r}
+rfdata_sf = st_as_sf(rfdata,
+                     coords = c("Longitude",
+                                "Latitude"),
+                     crs = 4326) %>%
+  st_transform(crs = 3414)
+```
+
+The spatial shapefile is then imported using the `st_read()` function in the **sf** package and transformed using the `st_transform()` function in the **sf** package.
+
+```{r}
+mpsz2019 = st_read(dsn = "data/geospatial",
+                   layer = "MPSZ-2019") %>%
+  st_transform(crs = 3414)
+```
+
+The functions in the **tmap** package are then used to plot the total monthly rainfall by weather stations based on their geographical locations.
+
+```{r}
+tmap_options(check.and.fix = TRUE)
+tmap_mode("view")
+tm_shape(mpsz2019) +
+  tm_borders() +
+  tm_shape(rfdata_sf) +
+  tm_dots(col = 'MONTHSUM')
+tmap_mode("plot")
+```
+
+The rast() function and the xyFromCell() function in the terra package are used to create the grid and xy coordinates.
+
+```{r}
+grid = terra::rast(mpsz2019,
+                   nrows = 690,
+                   ncols = 1075)
+
+xy = terra::xyFromCell(grid,
+                       1:ncell(grid))
+```
+
+sf layer
+
+```{r}
+# coop = st_as_sf(as.data.frame(xy),
+#                coords = c("x", "y"))
+```
 
 [**\~\~\~ End of In-class Exercise 7 \~\~\~**]{.smallcaps}

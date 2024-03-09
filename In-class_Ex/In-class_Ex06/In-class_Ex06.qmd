@@ -32,12 +32,7 @@ The learning outcome is to plot a horizon graph using the [**ggHoriPlot**](https
 In this hands-on exercise, the following R packages are used:
 
 -   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data;
-
-```{=html}
-<!-- -->
-```
 -   [**ggthemes**](https://ggplot2.tidyverse.org/reference/ggtheme.html) for extra themes, geoms, and scales for ggplot2; and
-
 -   [**ggHoriPlot**](https://rivasiker.github.io/ggHoriPlot/) for plotting horizon plots for ggplot2.
 
 ```{r}
