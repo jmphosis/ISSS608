@@ -1,6 +1,7 @@
 ---
 title: "In-class Exercise 7"
-date: "24 February 2024"
+author: "Janet Toa"
+date: "9 March 2024"
 date-modified: "last-modified" #allows for updating to the latest date
 format: html
 execute: 
