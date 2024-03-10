@@ -35,14 +35,16 @@ website:
             href: Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05E.html
           - text: Hands-on Exercise 6
             href: Hands-on_Ex/Hands-on_Ex06/Hands-on_Ex06.html
-          - text: Hands-on Exercise 7A
+          - text: Hands-on Exercise 7A (Lesson 8)
             href: Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07A.html
-          - text: Hands-on Exercise 7B
+          - text: Hands-on Exercise 7B (Lesson 8)
             href: Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07B.html
-          - text: Hands-on Exercise 7C
+          - text: Hands-on Exercise 7C (Lesson 8)
             href: Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07C.html
-          - text: Hands-on Exercise 8
+          - text: Hands-on Exercise 8 (Lesson 9)
             href: Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html
+          - text: Hands-on Exercise 9 (Lesson 10)
+            href: Hands-on_Ex/Hands-on_Ex09/Hands-on_Ex09.html
       - text: In-class Exercise
         menu: 
           - text: In-class Exercise 1

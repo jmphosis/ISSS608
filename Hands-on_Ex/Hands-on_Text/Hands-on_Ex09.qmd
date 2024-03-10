@@ -1,0 +1,124 @@
+---
+title: "Hands-on Exercise 9"
+date: "11 March 2024"
+date-modified: "last-modified" #allows for updating to the latest date
+format: html
+execute: 
+  echo: true #shows the code
+  eval: true #shows the outcomes of the code
+  warning: false #does not show the warnings
+editor: visual
+background-color: lightgrey;
+font-family:  Palatino Linotype;
+---
+
+# 29 Visualising and Analysing Text Data: tidytext Methods
+
+## 29.1 Overview and Learning Outcomes
+
+This hands-on exercise is based on [Chapter 9](https://r4va.netlify.app/chap09) of the **R for Visual Analytics** book.
+
+Visualising distribution is not new in statistical analysis. [Chapter 1](https://r4va.netlify.app/chap01) covered some of the popular statistical graphic methods for visualising distribution. They are histogram, probability density curve (pdf), boxplot, notch plot, and violin plot, using the [**ggplot2**](https://ggplot2.tidyverse.org/) package. Chapter 9 will cover two relatively new statistical graphic methods for visualising distribution. They are ridgeline plot and raincloud plot using the **ggplot2** package and its extensions.
+
+## 29.2 Getting Started
+
+### 29.2.1 Installing and Loading Required Libraries
+
+In this hands-on exercise, the following R packages are used:
+
+-   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data;
+
+-   [**ggthemes**](https://ggplot2.tidyverse.org/reference/ggtheme.html) for extra themes, geoms, and scales for ggplot2;
+
+-   [**ggridges**](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html) for creating ridgeline plots; and
+
+-   [**ggdist**](https://mjskay.github.io/ggdist/) for visualising distributions and uncertainty.
+
+The code chunk below uses the `p_load()` function in the **pacman** package to check if the packages are installed. If yes, they are then loaded into the R environment. If no, they are installed, then loaded into the R environment.
+
+```{r}
+#| eval: false
+pacman::p_load(tidyverse, ggthemes,
+               ggridges, ggdist)
+```
+
+### 29.2.2 Importing Data
+
+The dataset for this hands-on exercise is imported into the R environment using the `read_csv()` function in the **readr** package and stored as the R object, `exam`.
+
+```{r}
+#| eval: false
+exam = read_csv("data/Exam_data.csv")
+```
+
+The tibble data frame, `exam_data`, has 7 columns and 322 rows.
+
+-   It consists of the year-end examination grades of a cohort of 322 Primary 3 students from a local school.
+
+-   The 7 variables/attributes are:
+
+    -   Categorical: ID, CLASS, GENDER, and RACE.
+
+    -   Continuous: MATHS, ENGLISH, and SCIENCE.
+
+## 29.3 Introducing tidytext
+
+xxx
+
+### 29.3.1 Removing Header and Automated Email Signatures
+
+xxx
+
+### 29.3.2 Removing Lines with Nested Text Representing Quotes from Other Users
+
+xxx
+
+### 29.3.3 Processing Text Data
+
+xxx
+
+### 29.3.4 Visualising Words: wordcloud()
+
+xxx
+
+### 29.3.5 Visualising Words: ggwordcloud
+
+xxx
+
+## 29.4 Basic Concept of Term Frequency-Inverse Document Frequency (TF-IDF)
+
+xxx
+
+### 29.4.1 Computing tf-idf
+
+xxx
+
+### 29.4.2 Visualsing tf-idf as Interactive Table
+
+xxx
+
+### 29.4.3 Correlating Pairs of Words: widyr Package
+
+xxx
+
+### 29.4.4 Visualising Correlation as A Network
+
+xxx
+
+### 29.4.5 Creating Bigrams
+
+xxx
+
+### 29.4.6 Creating Network Graph from Bigram Data Frame
+
+xxx
+
+### 29.4.7 Visualising Network of Bigrams: ggraph Package
+
+xxx
+
+## 29.5 References
+
+xxx
+
+[**\~\~\~ End of Hands-on Exercise 9 \~\~\~**]{.smallcaps}
