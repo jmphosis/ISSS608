@@ -13,29 +13,54 @@ background-color: lightgrey;
 font-family:  Palatino Linotype;
 ---
 
-# Isopleth Map
+# Isohyet Map
 
-### 1 Installing and Loading Required Libraries
+## 1 Introduction
+
+An isohyet map is a surface map of some precipitation: rain, snow, and others.
+
+In order to prepare an isohyet map, spatial interpolation will be used. Spatial interpolation is the process of using points with known values to estimate values at other unknown points. For example, to make a rainfall above, we will not find enough evenly spread weather stations to cover the entire region. Spatial interpolation can estimate the rainfall at locations without recorded data by using known rainfall readings at nearby weather stations (see figure_temperature_map). This type of interpolated surface is often called a geostatistical surface. Elevation data, temperature, property prices, air quality index and population density are other types of data that can be computed using interpolation.
+
+There are many interpolation methods. In this in-class exercise, two widely used spatial interpolation methods called Inverse Distance Weighting (IDW) and kriging will be introduced.
+
+## 2 Getting Started
+
+### 2.1 Installing and Loading Required Libraries
 
 In this hands-on exercise, the following R packages are used:
 
 -   [**tidyverse**](https://www.tidyverse.org/) (i.e. readr, tidyr, dplyr) for performing data science tasks such as importing, tidying, and wrangling data;
 -   [**sf**](https://r-spatial.github.io/sf/) for importing, managing, and processing geospatial data;
--   [**terra**](https://rspatial.r-universe.dev/terra) for spatial data analysis;
+-   [**terra**](https://rspatial.r-universe.dev/terra) for spatial data analysis (a replacement of the [raster](https://cran.r-project.org/web/packages/raster/) package. It has a very similar, but simpler, interface, and it is faster than raster. In this hands-on exercise, it will be used to create grid (also known as raster) objects as the input and output of spatial interpolation);
 -   [**gstat**](https://r-spatial.github.io/gstat/) for spatial and spatio-temporal geostatistical modelling, prediction and simulation.
--   [**tmap**](https://r-tmap.github.io/tmap/) for thematic maps; and
+-   [**tmap**](https://r-tmap.github.io/tmap/) for thematic maps;
+-   [**automap**](https://cran.r-project.org/web/packages/automap/) for performing automatic variogram modelling and kriging interpolation; and
 -   [**viridis**](https://ggplot2.tidyverse.org/reference/scale_viridis.html?q=viridis#null) for colour-blind friendly colour maps.
 
 ```{r}
-pacman::p_load(sf, terra, gstat, tmap,
-               viridis, tidyverse)
+pacman::p_load(sf, terra, gstat, automap,
+               tmap, viridis, tidyverse)
 ```
+
+### 2.2 Importing Data
+
+Three data sets will be used in this exercise, they are:
+
+-   *RainfallStation.csv* provides location information of existing rainfall stations in Singapore. The data is downloaded from [Meteological Service Singapore](http://www.weather.gov.sg/home/).
+
+-   *DAILYDATA_202402.csv* provides weather data are rainfall stations for the month February, 2024. The data is also downloaded from [Meteological Service Singapore](http://www.weather.gov.sg/home/).
+
+-   *MPSZ-2019* contains planning subzone boundary of URA Master Plan 2019. It is downloaded from data.gov.sg. The original data is in kml format.
+
+#### 2.2.1 Importing Rainfall Station Data
 
 The dataset with name, latitude, and longitude of each weather station is imported using the `read_csv()` function in the **readr** package.
 
 ```{r}
 rfstations = read_csv("data/aspatial/RainfallStation.csv")
 ```
+
+#### 2.2.2 Importing Rainfall Record Data
 
 The dataset with the daily rainfall data is imported using the `read_csv()` function in the **readr** package, and processed using the `select()`, `group_by()`, `summarise()` and `ungroup()` functions in the **dplyr** package to obtain the total monthly rainfall by station.
 
@@ -47,6 +72,8 @@ rfdata = read_csv("data/aspatial/DAILYDATA_202402.csv") %>%
   ungroup()
 ```
 
+#### 2.2.3 Converting Aspatial Data into Geosptial Data
+
 The two datasets are then combined using the `left_join()` function in the **dplyr** package by the names of the weather stations.
 
 ```{r}
@@ -54,7 +81,7 @@ rfdata = rfdata %>%
   left_join(rfstations)
 ```
 
-The combined dataset is then converted to an simple feature object using the `st_as_sf()` function in the **sf** package. The longitudes and latitudes are inserted as sf geometry points in the dataset. The `st_transform()` function in the **sf** package is used to trnasform the coordinate system (from decimal degrees to metres).
+The combined dataset is then converted to an simple feature object using the `st_as_sf()` function in the **sf** package. The longitudes and latitudes are inserted as sf geometry points in the dataset. The `st_transform()` function in the **sf** package is used to transform the coordinate system (from wgs48 to svy21 projected coordinates system). 3414 is the EPSG code of svy21, which is the official projected coordinates of Singapore.
 
 ```{r}
 rfdata_sf = st_as_sf(rfdata,
@@ -64,12 +91,26 @@ rfdata_sf = st_as_sf(rfdata,
   st_transform(crs = 3414)
 ```
 
-The spatial shapefile is then imported using the `st_read()` function in the **sf** package and transformed using the `st_transform()` function in the **sf** package.
+#### 2.2.4 Importing Planning Subzone Boundary Data
+
+The spatial shapefile, `MPSZ-2019`, is then imported using the `st_read()` function in the **sf** package and transformed using the `st_transform()` function in the **sf** package.
 
 ```{r}
 mpsz2019 = st_read(dsn = "data/geospatial",
                    layer = "MPSZ-2019") %>%
   st_transform(crs = 3414)
+```
+
+## 3 Visualisation
+
+It is always a good practice to visualise the data prepared. In the code chunk below, **tmap** functions are used to create a dot map showing locations of rainfall station in Singapore.
+
+```{r}
+tmap_options(check.and.fix = TRUE)
+tmap_mode("view")
+tm_shape(rfdata_sf) +
+  tm_dots(col = "red")
+tmap_mode("plot")
 ```
 
 The functions in the **tmap** package are then used to plot the total monthly rainfall by weather stations based on their geographical locations.
@@ -84,7 +125,31 @@ tm_shape(mpsz2019) +
 tmap_mode("plot")
 ```
 
-The rast() function and the xyFromCell() function in the terra package are used to create the grid and xy coordinates.
+## 4 Spatial Interpolation: gstat method
+
+In order to perform spatial interpolation using the **gstat** package, we first need to create an object of class called gstat, using a function of the same name: `gstat()`. A gstat object contains all necessary information to conduct spatial interpolation, namely:
+
+-   The model definition
+
+-   The calibration data
+
+Based on its arguments, the gstat function “understands” what type of interpolation model we want to use:
+
+-   No variogram model → IDW
+
+-   Variogram model, no covariates → Ordinary Kriging
+
+-   Variogram model, with covariates → Universal Kriging
+
+The complete decision tree of the `gstat()` function is shown in the figure below.
+
+![](https://isss608-vaa-demo.netlify.app/in-class_ex/in-class_ex07/image/image4.png)
+
+### 4.1 Data Preparation
+
+To get start, we need to create a grid data object using the `rast()` function in the **terra** package.
+
+Next, a list called xy will be created using the `xyFromCell()` function in the **terra** package. The function gets coordinates of the center of raster cells for a row, column, or cell number of a SpatRaster. Or get row, column, or cell numbers from coordinates or from each other.
 
 ```{r}
 grid = terra::rast(mpsz2019,
@@ -95,11 +160,238 @@ xy = terra::xyFromCell(grid,
                        1:ncell(grid))
 ```
 
-sf layer
+Then, a data frame, `coop`, is created with prediction/simulation locations.
 
 ```{r}
-# coop = st_as_sf(as.data.frame(xy),
-#                coords = c("x", "y"))
+coop = st_as_sf(as.data.frame(xy), 
+                 coords = c("x", "y"),
+                 crs = st_crs(mpsz2019))
+
+coop = st_filter(coop, mpsz2019)
+head(coop)
 ```
+
+### 4.2 Inverse Distance Weighted (IDW)
+
+In the IDW interpolation method, the sample points are weighted during interpolation such that the influence of one point relative to another declines with distance from the unknown point you want to create.
+
+Weighting is assigned to sample points through the use of a weighting coefficient that controls how the weighting influence will drop off as the distance from new point increases. The greater the weighting coefficient, the less the effect points will have if they are far from the unknown point during the interpolation process. As the coefficient increases, the value of the unknown point approaches the value of the nearest observational point.
+
+It is important to notice that the IDW interpolation method also has some disadvantages: the quality of the interpolation result can decrease, if the distribution of sample data points is uneven. Furthermore, maximum and minimum values in the interpolated surface can only occur at sample data points. This often results in small peaks and pits around the sample data points.
+
+Three parameters of the `gstat()` function are used:
+
+-   formula: The prediction “formula” specifying the dependent and the independent variables (covariates)
+
+-   data: The calibration data
+
+-   model: The variogram model
+
+We need to specify parameter names, because these three parameters are not the first three in the function definition.
+
+> ***Note***: In R, formula objects are used to specify relation between objects, in particular—the role of different data columns in statistical models. A formula object is created using the \~ operator, which separates names of dependent variables (to the left of the \~ symbol) and independent variables (to the right of the \~ symbol). Writing 1 to the right of the \~ symbol, as in \~ 1, means that there are no independent variables
+
+```{r}
+res = gstat(formula = MONTHSUM ~ 1, 
+             locations = rfdata_sf, 
+             nmax = 5,
+             set = list(idp = 0))
+```
+
+Now that the model is defined, the `predict()` function is used to interpolate, i.e., to calculate predicted values. The predict function accepts:
+
+-   A raster—stars object, such as dem
+
+-   A model—gstat object, such as g
+
+The raster serves for two purposes:
+
+-   Specifying the locations where we want to make predictions (in all methods), and
+
+-   Specifying covariate values (in Universal Kriging only).
+
+```{r}
+resp = predict(res, coop)
+
+resp$x = st_coordinates(resp)[,1]
+resp$y = st_coordinates(resp)[,2]
+resp$pred = resp$var1.pred
+
+pred = terra::rasterize(resp, grid, 
+                         field = "pred", 
+                         fun = "mean")
+```
+
+Then, the interpolated surface is mapped using **tmap** functions.
+
+```{r}
+tmap_options(check.and.fix = TRUE)
+tmap_mode("plot")
+tm_shape(pred) + 
+  tm_raster(alpha = 0.6, 
+            palette = "viridis")
+```
+
+### 4.3 Kriging Method
+
+Kriging is one of several methods that use a limited set of sampled data points to estimate the value of a variable over a continuous spatial field. An example of a value that varies across a random spatial field might be total monthly rainfall over Singapore. It differs from Inverse Distance Weighted Interpolation discussed earlier in that it uses the spatial correlation between sampled points to interpolate the values in the spatial field: the interpolation is based on the spatial arrangement of the empirical observations, rather than on a presumed model of spatial distribution. Kriging also generates estimates of the uncertainty surrounding each interpolated value.
+
+In a general sense, the kriging weights are calculated such that points nearby to the location of interest are given more weight than those farther away. Clustering of points is also taken into account, so that clusters of points are weighted less heavily (in effect, they contain less information than single points). This helps to reduce bias in the predictions.
+
+The kriging predictor is an “optimal linear predictor” and an exact interpolator, meaning that each interpolated value is calculated to minimize the prediction error for that point. The value that is generated from the kriging process for any actually sampled location will be equal to the observed value at this point, and all the interpolated values will be the Best Linear Unbiased Predictors (BLUPs).
+
+Kriging will in general not be more effective than simpler methods of interpolation if there is little spatial autocorrelation among the sampled data points (that is, if the values do not co-vary in space). If there is at least moderate spatial autocorrelation, however, kriging can be a helpful method to preserve spatial variability that would be lost using a simpler method (for an example, see Auchincloss 2007, below).
+
+Kriging can be understood as a two-step process:
+
+-   first, the spatial covariance structure of the sampled points is determined by fitting a variogram; and
+
+-   second, weights derived from this covariance structure are used to interpolate values for unsampled points or blocks across the spatial field.
+
+Kriging methods require a **variogram** model. A variogram (sometimes called a “**semivariogram**”) is a visual depiction of the covariance exhibited between each pair of points in the sampled data. For each pair of points in the sampled data, the gamma-value or “semi-variance” (a measure of the half mean-squared difference between their values) is plotted against the distance, or “lag”, between them. The “experimental” variogram is the plot of observed values, while the “theoretical” or “model” variogram is the distributional model that best fits the data.
+
+![](https://isss608-vaa-demo.netlify.app/in-class_ex/in-class_ex07/image/image5.png)
+
+The empirical variogram is calcualted using the `variogram()` function in the **gstat** package. The function requires two arguments:
+
+-   formula, the dependent variable and the covariates; and
+
+-   data, a point layer with the dependent variable and covariates as attributes.
+
+```{r}
+v = variogram(MONTHSUM ~ 1, 
+               data = rfdata_sf)
+plot(v)
+```
+
+The theoretical plots re then compared:
+
+![](https://isss608-vaa-demo.netlify.app/in-class_ex/in-class_ex07/In-class_Ex07-IsoMap_files/figure-html/unnamed-chunk-16-1.png)
+
+With reference to the comparison above, an empirical variogram model will be fitted using the `fit.variogram()`function in the **gstat** package.
+
+```{r}
+fv = fit.variogram(object = v,
+                    model = vgm(
+                      psill = 0.5, 
+                      model = "Sph",
+                      range = 5000, 
+                      nugget = 0.1))
+fv
+```
+
+We can visualise how well the observed data fit the model by plotting fv.
+
+```{r}
+plot(v, fv)
+```
+
+The plot above reveals that the empirical model fits rather well. In view of this, spatial interpolation is performed using the newly derived model.
+
+```{r}
+k = gstat(formula = MONTHSUM ~ 1, 
+           data = rfdata_sf, 
+           model = fv)
+k
+```
+
+Once done, the `predict()` function in the **gstat** package will be used to estimate the unknown grids.
+
+```{r}
+resp = predict(k, coop)
+
+resp$x = st_coordinates(resp)[,1]
+resp$y = st_coordinates(resp)[,2]
+resp$pred = resp$var1.pred
+resp$pred = resp$pred
+resp
+```
+
+In order to create a raster surface data object, the `rasterize()` function in the terra package is used.
+
+```{r}
+kpred = terra::rasterize(resp, grid, 
+                         field = "pred")
+kpred
+```
+
+The output object, `kpred`, is in SpatRaster object class with a spatial resolution of 50m x 50m. It consists of 1,075 columns and 690 rows and in SVY21 projected coordinates system.
+
+### 4.4 Mapping Interpolated Rainfall Raster
+
+Finally, the **tmap** functions are used to map the interpolated rainfall raster (i.e. `kpred`).
+
+```{r}
+tmap_options(check.and.fix = TRUE)
+tmap_mode("plot")
+tm_shape(kpred) + 
+  tm_raster(alpha = 0.6, 
+            palette = "viridis",
+            title = "Total monthly rainfall (mm)") +
+  tm_layout(main.title = "Distribution of monthly rainfall, Feb 2024",
+            main.title.position = "center",
+            main.title.size = 1.2,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            frame = TRUE) +
+  tm_compass(type="8star", size = 2) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2)
+```
+
+### 4.5 Automatic Variogram Modelling
+
+Beside using the **gstat** package to perform variogram modelling manually, the `autofirVariogram()` function in the [**automap**](https://cran.r-project.org/web/packages/automap/) package can be used to perform varigram modelling.
+
+```{r}
+v_auto = autofitVariogram(MONTHSUM ~ 1, 
+                           rfdata_sf)
+plot(v_auto)
+```
+
+```{r}
+v_auto
+```
+
+```{r}
+k = gstat(formula = MONTHSUM ~ 1, 
+           model = v_auto$var_model,
+           data = rfdata_sf)
+k
+```
+
+```{r}
+resp = predict(k, coop)
+
+resp$x = st_coordinates(resp)[,1]
+resp$y = st_coordinates(resp)[,2]
+resp$pred = resp$var1.pred
+resp$pred = resp$pred
+
+kpred = terra::rasterize(resp, grid, 
+                         field = "pred")
+```
+
+```{r}
+tmap_options(check.and.fix = TRUE)
+tmap_mode("plot")
+tm_shape(kpred) + 
+  tm_raster(alpha = 0.6, 
+            palette = "viridis",
+            title = "Total monthly rainfall (mm)") +
+  tm_layout(main.title = "Distribution of monthly rainfall, Feb 2024",
+            main.title.position = "center",
+            main.title.size = 1.2,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            frame = TRUE) +
+  tm_compass(type="8star", size = 2) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2)
+```
+
+## **5 Reference**
+
+Olea, Ricardo A. (2006-07) “A six-step practical approach to semivariogram modeling”, *Stochastic Environmental Research and Risk Assessment*, 2006-07, Vol.20 (5), p.307-318. SMU e-journal.
 
 [**\~\~\~ End of In-class Exercise 7 \~\~\~**]{.smallcaps}
