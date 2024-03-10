@@ -390,7 +390,7 @@ tm_shape(kpred) +
   tm_grid(alpha =0.2)
 ```
 
-## **5 Reference**
+## 5 Reference
 
 Olea, Ricardo A. (2006-07) “A six-step practical approach to semivariogram modeling”, *Stochastic Environmental Research and Risk Assessment*, 2006-07, Vol.20 (5), p.307-318. SMU e-journal.
 
