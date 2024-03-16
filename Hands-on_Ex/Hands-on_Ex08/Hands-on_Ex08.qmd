@@ -88,7 +88,7 @@ GAStech_edges = GAStech_edges %>%
 glimpse(GAStech_edges)
 ```
 
-A close examination of the `GAStech_edges` tibble data frame reveals that it consists of individual email flow records. This is not very useful for visualisation. Hence, they are aggregate by date, senders, receivers, main subject and day of the week using the `filter()`, `group_by()`, `summarise()`, and `ungroup()` functions in the **dplyr** packages. The output tibble data frame is `GAStech_edges_aggregated`. A new field "WEight" is added to count the aggregated entries that form each row.
+A close examination of the `GAStech_edges` tibble data frame reveals that it consists of individual email flow records. This is not very useful for visualisation. Hence, they are aggregate by date, senders, receivers, main subject and day of the week using the `filter()`, `group_by()`, `summarise()`, and `ungroup()` functions in the **dplyr** packages. The output tibble data frame is `GAStech_edges_aggregated`. A new field "Weight" is added to count the aggregated entries that form each row.
 
 ```{r}
 GAStech_edges_aggregated <- GAStech_edges %>%
